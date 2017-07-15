@@ -1,5 +1,5 @@
 # Diana.jl  
-
+[![Build Status](https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master)](https://travis-ci.org/codeneomatrix/Diana.jl)
 This repository is an implementation of a GraphQL server, a query language for API created by Facebook.
 
 See more complete documentation at http://graphql.org/
@@ -27,6 +27,7 @@ Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
 ### Query
 
 ```julia
+using Diana
 query("https://neomatrix.herokuapp.com/graphql","{ neomatrix{ nombre linkedin } }")
 ```
 
