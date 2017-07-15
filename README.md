@@ -1,7 +1,7 @@
 # Diana.jl  
 [![Build Status](https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master)](https://travis-ci.org/codeneomatrix/Diana.jl)
-This repository is an implementation of a GraphQL server, a query language for API created by Facebook.
 
+This repository is an implementation of a GraphQL server, a query language for API created by Facebook.
 See more complete documentation at http://graphql.org/
 
 Looking for help? Find resources from the community.
