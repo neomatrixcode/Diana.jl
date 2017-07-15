@@ -18,8 +18,6 @@ This package is intended to help you building GraphQL schemas/types fast and eas
 
 ### Using Diana.jl
 
-Diana.jl provides three important capabilities: building a type schema, serving queries against that type schema and consult schemes
-
 Installing
 ----------
 ```julia
