@@ -28,10 +28,20 @@ Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
 
 ```julia
 using Diana
-query("https://neomatrix.herokuapp.com/graphql","{ neomatrix{ nombre linkedin } }")
+
+Query = """
+{
+  neomatrix{
+    nombre
+    linkedin
+  }
+} 
+"""   
+
+query("https://neomatrix.herokuapp.com/graphql",Query)
+
 ```
 
-
-### Contributing
+## Contributing
 Features are welcome !!
 
