@@ -20,6 +20,18 @@ This package is intended to help you building GraphQL schemas/types fast and eas
 
 Diana.jl provides three important capabilities: building a type schema, serving queries against that type schema and consult schemes
 
+Installing
+----------
+```julia
+Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
+```
+
+### Query
+
+```julia
+query("https://neomatrix.herokuapp.com/graphql","{ neomatrix{ nombre linkedin } }")
+```
+
 
 ### Contributing
 Features are welcome !!
