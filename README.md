@@ -36,7 +36,7 @@ Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
 ```julia
 using Diana
 
-Query = """
+query = """
 {
   neomatrix{
     nombre
@@ -45,7 +45,7 @@ Query = """
 } 
 """   
 
-query("https://neomatrix.herokuapp.com/graphql",Query)
+Query("https://neomatrix.herokuapp.com/graphql",query)
 
 ```
 
@@ -54,7 +54,7 @@ query("https://neomatrix.herokuapp.com/graphql",Query)
 ```julia
 using Diana
 
-Query = """
+query = """
 query(\$number_of_repos:Int!) {
   viewer {
     name
@@ -66,12 +66,49 @@ query(\$number_of_repos:Int!) {
    }
 }
 """   
-vars= Dict("number_of_repos" => 3)
-auth= "Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280"
 
-query("https://api.github.com/graphql",Query,auth,vars)
+Query("https://api.github.com/graphql",query,vars= Dict("number_of_repos" => 3),auth="Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280")
+
 ```
 
+```julia
+using Diana
+
+client = GraphQLClient("https://api.graph.cool/simple/v1/movies")
+client.serverAuth("Bearer my-jwt-token")
+
+or
+
+client = GraphQLClient("https://api.graph.cool/simple/v1/movies","Bearer my-jwt-token")
+
+
+query = """
+{
+  Movie(title: "Inception"){
+    actors{
+      name
+    }
+  }
+}
+""" 
+
+client.Query(query)
+
+
+query = """
+query getMovie(\$title: String!) {
+  Movie(title:\$title) {
+    releaseDate
+    actors {
+      name
+    }
+  }
+}
+"""  
+client.Query(query,vars= Dict("title" => "Inception"))
+
+client.serverUrl("https://api.graph.cool/simple/v1/movies")
+```
 ## Contributing
 Features are welcome !!
 

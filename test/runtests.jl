@@ -2,7 +2,7 @@ using Diana
 using Base.Test
 
 
-Query = """
+query = """
 {
   neomatrix{
     nombre
@@ -11,22 +11,32 @@ Query = """
 } 
 """   
 
-Query2 = """
-query(\$number_of_repos:Int!) {
-  viewer {
-    name
-     repositories(last: \$number_of_repos) {
-       nodes {
-         name
-       }
-     }
-   }
+
+@test Query("https://neomatrix.herokuapp.com/graphql",query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\",\"linkedin\":\"https://www.linkedin.com/in/acevedo-maldonado-josue/\"}}}"
+
+client = GraphQLClient("https://api.graph.cool/simple/v1/movies","Bearer my-jwt-token")
+
+query2 = """
+query getMovie(\$title: String!) {
+  Movie(title:\$title) {
+    releaseDate
+    actors {
+      name
+    }
+  }
 }
-"""   
-vars= Dict("number_of_repos" => 3)
-auth= "Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280"
+"""
 
-@test query("https://neomatrix.herokuapp.com/graphql",Query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\",\"linkedin\":\"https://www.linkedin.com/in/acevedo-maldonado-josue/\"}}}"
+@test client.Query(query2,vars=Dict("title" => "Inception")) == "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
 
-# @test query("https://api.github.com/graphql",Query2,auth,vars) == "{\"data\":{\"viewer\":{\"name\":\"neomatrix\",\"repositories\":{\"nodes\":[{\"name\":\"bombs\"},{\"name\":\"prueba\"},{\"name\":\"Diana.jl\"}]}}}}"
+query2 = """
+{
+  Movie(title: "Inception"){
+    actors{
+      name
+    }
+  }
+}
+""" 
 
+@test client.Query(query2) == "{\"data\":{\"Movie\":{\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
