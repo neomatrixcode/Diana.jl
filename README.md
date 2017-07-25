@@ -1,4 +1,6 @@
-![Sin titulo](pictures/avatar.png) # Diana.jl  
+<img src="diana_logo.png" width="5%" border="0">      Diana.jl  
+----------
+
 [![Build Status](https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master)](https://travis-ci.org/codeneomatrix/Diana.jl)
 [![Diana](http://pkg.julialang.org/badges/Diana_0.6.svg)](http://pkg.julialang.org/detail/Diana)
 
@@ -27,6 +29,7 @@ Roadmap
 Installing
 ----------
 ```julia
+Pkg.add("Diana")                                           #Release
 Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
 ```
 
@@ -105,9 +108,12 @@ query getMovie(\$title: String!) {
 }
 """  
 client.Query(query,vars= Dict("title" => "Inception"))
-
+```
+### Change server
+```julia
 client.serverUrl("https://api.graph.cool/simple/v1/movies")
 ```
+
 ## Contributing
 Features are welcome !!
 
