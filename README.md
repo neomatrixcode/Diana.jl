@@ -1,4 +1,4 @@
-# Diana.jl  
+![Sin titulo](pictures/avatar.png) # Diana.jl  
 [![Build Status](https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master)](https://travis-ci.org/codeneomatrix/Diana.jl)
 [![Diana](http://pkg.julialang.org/badges/Diana_0.6.svg)](http://pkg.julialang.org/detail/Diana)
 
@@ -27,7 +27,6 @@ Roadmap
 Installing
 ----------
 ```julia
-Pkg.add("Diana")                                           #Release
 Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
 ```
 
@@ -48,9 +47,6 @@ query = """
 Query("https://neomatrix.herokuapp.com/graphql",query)
 
 ```
-
-### Query
-
 ```julia
 using Diana
 
@@ -71,6 +67,8 @@ Query("https://api.github.com/graphql",query,vars= Dict("number_of_repos" => 3),
 
 ```
 
+### Query
+
 ```julia
 using Diana
 
@@ -80,8 +78,9 @@ client.serverAuth("Bearer my-jwt-token")
 or
 
 client = GraphQLClient("https://api.graph.cool/simple/v1/movies","Bearer my-jwt-token")
+```
 
-
+```julia
 query = """
 {
   Movie(title: "Inception"){
@@ -93,8 +92,8 @@ query = """
 """ 
 
 client.Query(query)
-
-
+```
+```julia
 query = """
 query getMovie(\$title: String!) {
   Movie(title:\$title) {
