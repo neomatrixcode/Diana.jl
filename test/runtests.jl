@@ -11,8 +11,11 @@ query = """
 } 
 """   
 
+r = Query("https://neomatrix.herokuapp.com/graphql",query)
 
-@test Query("https://neomatrix.herokuapp.com/graphql",query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\",\"linkedin\":\"https://www.linkedin.com/in/acevedo-maldonado-josue/\"}}}"
+@test r.Info.status == 200
+@test r.Data == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\",\"linkedin\":\"https://www.linkedin.com/in/acevedo-maldonado-josue/\"}}}"
+
 
 client = GraphQLClient("https://api.graph.cool/simple/v1/movies","Bearer my-jwt-token")
 
@@ -26,8 +29,10 @@ query getMovie(\$title: String!) {
   }
 }
 """
+r = client.Query(query2,vars=Dict("title" => "Inception"))
 
-@test client.Query(query2,vars=Dict("title" => "Inception")) == "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
+@test r.Info.status == 200
+@test r.Data == "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
 
 query2 = """
 {
@@ -38,5 +43,7 @@ query2 = """
   }
 }
 """ 
+r = client.Query(query2)
 
-@test client.Query(query2) == "{\"data\":{\"Movie\":{\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
+@test r.Info.status == 200
+@test r.Data == "{\"data\":{\"Movie\":{\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"

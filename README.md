@@ -47,7 +47,8 @@ query = """
 } 
 """   
 
-Query("https://neomatrix.herokuapp.com/graphql",query)
+r = Query("https://neomatrix.herokuapp.com/graphql",query)
+if (r.Info.status == 200) println(r.Data) end
 
 ```
 ```julia
@@ -66,7 +67,8 @@ query(\$number_of_repos:Int!) {
 }
 """   
 
-Query("https://api.github.com/graphql",query,vars= Dict("number_of_repos" => 3),auth="Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280")
+r = Query("https://api.github.com/graphql",query,vars= Dict("number_of_repos" => 3),auth="Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280")
+if (r.Info.status == 200) println(r.Data) end
 
 ```
 
@@ -94,7 +96,8 @@ query = """
 }
 """ 
 
-client.Query(query)
+r = client.Query(query)
+if (r.Info.status == 200) println(r.Data) end
 ```
 ```julia
 query = """
@@ -107,7 +110,8 @@ query getMovie(\$title: String!) {
   }
 }
 """  
-client.Query(query,vars= Dict("title" => "Inception"))
+r = client.Query(query,vars= Dict("title" => "Inception"))
+if (r.Info.status == 200) println(r.Data) end
 ```
 ### Change server
 ```julia
