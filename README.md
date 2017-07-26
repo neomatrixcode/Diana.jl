@@ -20,10 +20,10 @@ This package is intended to help you building GraphQL schemas/types fast and eas
 
 Roadmap
 -----
-#### Version 0.0.1
+#### Version 0.0.2
  + graphql client 
 
-#### Version 0.0.2
+#### Version 0.0.3
   + Creation of schemas / types
 
 Installing
