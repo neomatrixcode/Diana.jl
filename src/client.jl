@@ -1,3 +1,6 @@
+using Requests
+import Requests: post
+
 type Client
   Query::Function
   serverUrl::Function
@@ -9,10 +12,10 @@ type Result
 	Data::String
 end
 
-function Query(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000")
+function Query(url::String,data::String;vars::Dict=Dict(),auth::String="Bearer 0000")
   r=post(url; json = Dict("query"=>data,"variables" => vars),headers = Dict("Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth))  
   content=""
-  r.status == 200 ? map(x -> (content*="$(Char(x))"), r.data): content="{\"data\":{}}"
+  map(x -> (content*="$(Char(x))"), r.data)
   return Result(r,content)
 end
 
@@ -32,7 +35,7 @@ my_auth::String= auth
 	function Query(data::String;vars::Dict=Dict())
 	  r=post(my_url; json = Dict("query"=>data,"variables" => vars),headers = Dict("Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => my_auth))  
 	  content=""
-	  r.status == 200 ? map(x -> (content*="$(Char(x))"), r.data): content="{\"data\":{}}"
+	  map(x -> (content*="$(Char(x))"), r.data)
 	  return Result(r,content)
 	end
 

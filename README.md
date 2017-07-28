@@ -111,13 +111,45 @@ query getMovie(\$title: String!) {
 }
 """  
 r = client.Query(query,vars= Dict("title" => "Inception"))
-if (r.Info.status == 200) println(r.Data) end
+
+if (r.Info.status == 200) 
+  println(r.Data) 
+else
+  println(r.Data)
+end
 ```
 ### Change server
 ```julia
 client.serverUrl("https://api.graph.cool/simple/v1/movies")
 ```
 
+Note: the lexer is built based on the [Tokenize](https://github.com/KristofferC/Tokenize.jl) package code
+
+thanks guys
+
+
+### lexer
+```julia
+using Diana
+
+schema = Schema("algo")
+
+schema.execute("""
+# Welcome to Graphcool's custom GraphiQL ✌
+#
+query PostsForAuthor { 
+  author(id: "1") { 
+    username 
+    posts { 
+      title 
+    votes 
+    createAt
+  }
+  }
+}
+""")
+
+```
 ## Contributing
 Features are welcome !!
 
