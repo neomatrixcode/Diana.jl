@@ -29,8 +29,8 @@ Roadmap
 Installing
 ----------
 ```julia
-Pkg.add("Diana")                                           #Release
-Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development
+Pkg.add("Diana")                                           #Release (Master branch)
+Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development (Dev branch)
 ```
 
 ### Simple query
