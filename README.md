@@ -177,7 +177,7 @@ client.serverUrl("https://api.graph.cool/simple/v1/movies")
 #### Note
  The lexer is built based on the [Tokenize](https://github.com/KristofferC/Tokenize.jl) package code and the Parser on the [graphql-js](https://github.com/graphql/graphql-js) package
 
-thanks guys
+### Thanks people
 
 Lexer
 ----------
