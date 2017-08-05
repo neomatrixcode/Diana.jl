@@ -3,21 +3,19 @@
     ERROR,
     COMMENT, # aadsdsa, #= fdsf #=
     WHITESPACE, # '\n   \t'
-    IDENTIFIER, # foo, Σxx
-    AT_SIGN, # @
+    NAME, # foo, Σxx
+    AT, # @
+    PIPE, #|
     COMMA, #,
     SEMICOLON, # ;
 
     begin_keywords,
         KEYWORD, # general
-        QUERY,
-        MUTATION,
-        SUBSCRIPTION,
     end_keywords,
 
     begin_literal,
         LITERAL, # general
-        INTEGER, # 4
+        INT, # 4
         FLOAT, # 3.5, 3.7e+3
         STRING, # "foo"
         TRIPLE_STRING, # """ foo \n """
@@ -27,7 +25,7 @@
 
     begin_delimiters,
         LSQUARE, # [
-        RSQUARE, # [
+        RSQUARE, # ]
         LBRACE, # {
         RBRACE, # }
         LPAREN, # (
@@ -36,11 +34,11 @@
 
     begin_ops,
         OP, # general
-        DDDOT, # ...
+        SPREAD, # ...
 
         # Level 1
         begin_assignments,
-            EQ, # =
+            EQUALS, # =
         end_assignments,
 
         # Level 2
@@ -56,27 +54,21 @@
         # Level 8
         begin_colon,
             COLON, # :
-            DDOT, # ..
         end_colon,
 
         # Level 9
         begin_plus,
-            EX_OR, # $
+            DOLLAR, # $
             PLUS, # +
             MINUS, # -
         end_plus,
-
-        # Level 11
-        begin_times,
-            STAR,  # *
-        end_times,
 
         # Level 16
         begin_dot,
             DOT,# .
         end_dot,
 
-        NOT, # !
+        BANG, # !
         PRIME, # '
        
     end_ops,

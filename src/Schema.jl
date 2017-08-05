@@ -1,4 +1,4 @@
-include("parser.jl")
+
 
 type schema
   execute::Function
@@ -9,7 +9,8 @@ end
 function Schema(algo)
 	
 	function execute(query::String)
-		parser(query)
+		ast= Parse(query)
+        ast
 	end
 
 return schema(execute) 
