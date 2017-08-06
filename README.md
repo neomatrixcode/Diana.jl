@@ -1,5 +1,4 @@
-<img src="diana_logo.png" width="5%" border="0">      Diana.jl  
-----------
+<img src="diana-banner.png" width="75%" border="0" align="center">
 
 [![Build Status](https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master)](https://travis-ci.org/codeneomatrix/Diana.jl)
 [![Diana](http://pkg.julialang.org/badges/Diana_0.6.svg)](http://pkg.julialang.org/detail/Diana)
