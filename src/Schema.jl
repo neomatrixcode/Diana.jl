@@ -6,13 +6,21 @@ end
 
 
 
-function Schema(algo)
-	
-	function execute(query::String)
-		ast= Parse(query)
-        ast
-	end
+function Schema(_schema)
 
-return schema(execute) 
+my_schema = _schema
+	
+    function execute(query::String)
+      ast=""
+      try                           
+         ast= Parse(str)
+     catch e                       
+        s=string(e.msg) 
+        m=match(r"(?<line>\d+)[\s]*,?[\s]*(\w)+[\s]*(?<col>\d+)",s)              
+        return "{\"errors\": [{\"message\": \"Syntax Error GraphQL request $s\",\"locations\": [{\"column\": $(m["col"]),\"line\": $(m["line"])}]}]}"
+      end
+    end
+
+ return schema(execute) 
 
 end

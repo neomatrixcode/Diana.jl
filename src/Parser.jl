@@ -327,7 +327,7 @@ function expect(lexer, kind)
 		lexer.advance()
 		return token
 	end
-	throw("Expected $kind, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])")
+	return throw(ErrorException("Expected $kind, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])"))
 end
 
 """
@@ -341,7 +341,7 @@ function expectKeyword(lexer, value::String)
     lexer.advance()
     return token
   end
-  throw("Expected $value, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])")
+  return throw(ErrorException("Expected $value, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])"))
 end
 
 """
@@ -457,7 +457,7 @@ function parseDefinition(lexer::Lexer)
       end
     end
 
-  throw(unexpected(lexer))
+  return throw(ErrorException(unexpected(lexer)))
 end
 
 """ 
@@ -611,7 +611,8 @@ function parseOperationType(lexer::Lexer)
 	if(operationToken.val =="subscription") 
 		return "subscription" 
 	end
-	throw(unexpected(operationToken))
+
+	return throw(ErrorException(unexpected(operationToken)))
 end
 
 """
@@ -692,7 +693,7 @@ end
 """
 function parseFragmentName(lexer::Lexer)
   if (lexer.token().val == "on")
-    throw(unexpected(lexer))
+    return throw(ErrorException(unexpected(lexer)))
   end
   return parseName(lexer)
 end
@@ -762,7 +763,8 @@ function parseValueLiteral(lexer::Lexer, isConst::Bool)
       end
       #break
     end
-  throw(unexpected(lexer))
+
+  return throw(ErrorException(unexpected(lexer)))
 end
 
 function parseConstValue(lexer::Lexer) ##export
@@ -894,7 +896,8 @@ function parseTypeSystemDefinition(lexer::Lexer)
       if(lexer.token().val=="extend") return parseTypeExtensionDefinition(lexer) end
       if(lexer.token().val=="directive") return parseDirectiveDefinition(lexer) end
   end
-  throw(unexpected(lexer))
+
+  return throw(ErrorException(unexpected(lexer)))
 end
 
 """
@@ -1128,7 +1131,6 @@ function parseDirectiveLocations(lexer::Lexer)
   return locations
 end
 
-
 function Base.show(io::IO, x::Node)
   t = typeof(x)::DataType
   s = ""
@@ -1137,7 +1139,7 @@ function Base.show(io::IO, x::Node)
   nf = nfields(x)
   nb = sizeof(x)
   if nf != 0 || nb == 0
-    recur_io = IOContext(io, :SHOWN_SET => x)
+    #recur_io = IOContext(io, :SHOWN_SET => x)
     for i in 1:nf
       f = fieldname(t, i)
       v=true
