@@ -1,10 +1,10 @@
-type Client
+mutable struct Client
   Query::Function
   serverUrl::Function
   serverAuth::Function
 end
 
-type Result
+mutable struct Result
 	Info
 	Data::String
 end
