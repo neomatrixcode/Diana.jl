@@ -1,4 +1,4 @@
-<p align="center"><img src="diana-banner.png" width="75%" ></p>
+<p align="center"><img src="diana-banner.png" width="25%" ></p>
 <p align="center">
 <strong>This repository is a GraphQL server implementation.</strong>
 <br><br>
