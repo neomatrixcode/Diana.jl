@@ -1,7 +1,15 @@
-<img src="diana-banner.png" width="75%" border="0" align="center">
+<p align="center"><img src="diana-banner.png" width="75%" ></p>
+<p align="center">
+<strong>Build GraphQL schemas/types fast and easily using <a href="https://julialang.org/">julia</a>.</strong>
+<br><br>
+<a href="https://travis-ci.org/codeneomatrix/Diana.jl"><img src="https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master"></a>
+<a href="https://coveralls.io/github/"><img src="https://img.shields.io/coveralls/"></a>
+<a href="https://pkg.julialang.org/detail/Diana"><img src="http://pkg.julialang.org/badges/Diana_0.6.svg"></a>
+<a href="https://raw.githubusercontent.com/codeneomatrix/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 
-[![Build Status](https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master)](https://travis-ci.org/codeneomatrix/Diana.jl)
-[![Diana](http://pkg.julialang.org/badges/Diana_0.6.svg)](http://pkg.julialang.org/detail/Diana)
+</p>
+
+## About
 
 This repository is an implementation of a GraphQL server, a query language for API created by Facebook.
 See more complete documentation at http://graphql.org/
@@ -9,13 +17,12 @@ See more complete documentation at http://graphql.org/
 Looking for help? Find resources from the community.
 
 ### Getting Started
-
 An overview of GraphQL in general is available in the [README](https://github.com/facebook/graphql/blob/master/README.md) for the Specification for GraphQL.
 
 This package is intended to help you building GraphQL schemas/types fast and easily.
-+ Easy to use: Diana.jl helps you use GraphQL in Julia without effort.
-+ Data agnostic: Diana.jl supports any type of data source: SQL, NoSQL, etc. The intent is to provide a complete API and make your data available through GraphQL.
-+ Make querys: Diana.jl allows queries to graphql schemas
++ **Easy to use:** Diana.jl helps you use GraphQL in Julia without effort.
++ **Data agnostic:** Diana.jl supports any type of data source: SQL, NoSQL, etc. The intent is to provide a complete API and make your data available through GraphQL.
++ **Make querys:** Diana.jl allows queries to graphql schemas
 
 Roadmap
 -----
