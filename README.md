@@ -1,10 +1,12 @@
 <p align="center"><img src="diana-banner.png" width="75%" ></p>
 <p align="center">
-<strong>Build GraphQL schemas/types fast and easily using <a href="https://julialang.org/">julia</a>.</strong>
+<strong>This repository is a GraphQL server implementation.</strong>
 <br><br>
 <a href="https://travis-ci.org/codeneomatrix/Diana.jl"><img src="https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master"></a>
 <a href="https://coveralls.io/github/"><img src="https://img.shields.io/coveralls/"></a>
+&nbsp;&nbsp;&nbsp;
 <a href="https://pkg.julialang.org/detail/Diana"><img src="http://pkg.julialang.org/badges/Diana_0.6.svg"></a>
+ &nbsp;&nbsp;&nbsp;
 <a href="https://raw.githubusercontent.com/codeneomatrix/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 
 </p>
