@@ -3,7 +3,9 @@
 <strong>This repository is a GraphQL server implementation.</strong>
 <br><br>
 <a href="https://travis-ci.org/codeneomatrix/Diana.jl"><img src="https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master"></a>
-<a href="https://coveralls.io/github/"><img src="https://img.shields.io/coveralls/"></a>
+<a href="https://codecov.io/gh/codeneomatrix/Diana.jl">
+  <img src="https://codecov.io/gh/codeneomatrix/Diana.jl/branch/master/graph/badge.svg" />
+</a>
 &nbsp;&nbsp;&nbsp;
 <a href="https://pkg.julialang.org/detail/Diana"><img src="http://pkg.julialang.org/badges/Diana_0.6.svg"></a>
  &nbsp;&nbsp;&nbsp;
