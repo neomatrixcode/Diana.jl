@@ -3,7 +3,7 @@ module Diana
 using Requests
 import Requests: post
 
-export Query, GraphQLClient
+export Queryclient, GraphQLClient
 
 include("client.jl")
 
