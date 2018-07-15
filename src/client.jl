@@ -1,5 +1,5 @@
 mutable struct Client
-  Query::Function
+  Queryclient::Function
   serverUrl::Function
   serverAuth::Function
 end
@@ -9,7 +9,7 @@ mutable struct Result
 	Data::String
 end
 
-function Query(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict())
+function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict())
   r=post(url; json = Dict("query"=>data,"variables" => vars),headers = merge(Dict("Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth), headers))
   content=""
   r.status == 200 ? map(x -> (content*="$(Char(x))"), r.data): content="{\"data\":{}}"
@@ -29,12 +29,12 @@ my_auth::String= auth
 		my_auth= auth
 	end
 
-	function Query(data::String;vars::Dict=Dict())
+	function Queryclient(data::String;vars::Dict=Dict())
 	  r=post(my_url; json = Dict("query"=>data,"variables" => vars),headers = merge(Dict("Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => my_auth), headers))
 	  content=""
 	  r.status == 200 ? map(x -> (content*="$(Char(x))"), r.data): content="{\"data\":{}}"
 	  return Result(r,content)
 	end
 
-	return Client(Query,serverUrl,serverAuth)
+	return Client(Queryclient,serverUrl,serverAuth)
 end
