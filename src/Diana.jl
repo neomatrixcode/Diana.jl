@@ -1,10 +1,20 @@
+ __precompile__()
+
 module Diana
 
-using Requests
-import Requests: post
+include("Client.jl")
+include("token.jl")
+include("lexer.jl")
+include("parser.jl")
+include("Schema.jl")
 
-export Queryclient, GraphQLClient
+import .Lexers: Tokenize,Tokensgraphql
 
-include("client.jl")
 
+export Queryclient, GraphQLClient, Schema, Tokenize,Tokensgraphql, Parse
+
+
+
+include("_precompile.jl")
+_precompile_()
 end # module
