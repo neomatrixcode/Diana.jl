@@ -1,5 +1,5 @@
-using Requests
-import Requests: post
+using HTTP
+using JSON
 
 mutable struct Client
   Queryclient::Function
@@ -12,12 +12,21 @@ mutable struct Result
 	Data::String
 end
 
-function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict())
-  r=post(url; json = Dict("query"=>data,"variables" => vars),headers = merge(Dict("Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth), headers))
+function postexecute(url, body, headers, headersextra )
+ for (key, value) in headersextra
+    HTTP.setheader(headers,key => value )
+  end
 
-  content=""
-  map(x -> (content*="$(Char(x))"), r.data)
-  return Result(r,content)
+return HTTP.post(url,headers,JSON.json(body))
+end
+
+function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict())
+
+	myjson = Dict("query"=>data,"variables" => vars,"operationName" => Dict())
+
+  r=postexecute(url, myjson,HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth]), headers)
+
+  return Result(r,String(r.body))
 end
 
 function GraphQLClient(url::String, auth::String="Bearer 0000", headers::Dict=Dict())
@@ -34,10 +43,10 @@ my_auth::String= auth
 	end
 
 	function Queryclient(data::String;vars::Dict=Dict())
-	  r=post(my_url; json = Dict("query"=>data,"variables" => vars),headers = merge(Dict("Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => my_auth), headers))
-	  content=""
-	  map(x -> (content*="$(Char(x))"), r.data)
-	  return Result(r,content)
+		myjson = Dict("query"=>data,"variables" => vars,"operationName" => Dict())
+	  r=postexecute(my_url, myjson,HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => my_auth]), headers)
+
+	  return Result(r,String(r.body))
 	end
 
 	return Client(Queryclient,serverUrl,serverAuth)

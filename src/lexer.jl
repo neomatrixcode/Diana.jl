@@ -3,8 +3,8 @@ module Lexers
 include("utilities.jl")
 global const charstore = IOBuffer()
 
-using Compat
-import Compat.String
+#using Compat
+#import Compat.String
 
 import ..Tokens
 import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
@@ -42,12 +42,12 @@ Lexer(str::AbstractString) = Lexer(IOBuffer(str))
 Returns an `Iterable` containing the tokenized input. Can be reverted by e.g.
 `join(untokenize.(Tokenize(x)))`.
 """
-function Tokenize(x) 
+function Tokenize(x)
  y=replace(x, r"#.*\n", "\n") # quit comments
  Lexer(y)
 end
 
-function Tokensgraphql(x) 
+function Tokensgraphql(x)
  y=replace(x, r"#.*\n", "\n") # quit comments
 
  filter(x -> (x.kind != Tokens.WHITESPACE), collect(Lexer(y)))
@@ -285,7 +285,7 @@ function next_token(l::Lexer)
     elseif c == '}'; return emit(l, Tokens.RBRACE)
     elseif c == '('; return emit(l, Tokens.LPAREN)
     elseif c == ')'; return emit(l, Tokens.RPAREN)
-    elseif c == '|'; return emit(l, Tokens.PIPE)        
+    elseif c == '|'; return emit(l, Tokens.PIPE)
     elseif c == '@'; return emit(l, Tokens.AT)
     elseif c == '$'; return emit(l, Tokens.DOLLAR)
     elseif c == '='; return emit(l, Tokens.EQUALS)
@@ -407,7 +407,7 @@ function lex_quote(l::Lexer, doemit=true)
         end
 end
 
-# We just consumed a " 
+# We just consumed a "
 function read_string(l::Lexer, kind::Tokens.Kind)
     while true
         c = readchar(l)
@@ -487,7 +487,7 @@ function lex_identifier(l, c)
         return tryread(l, ('u', 'b', 's', 'c','r','i','p', 't','i','o','n'), NAME, c)
     elseif c == 'f'
         return tryread(l, ('r', 'a', 'g', 'm','e','n','t'), NAME, c)
-        
+
     elseif c == 'd'
         return tryread(l, ('i', 'r', 'e', 'c','t','i','v','e'), NAME, c)
     else

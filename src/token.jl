@@ -1,7 +1,7 @@
 module Tokens
 
-using Compat
-import Compat.String
+#using Compat
+#import Compat.String
 import Base.eof
 
 export Token
@@ -49,7 +49,7 @@ immutable Token
     endpos::Tuple{Int, Int}
     startbyte::Int # The byte where the token start in the buffer
     endbyte::Int # The byte where the token ended in the buffer
-    val::Compat.String # The actual string of the token
+    val::String #Compat.String # The actual string of the token
     token_error::TokenError
 end
 
@@ -87,7 +87,7 @@ function Base.show(io::IO, t::Token)
   end_r, end_c = endpos(t)
   str = kind(t) == ENDMARKER ? "" : escape_string(untokenize(t))
   print(io, rpad(exactkind(t), 15, " "))
-  print(io, rpad(str, 20, " ")) 
+  print(io, rpad(str, 20, " "))
   print(io, rpad(string(start_r, ",", start_c, " - ", end_r, ",", end_c), 17, " "))
 end
 

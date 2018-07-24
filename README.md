@@ -101,7 +101,7 @@ query(\$number_of_repos:Int!) {
 }
 """
 
-r = Queryclient("https://api.github.com/graphql",query,vars= Dict("number_of_repos" => 3),auth="Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280",Dict("header"=>"value"))
+r = Queryclient("https://api.github.com/graphql",query,vars= Dict("number_of_repos" => 3),auth="Bearer 7fe6d7e40cc191101b4708b078a5fcea35ee7280",headers=Dict("header"=>"value"))
 if (r.Info.status == 200) println(r.Data) end
 
 ```
