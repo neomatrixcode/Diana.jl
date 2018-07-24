@@ -15,6 +15,6 @@ export Queryclient, GraphQLClient#, Schema, Tokenize,Tokensgraphql, Parse
 
 
 
-include("_precompile.jl")
-_precompile_()
-end # module
+#include("_precompile.jl")
+#_precompile_()
+#end # module
