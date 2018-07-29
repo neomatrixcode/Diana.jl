@@ -42,7 +42,7 @@ TOKEN_ERROR_DESCRIPTION = Dict{TokenError, String}(
   UNKNOWN => "unknown",
 )
 
-immutable Token
+struct Token
     kind::Kind
     # Offsets into a string or buffer
     startpos::Tuple{Int, Int} # row, col where token starts /end, col is a string index

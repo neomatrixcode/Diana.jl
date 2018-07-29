@@ -14,10 +14,10 @@ import ..Tokens:  NAME
 
 export tokenize
 
-iswhitespace(c::Char) = Base.UTF8proc.isspace(c)
+@inline iswhitespace(c::Char) = Base.isspace(c)
 
-type Lexer{IO_t <: IO}
-    io::IO_t
+mutable struct Lexer
+    io::IO
     io_startpos::Int
 
     token_start_row::Int
@@ -33,7 +33,7 @@ type Lexer{IO_t <: IO}
     last_token::Tokens.Kind
 end
 
-Lexer(io) = Lexer(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
+Lexer(io::IO) = Lexer(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
 Lexer(str::AbstractString) = Lexer(IOBuffer(str))
 
 """
@@ -43,19 +43,19 @@ Returns an `Iterable` containing the tokenized input. Can be reverted by e.g.
 `join(untokenize.(Tokenize(x)))`.
 """
 function Tokenize(x)
- y=replace(x, r"#.*\n", "\n") # quit comments
- Lexer(y)
+ x=replace(x, r"#.*\n" => "\n") # quit comments
+ Lexer(x)
 end
 
 function Tokensgraphql(x)
- y=replace(x, r"#.*\n", "\n") # quit comments
-
- filter(x -> (x.kind != Tokens.WHITESPACE), collect(Lexer(y)))
+ x=replace(x, r"#.*\n" => "\n") # quit comments
+ #@time collect(Lexer(y))
+ filter(x -> (x.kind != Tokens.WHITESPACE), collect(Lexer(x)))
 end
 # Iterator interface
-Base.iteratorsize{IO_t}(::Type{Lexer{IO_t}}) = Base.SizeUnknown()
-Base.iteratoreltype{IO_t}(::Type{Lexer{IO_t}}) = Base.HasEltype()
-Base.eltype{IO_t}(::Type{Lexer{IO_t}}) = Token
+Base.IteratorSize(::Type{Lexer}) = Base.SizeUnknown()
+Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
+Base.eltype(::Type{Lexer}) = Token
 
 function Base.start(l::Lexer)
     seekstart(l)
@@ -169,7 +169,7 @@ Returns the next character and increments the current position.
 """
 function readchar end
 
-function readchar{I <: IO}(l::Lexer{I})
+function readchar(l::Lexer)
     prevpos!(l, position(l))
     c = readchar(l.io)
     return c
@@ -194,7 +194,7 @@ Consumes the next character `c` if either `f::Function(c)` returns true, `c == f
 for `c::Char` or `c in f` otherwise. Returns `true` if a character has been
 consumed and `false` otherwise.
 """
-function accept(l::Lexer, f::Union{Function, Char, Vector{Char}, String})
+@inline function accept(l::Lexer, f::Union{Function, Char, Vector{Char}, String})
     c = peekchar(l)
     if isa(f, Function)
         ok = f(c)
@@ -212,7 +212,7 @@ end
 
 Consumes all following characters until `accept(l, f)` is `false`.
 """
-function accept_batch(l::Lexer, f)
+@inline function accept_batch(l::Lexer, f)
     ok = false
     while accept(l, f)
         ok = true
