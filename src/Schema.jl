@@ -1,6 +1,6 @@
 
 
-type schema
+mutable struct schema
   execute::Function
 end
 
@@ -9,18 +9,19 @@ end
 function Schema(_schema)
 
 my_schema = _schema
-	
+
     function execute(query::String)
       ast=""
-      try                           
-         ast= Parse(str)
-     catch e                       
-        s=string(e.msg) 
-        m=match(r"(?<line>\d+)[\s]*,?[\s]*(\w)+[\s]*(?<col>\d+)",s)              
-        return "{\"errors\": [{\"message\": \"Syntax Error GraphQL request $s\",\"locations\": [{\"column\": $(m["col"]),\"line\": $(m["line"])}]}]}"
+      try
+         ast= Parse(query)
+     catch e
+        s=string(e.msg)
+        println(s)
+        m=match(r"(?<text>^.*)in:[\s]*[\w]+[\s]*(?<line>\d+)[\s]*,[\s]*col[\s]*(?<col>\d+)",s)
+        return "{\"errors\":[{\"locations\": [{\"column\": $(m["col"]),\"line\": $(m["line"])}],\"message\": \"Syntax Error GraphQL request ($(m["col"]):$(m["line"])) $(m["text"])\"}]}"
       end
     end
 
- return schema(execute) 
+ return schema(execute)
 
 end

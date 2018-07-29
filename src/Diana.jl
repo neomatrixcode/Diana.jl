@@ -5,13 +5,13 @@ module Diana
 include("client.jl")
 include("token.jl")
 include("lexer.jl")
-include("parser.jl")
-#include("Schema.jl")
+include("Parser.jl")
+include("Schema.jl")
 
 import .Lexers: Tokenize,Tokensgraphql
 
 
-export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse #Schema
+export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse,Schema
 
 
 
