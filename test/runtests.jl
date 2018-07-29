@@ -1,5 +1,5 @@
 using Diana
-using Base.Test
+using Test
 
 
 query = """

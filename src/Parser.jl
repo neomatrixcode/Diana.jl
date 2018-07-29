@@ -386,8 +386,10 @@ function many(lexer::Lexer, openKind, parseFn::Function, closeKind)
  	end
  	return nodes
  end
-
-
+"""
+Given a GraphQL source, parses it into a Document.
+Throws GraphQLError if a syntax error is encountered.
+ """
 function Parse(str)
 	lexer = createLexer(str)
 	return parseDocument(lexer)

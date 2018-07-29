@@ -2,7 +2,7 @@
 
 module Diana
 
-include("Client.jl")
+include("client.jl")
 include("token.jl")
 include("lexer.jl")
 include("parser.jl")
