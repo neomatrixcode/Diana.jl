@@ -291,6 +291,7 @@ function next_token(l::Lexer)
     elseif c == '='; return emit(l, Tokens.EQUALS)
     elseif c == '!'; return emit(l, Tokens.BANG)
     elseif c == ':'; return emit(l, Tokens.COLON)
+    elseif c == '&'; return emit(l, Tokens.AMP)
     elseif c == '"'; return lex_quote(l);
     elseif c == '.'; return lex_dot(l);
     elseif is_identifier_start_char(c); return lex_identifier(l, c)

@@ -8,6 +8,7 @@
     PIPE, #|
     COMMA, #,
     SEMICOLON, # ;
+    AMP, #&
 
     begin_keywords,
         KEYWORD, # general
@@ -20,7 +21,7 @@
         STRING, # "foo"
         TRIPLE_STRING, # """ foo \n """
         CHAR, # 'a'
-        TRUE, FALSE, 
+        TRUE, FALSE,
     end_literal,
 
     begin_delimiters,
@@ -70,6 +71,6 @@
 
         BANG, # !
         PRIME, # '
-       
+
     end_ops,
 )

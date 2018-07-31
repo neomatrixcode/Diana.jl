@@ -443,14 +443,29 @@ function parseDefinition(lexer::Lexer)
       end
 
       # Note: the Type System IDL is an experimental non-spec addition.
-      if((lexer.token().val)=="schema") end
-      if((lexer.token().val)=="scalar") end
-      if((lexer.token().val)=="type") end
-      if((lexer.token().val)=="interface") end
-      if((lexer.token().val)=="union") end
-      if((lexer.token().val)=="enum") end
-      if((lexer.token().val)=="input") end
-      if((lexer.token().val)=="extend") end
+      if((lexer.token().val)=="schema")
+        return parseTypeSystemDefinition(lexer) end
+      if((lexer.token().val)=="scalar")
+      return parseTypeSystemDefinition(lexer)
+       end
+      if((lexer.token().val)=="type")
+      return parseTypeSystemDefinition(lexer)
+       end
+      if((lexer.token().val)=="interface")
+      return parseTypeSystemDefinition(lexer)
+       end
+      if((lexer.token().val)=="union")
+      return parseTypeSystemDefinition(lexer)
+       end
+      if((lexer.token().val)=="enum")
+      return parseTypeSystemDefinition(lexer)
+       end
+      if((lexer.token().val)=="input")
+      return parseTypeSystemDefinition(lexer)
+       end
+      if((lexer.token().val)=="extend")
+      return parseTypeSystemDefinition(lexer)
+       end
       if((lexer.token().val)=="directive")
       	return parseTypeSystemDefinition(lexer)
       end
@@ -940,16 +955,19 @@ end
 """
 function parseImplementsInterfaces(lexer::Lexer)
   tipes = []
-  if (lexer.token.val == "implements")
-    lexer.advance()
+
+  try
+  expectKeyword(lexer,"implements")
     while true
     	push!(tipes,parseNamedType(lexer))
         if(!peek(lexer, Tokens.NAME))
         	break
         end
     end
-  end
   return tipes
+  catch
+    return []
+  end
 end
 
 """

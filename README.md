@@ -34,7 +34,11 @@ Roadmap
  + graphql client
 
 #### Version 0.1.0
+  + Update to julia 0.7
   + Creation of schemas / types
+  + Validator
+  + Schemas / Types
+  + Execute
 
 ## TODO
 - [x] Client
