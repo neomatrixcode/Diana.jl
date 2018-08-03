@@ -17,8 +17,7 @@ my_schema = _schema
      catch e
         s=string(e.msg)
         println(s)
-        m=match(r"(?<text>^.*)in:[\s]*[\w]+[\s]*(?<line>\d+)[\s]*,[\s]*col[\s]*(?<col>\d+)",s)
-        return "{\"errors\":[{\"locations\": [{\"column\": $(m["col"]),\"line\": $(m["line"])}],\"message\": \"Syntax Error GraphQL request ($(m["col"]):$(m["line"])) $(m["text"])\"}]}"
+        return s
       end
     end
 

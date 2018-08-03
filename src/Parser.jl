@@ -327,7 +327,7 @@ function expect(lexer, kind)
 		lexer.advance()
 		return token
 	end
-	return throw(ErrorException("Expected $kind, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])"))
+	return throw(ErrorException("{\"errors\":[{\"locations\": [{\"column\": $(token.startpos[2]),\"line\": $(token.startpos[1])}],\"message\": \"Syntax Error GraphQL request ($(token.startpos[2]):$(token.startpos[1])) Expected $kind, found $token \"}]}"))
 end
 
 """
@@ -349,11 +349,11 @@ end
   is encountered.
 """
 function unexpected(token)
-  return "Unexpected $(token) in: line $(token.startpos[1]) , col $(token.startpos[2])"
+  return "{\"errors\":[{\"locations\": [{\"column\": $(token.startpos[2]),\"line\": $(token.startpos[1])}],\"message\": \"Syntax Error GraphQL request ($(token.startpos[2]):$(token.startpos[1])) Unexpected character $(token) \"}]}"
 end
 function unexpected(lexer::Lexer)
   token =lexer.token()
-  return "Unexpected $(token) in: line $(token.startpos[1]) , col $(token.startpos[2])"
+  return "{\"errors\":[{\"locations\": [{\"column\": $(token.startpos[2]),\"line\": $(token.startpos[1])}],\"message\": \"Syntax Error GraphQL request ($(token.startpos[2]):$(token.startpos[1])) Unexpected character $(token) \"}]}"
 
 end
 

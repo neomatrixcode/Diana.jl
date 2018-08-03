@@ -167,8 +167,6 @@ end
 
 Returns the next character and increments the current position.
 """
-function readchar end
-
 function readchar(l::Lexer)
     prevpos!(l, position(l))
     c = readchar(l.io)
@@ -278,7 +276,7 @@ function next_token(l::Lexer)
     c = readchar(l)
 
     if eof(c); return emit(l, Tokens.ENDMARKER)
-    elseif iswhitespace(c); return lex_whitespace(l)
+    elseif iswhitespace(c); return  lex_whitespace(l)
     elseif c == '['; return emit(l, Tokens.LSQUARE)
     elseif c == ']'; return emit(l, Tokens.RSQUARE)
     elseif c == '{'; return emit(l, Tokens.LBRACE)
