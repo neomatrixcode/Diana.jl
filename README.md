@@ -273,72 +273,33 @@ query {
 ```
 result:
 ```
- (  kind : Document
- definitions : Any[
- (  kind : OperationDefinition
- operation : query
- selectionSet :
- (  kind : SelectionSet
- selections : Diana.Field[
- (  kind : Field
- name :
- (  kind : Name
- value : Region )
- arguments : Diana.Argument[
- (  Kind : Argument
- name :
- (  kind : Name
- value : name )
- value : (":",
- (  kind : StringValue
- value : "The North" ) ) ) ]
- selectionSet :
- (  kind : SelectionSet
- selections : Diana.Field[
- (  kind : Field
- name :
- (  kind : Name
- value : NobleHouse )
- arguments : Diana.Argument[
- (  Kind : Argument
- name :
- (  kind : Name
- value : name )
- value : (":",
- (  kind : StringValue
- value : "Stark" ) ) ) ]
- selectionSet :
- (  kind : SelectionSet
- selections : Diana.Field[
- (  kind : Field
- name :
- (  kind : Name
- value : castle )
- selectionSet :
- (  kind : SelectionSet
- selections : Diana.Field[
- (  kind : Field
- name :
- (  kind : Name
- value : name )
- ) ] )  ) ,
- (  kind : Field
- name :
- (  kind : Name
- value : members )
- selectionSet :
- (  kind : SelectionSet
- selections : Diana.Field[
- (  kind : Field
- name :
- (  kind : Name
- value : name )
- ) ,
- (  kind : Field
- name :
- (  kind : Name
- value : alias )
- ) ] )  ) ] )  ) ] )  ) ] )  ) ] )
+ < Node :: Document ,definitions : Any[
+ < Node :: OperationDefinition ,operation : query ,selectionSet :
+ < Node :: SelectionSet ,selections : Main.Diana.Field[
+ < Node :: Field ,name :
+ < Node :: Name ,value : Region >  ,arguments : Main.Diana.Argument[
+ < Node :: Argument ,name :
+ < Node :: Name ,value : name >  ,value : (":",
+ < Node :: StringValue ,value : "The North" > ) > ] ,selectionSet :
+ < Node :: SelectionSet ,selections : Main.Diana.Field[
+ < Node :: Field ,name :
+ < Node :: Name ,value : NobleHouse >  ,arguments : Main.Diana.Argument[
+ < Node :: Argument ,name :
+ < Node :: Name ,value : name >  ,value : (":",
+ < Node :: StringValue ,value : "Stark" > ) > ] ,selectionSet :
+ < Node :: SelectionSet ,selections : Main.Diana.Field[
+ < Node :: Field ,name :
+ < Node :: Name ,value : castle >  ,selectionSet :
+ < Node :: SelectionSet ,selections : Main.Diana.Field[
+ < Node :: Field ,name :
+ < Node :: Name ,value : name >  > ] >  > ,
+ < Node :: Field ,name :
+ < Node :: Name ,value : members >  ,selectionSet :
+ < Node :: SelectionSet ,selections : Main.Diana.Field[
+ < Node :: Field ,name :
+ < Node :: Name ,value : name >  > ,
+ < Node :: Field ,name :
+ < Node :: Name ,value : alias >  > ] >  > ] >  > ] >  > ] >  > ] >
 ```
 
 

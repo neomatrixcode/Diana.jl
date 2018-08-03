@@ -4,16 +4,15 @@ mutable struct visitor
 end
 
 function visitante(x::Node)
-	t = typeof(x)::DataType
+	t = typeof(x)#::DataType
 	println("Enter ", x.kind)
-	for i in 1:nfields(x)
-		f = fieldname(t, i)
-		tipo = typeof((getfield(x, f)))
+	for f in fieldnames(t)
 		if(f == :value) #|| (f == :operation)
 			println("	holo XD  ")
 		end
-		if (tipo <: Node || tipo <: Array)
+		try
 			visitante(getfield(x, f))
+		catch
 		end
 	end
 	println("leave ", x.kind )

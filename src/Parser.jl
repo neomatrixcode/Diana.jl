@@ -28,7 +28,7 @@ mutable struct Name <:Node
 	Name(val)= new("Name",val)
 end
 mutable struct Argument <:Node
-	Kind::String# "Argument";
+	kind::String# "Argument";
 	name::Name
 	value #[ Literal | Variable | Reference ];
 	#loc
@@ -43,7 +43,7 @@ mutable struct VariableDefinition <:Node
 	VariableDefinition(va,tipe,defval)=new("VariableDefinition",va,tipe,defval)
 end
 mutable struct Variable <:Node
-	Kind::String# "Variable";
+	kind::String# "Variable";
 	name
 	Variable(n)= new("Variable",n)
 end
@@ -133,20 +133,20 @@ mutable struct Directive <:Node
 	Directive(n,a) = new("Directive",n,a)
 end
 mutable struct ListType <:Node
-    Kind::String
+    kind::String
     tipe
     #loc
     ListType(t)=new("ListType",t)
 end
 
 mutable struct NonNullType <:Node
-    Kind::String
+    kind::String
     tipe
     #loc
     NonNullType(t)=new("NonNullType",t)
 end
 mutable struct NamedType <:Node
-   Kind::String
+   kind::String
    name
    #loc
    NamedType(n)=new("NamedType",n)
@@ -182,7 +182,7 @@ mutable struct ObjectTypeDefinition <:Node
 	ObjectTypeDefinition(n,i,d,f)=new("ObjectTypeDefinition",n,i,d,f)
 end
 mutable struct FieldDefinition <:Node
-	Kind::String# "Field";
+	kind::String# "Field";
 	name
 	arguments
 	tipe
@@ -566,7 +566,7 @@ end
 function parseArgument(lexer::Lexer)
   start_token = lexer.token()
   pN=parseName(lexer)
-  return Argument(pN,(((expect(lexer, Tokens.COLON))).val, parseValueLiteral(lexer, false))#=,loc(lexer, start_token)=#)
+  return Argument(pN,(expect(lexer, Tokens.COLON).val, parseValueLiteral(lexer, false))#=,loc(lexer, start_token)=#)
 end
 
 
@@ -1136,75 +1136,26 @@ function parseDirectiveLocations(lexer::Lexer)
 end
 
 function Base.show(io::IO, x::Node)
-  t = typeof(x)::DataType
-  s = ""
-  #show(io, t)
-  print(io, "\n\e[33m ( \e[37m")
-  nf = nfields(x)
-  nb = sizeof(x)
-  if nf != 0 || nb == 0
-    #recur_io = IOContext(io, :SHOWN_SET => x)
-    for i in 1:nf
-      f = fieldname(t, i)
-      v=true
+  t = typeof(x)
+  print(io, "\n\e[33m < \e[37m")
+    for f in fieldnames(t)
+      elemento = getfield(x, f)
+      v= true
       try
-        v= length(getfield(x, f))>0
-        if v
-          s=" "
-        end
+        v = length(elemento)>0
       catch
         v=true
       end
-      if !isdefined(x, f)
-        print(io,undef_ref_str)
-      else
-        if ((getfield(x, f)!=nothing) && v)
-          if(f == :value) || (f == :operation)
-            print(io,s,f ," : \e[32m",getfield(x, f),"\e[37m")
-          else
-          print(io,s,f ," : ",getfield(x, f))
-          end
-          if i < nf
-            print(io, "\n")
-
-          end
+      if (elemento!=nothing && v)
+        if(f == :kind)
+          print(io,"Node :: ",elemento)
+        elseif(f == :value) || (f == :operation)
+          print(io," ,",f ," : \e[92m",elemento,"\e[37m")
+        else
+          print(io," ,",f ," : ",elemento)
         end
       end
     end
 
-  else
-    print(io, "0x")
-    #=p = data_pointer_from_objref(x)
-    for i in (nb - 1):-1:0
-      print(io, hex(unsafe_load(convert(Ptr{UInt8}, p + i)), 2))
-    end=#
-  end
-  print(io,"\e[33m ) \e[37m")
+  print(io,"\e[33m > \e[37m")
 end
-#=
-"""
- Core parsing utility functions
-
-  Returns a location object, used to identify the place in
-  the source that created a given parsed object.
- """
-
-function loc(lexer::Lexer, start_Token)
-  if (!lexer.options.noLocation) {
-    return new Loc(start_Token, lexer.lastToken, lexer.source)
-  }
-}
-
-function Loc(startToken, _endToken, source)
-  this.start = startToken.start;
-  this.end = _endToken.end;
-  this.startToken = startToken;
-  this._endToken = _endToken;
-  this.source = source;
-end
-
-# Print a simplified form when appearing in JSON/util.inspect.
-Loc.prototype.toJSON = Loc.prototype.inspect = function toJSON() {
-  return { start: this.start, end: this.end };
-};
-=#
