@@ -5,13 +5,13 @@ include("token.jl")
 include("lexer.jl")
 include("Parser.jl")
 include("Schema.jl")
-include("Visitor.jl")
+include("Validate.jl")
 
 
 import .Lexers: Tokenize,Tokensgraphql
 
 
-export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse,Schema,visitante
+export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse,Schema,visitInParallel
 
 
 
