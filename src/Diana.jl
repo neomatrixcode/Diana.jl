@@ -14,7 +14,4 @@ import .Lexers: Tokenize,Tokensgraphql
 export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse,Schema,visitInParallel
 
 
-
-include("_precompile.jl")
-_precompile_()
 end # module
