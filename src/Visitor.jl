@@ -17,7 +17,11 @@ function visitante(x::Node,rules)
 	try
 	rules.rule(x)
     catch e
+
     	if isa(e,GraphqlError)
+    		return throw(e)
+    	end
+    	if !isa(e,MethodError)
     		return throw(e)
     	end
     end
