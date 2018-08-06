@@ -11,11 +11,11 @@ julia> f.(1,A)
  2
  3=#
 
-function visitante(x::Node,rule::Function)
+function visitante(x::Node,rules)
 	t = typeof(x)
 
 	try
-	rule(x)
+	rules.rule(x)
     catch e
     	if isa(e,GraphqlError)
     		return throw(e)
@@ -27,9 +27,9 @@ function visitante(x::Node,rule::Function)
 			println("	holo XD  ")
 		end=#
 		if( typeof(getfield(x, f) )<: Node)
-			visitante(getfield(x, f),rule)
+			visitante(getfield(x, f),rules)
 		elseif (typeof(getfield(x, f)) <: Array)
-		    visitante(getfield(x, f),rule)
+		    visitante(getfield(x, f),rules)
 		end
 
 	end

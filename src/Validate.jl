@@ -1,11 +1,12 @@
 include("Visitor.jl")
 include("rules/consultas.jl")
 
-queryRules=[NotExtensionOnOperation,NotTypeOnOperation,NotSchemaOnOperation]
+#queryRules=[NotExtensionOnOperation,NotTypeOnOperation,NotSchemaOnOperation]
 
 function visitInParallel(documentAST)
+	rules = Rules()
 	try
-	visitante.(documentAST,queryRules)
+	visitante(documentAST,rules)
 	catch e
         s=string(e.msg)
         #println(s)
