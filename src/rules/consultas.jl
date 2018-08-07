@@ -21,6 +21,14 @@ struct Rules
 			return throw(GraphqlError("GraphQL cannot execute a request containing a SchemaDefinition."))
 		end
 
+		function rule(node::FragmentDefinition)
+			if (node.typeCondition[2].name.value == "Subscription")
+				if (length(node.selectionSet.selections)>1)
+		    		return throw(GraphqlError("subscription must select only one top level field"))
+		    	end
+			end
+		end
+
 		function rule(node::OperationDefinition)
 			valor = node.name
 			#----------------------------------[
@@ -36,6 +44,12 @@ struct Rules
 			else#--------------------------------[
                    datos["anonimo"]=true
 				#---------------------------------]
+		    end
+
+		    if (node.operation == "subscription")
+		    	if (length(node.selectionSet.selections)>1)
+		    		return throw(GraphqlError("subscription must select only one top level field"))
+		    	end
 		    end
 
 		    if ((datos["anonimo"]==true) && (datos["n_operation"]>1))
