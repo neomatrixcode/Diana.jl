@@ -13,6 +13,8 @@ struct Rules
         datos["name_fragments"]=Dict()
         datos["name_operations"]=Dict()
         datos["used_fragments"]=Dict()
+        datos["cycles_fragments"]=Dict()
+		datos["ultimateFragmentSpread"]=""
 		function rule(node::TypeExtensionDefinition)
 			return throw(GraphqlError("GraphQL cannot execute a request containing a TypeExtensionDefinition."))
 		end
@@ -26,6 +28,7 @@ struct Rules
 		end
 
 		function rule(node::FragmentDefinition)
+			datos["ultimateFragmentSpread"]=nothing
 			if (node.typeCondition[2].name.value == "Subscription")
 				if (length(node.selectionSet.selections)>1)
 					return throw(GraphqlError("subscription must select only one top level field"))
@@ -42,10 +45,18 @@ struct Rules
 		end
 
 		function rule(node::FragmentSpread)
-			datos["used_fragments"]["$(node.name.value)"]=true
+			nombre = node.name.value
+			datos["used_fragments"]["$(nombre)"]=true
+			datos["ultimateFragmentSpread"] = nombre
 		end
 
-		function leave()
+		function leave(x::FragmentDefinition)
+			if (typeof(datos["ultimateFragmentSpread"])<:String)
+				datos["cycles_fragments"][x.name.value]=datos["ultimateFragmentSpread"]
+			end
+		end
+
+		function leave(x::Document)
 			#=for nombre in keys(datos["name_fragments"])
 				if !(haskey(datos["used_fragments"], nombre))
 				    return throw(GraphqlError("Fragment $(nombre) is not used."))
@@ -57,6 +68,20 @@ struct Rules
 				    return throw(GraphqlError("Unknown fragment $(nombre)."))
 				end
 			end=#
+
+			for (key, value) in datos["cycles_fragments"]
+                inicio = key
+                traza=""
+    			while(haskey(datos["cycles_fragments"], value))
+    				traza=traza*",$(value)"
+    				value = datos["cycles_fragments"][value]
+                    if (value == inicio)
+    					return throw(GraphqlError("Cannot spread fragment $(inicio) within itself via $(traza)."))
+                    end
+    			end
+    			break
+ 			end
+
 		   for (key, value) in merge(datos["name_fragments"], datos["used_fragments"])
     			if(value==false)
     				return throw(GraphqlError("Fragment $(key) is not used."))

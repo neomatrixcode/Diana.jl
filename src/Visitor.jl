@@ -18,9 +18,9 @@ function visitante(x::Node,rules)
 	rules.rule(x)
     catch e
 
-    	if isa(e,GraphqlError)
+    	#=if isa(e,GraphqlError)
     		return throw(e)
-    	end
+    	end=#
     	if !isa(e,MethodError)
     		return throw(e)
     	end
@@ -38,7 +38,10 @@ function visitante(x::Node,rules)
 
 	end
 	if (x.kind=="Document")
-		rules.leave()
+		rules.leave(x)
+	end
+	if (x.kind=="FragmentDefinition")
+		rules.leave(x)
 	end
 end
 
