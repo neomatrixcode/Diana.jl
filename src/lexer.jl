@@ -44,11 +44,13 @@ Returns an `Iterable` containing the tokenized input. Can be reverted by e.g.
 """
 function Tokenize(x)
  x=replace(x, r"#.*\n" => "\n") # quit comments
+ x=replace(x, "," => "\n") # quit comma
  Lexer(x)
 end
 
 function Tokensgraphql(x)
  x=replace(x, r"#.*\n" => "\n") # quit comments
+ x=replace(x, "," => "\n") # quit comma
  #@time collect(Lexer(y))
  filter(x -> (x.kind != Tokens.WHITESPACE), collect(Lexer(x)))
 end

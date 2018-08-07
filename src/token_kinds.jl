@@ -6,8 +6,6 @@
     NAME, # foo, Σxx
     AT, # @
     PIPE, #|
-    COMMA, #,
-    SEMICOLON, # ;
     AMP, #&
 
     begin_keywords,
@@ -15,12 +13,10 @@
     end_keywords,
 
     begin_literal,
-        LITERAL, # general
         INT, # 4
         FLOAT, # 3.5, 3.7e+3
         STRING, # "foo"
         TRIPLE_STRING, # """ foo \n """
-        CHAR, # 'a'
         TRUE, FALSE,
     end_literal,
 
@@ -34,7 +30,6 @@
     end_delimiters,
 
     begin_ops,
-        OP, # general
         SPREAD, # ...
 
         # Level 1
@@ -42,15 +37,6 @@
             EQUALS, # =
         end_assignments,
 
-        # Level 2
-        begin_conditional,
-            CONDITIONAL, # ?
-        end_conditional,
-
-        # Level 6
-        begin_comparison,
-            EQEQ, # ==
-        end_comparison,
 
         # Level 8
         begin_colon,
@@ -60,17 +46,9 @@
         # Level 9
         begin_plus,
             DOLLAR, # $
-            PLUS, # +
-            MINUS, # -
         end_plus,
 
-        # Level 16
-        begin_dot,
-            DOT,# .
-        end_dot,
-
         BANG, # !
-        PRIME, # '
 
     end_ops,
 )
