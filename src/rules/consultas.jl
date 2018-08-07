@@ -24,9 +24,18 @@ struct Rules
 		function rule(node::FragmentDefinition)
 			if (node.typeCondition[2].name.value == "Subscription")
 				if (length(node.selectionSet.selections)>1)
-		    		return throw(GraphqlError("subscription must select only one top level field"))
-		    	end
+					return throw(GraphqlError("subscription must select only one top level field"))
+				end
 			end
+
+
+			valor= node.name.value
+			if(haskey(datos, "fragment_$(valor)"))
+				return throw(GraphqlError("There can only be one fragment named \'$(valor)\'."))
+			else
+				datos["fragment_$(valor)"]=true
+			end
+
 		end
 
 		function rule(node::OperationDefinition)
