@@ -37,7 +37,9 @@ function visitante(x::Node,rules)
 		end
 
 	end
-	#println("leave ", x.kind )
+	if (x.kind=="Document")
+		rules.leave()
+	end
 end
 
 function visitante(x::Array,f)
