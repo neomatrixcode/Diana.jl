@@ -159,7 +159,7 @@ query = """
            ...ownerFragment
            }"""
 
-@test visitInParallel(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": Cannot spread fragment c within itself via ,ownerFragment,dogFragment,a,b.\n    }\n  ]\n"
+@test visitInParallel(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": Cannot spread fragment c within itself via ,ownerFragment,dogFragment,a,b.\n    }\n  ]\n}"
 
 
 
