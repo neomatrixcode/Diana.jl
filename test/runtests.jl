@@ -1,6 +1,6 @@
 using Diana
 using Test
-
+include("validationast.jl")
 
 query = """
 {
