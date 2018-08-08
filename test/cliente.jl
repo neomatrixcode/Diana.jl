@@ -7,7 +7,7 @@ query = """
 }
 """
 
-r = Queryclient("https://neomatrix.herokuapp.com/graphql",query)
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,headers=Dict("header"=>"value"))
 
 @test r.Info.status == 200
 @test r.Data == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\",\"linkedin\":\"https://www.linkedin.com/in/acevedo-maldonado-josue/\"}}}"

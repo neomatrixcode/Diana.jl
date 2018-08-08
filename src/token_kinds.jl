@@ -30,6 +30,7 @@
     end_delimiters,
 
     begin_ops,
+        OP,
         SPREAD, # ...
 
         # Level 1
