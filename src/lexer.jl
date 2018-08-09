@@ -59,7 +59,7 @@ Base.IteratorSize(::Type{Lexer}) = Base.SizeUnknown()
 Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
 Base.eltype(::Type{Lexer}) = Token
 
-function Base.start(l::Lexer)
+function Base.iterate(l::Lexer)
     seekstart(l)
     l.token_startpos = position(l)
     l.token_start_row = 1
@@ -68,15 +68,15 @@ function Base.start(l::Lexer)
     l.current_row = 1
     l.current_col = 1
     l.current_pos = l.io_startpos
-    false
-end
-
-function Base.next(l::Lexer, ::Any)
     t = next_token(l)
     return t, t.kind == Tokens.ENDMARKER
 end
 
-Base.done(::Lexer, isdone) = isdone
+function Base.iterate(l::Lexer, isdone::Any)
+    isdone && return nothing
+    t = next_token(l)
+    return t, t.kind == Tokens.ENDMARKER
+end
 
 function Base.show(io::IO, l::Lexer)
     print(io, typeof(l), " at position: ", position(l))
