@@ -119,10 +119,11 @@ using Diana
 
 client = GraphQLClient("https://api.graph.cool/simple/v1/movies")
 client.serverAuth("Bearer my-jwt-token")
+client.headers(Dict("header"=>"value"))
 
 or
 
-client = GraphQLClient("https://api.graph.cool/simple/v1/movies","Bearer my-jwt-token")
+client = GraphQLClient("https://api.graph.cool/simple/v1/movies",auth="Bearer my-jwt-token",headers=Dict("header"=>"value"))
 ```
 
 ```julia
