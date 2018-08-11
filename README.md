@@ -7,7 +7,7 @@
   <img src="https://codecov.io/gh/codeneomatrix/Diana.jl/branch/master/graph/badge.svg" />
 </a>
 &nbsp;&nbsp;&nbsp;
-<a href="https://pkg.julialang.org/detail/Diana"><img src="http://pkg.julialang.org/badges/Diana_0.7.svg"></a>
+<a href="https://pkg.julialang.org/detail/Diana"><img src="http://pkg.julialang.org/badges/Diana_0.6.svg"></a>
  &nbsp;&nbsp;&nbsp;
 <a href="https://raw.githubusercontent.com/codeneomatrix/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 
@@ -54,8 +54,10 @@ Roadmap
 Installing
 ----------
 ```julia
-Pkg.add("Diana")                                           #Release (Master branch)
-Pkg.clone("git://github.com/codeneomatrix/Diana.jl.git")   #Development (Dev branch)
+Pkg> add Diana
+#Release
+pkg> add Diana#master
+#Development
 ```
 
 Client
@@ -134,7 +136,7 @@ query = """
 }
 """
 
-r = client.Queryclient(query)
+r = client.Query(query)
 if (r.Info.status == 200) println(r.Data) end
 ```
 result:
@@ -175,7 +177,7 @@ query getMovie(\$title: String!) {
   }
 }
 """
-r = client.Queryclient(query,vars= Dict("title" => "Inception"))
+r = client.Query(query,vars= Dict("title" => "Inception"))
 
 if (r.Info.status == 200)
   println(r.Data)

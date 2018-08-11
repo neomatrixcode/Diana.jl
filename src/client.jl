@@ -2,9 +2,9 @@ using HTTP
 using JSON
 
 mutable struct Client
-  Queryclient::Function
-  serverUrl::Function
-  serverAuth::Function
+	Query::Function
+	serverUrl::Function
+	serverAuth::Function
 end
 
 mutable struct Result
@@ -12,27 +12,26 @@ mutable struct Result
 	Data::String
 end
 
-function postexecute(url, body, headers, headersextra )
- for (key, value) in headersextra
-    HTTP.setheader(headers,key => value )
-  end
-
-return HTTP.post(url,headers,JSON.json(body))
-end
 
 function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict())
 
 	myjson = Dict("query"=>data,"variables" => vars,"operationName" => Dict())
 
-  r=postexecute(url, myjson,HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth]), headers)
+	my_headers = HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth])
 
-  return Result(r,String(r.body))
+	for (key, value) in headers
+		HTTP.setheader(my_headers,key => value )
+	end
+
+	r = HTTP.post(url,my_headers,JSON.json(myjson))
+
+	return Result(r,String(r.body))
 end
 
 function GraphQLClient(url::String, auth::String="Bearer 0000", headers::Dict=Dict())
 
-my_url::String= url
-my_auth::String= auth
+	my_url::String= url
+	my_auth::String= auth
 
 	function serverUrl(url::String)
 		my_url = url
@@ -42,12 +41,11 @@ my_auth::String= auth
 		my_auth= auth
 	end
 
-	function Queryclient(data::String;vars::Dict=Dict())
-		myjson = Dict("query"=>data,"variables" => vars,"operationName" => Dict())
-	  r=postexecute(my_url, myjson,HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => my_auth]), headers)
+	function Query(data::String; vars::Dict=Dict())
 
-	  return Result(r,String(r.body))
+		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=headers)
+
 	end
 
-	return Client(Queryclient,serverUrl,serverAuth)
+	return Client(Query,serverUrl,serverAuth)
 end

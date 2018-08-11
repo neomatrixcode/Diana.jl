@@ -25,7 +25,7 @@ query getMovie(\$title: String!) {
   }
 }
 """
-r = client.Queryclient(query2,vars=Dict("title" => "Inception"))
+r = client.Query(query2,vars=Dict("title" => "Inception"))
 
 @test r.Info.status == 200
 @test r.Data == "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
@@ -39,7 +39,7 @@ query2 = """
   }
 }
 """
-r = client.Queryclient(query2)
+r = client.Query(query2)
 
 @test r.Info.status == 200
 @test r.Data == "{\"data\":{\"Movie\":{\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
