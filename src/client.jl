@@ -4,6 +4,7 @@ using JSON
 mutable struct Client
 	Query::Function
 	serverUrl::Function
+	headers::Function
 	serverAuth::Function
 end
 
@@ -28,13 +29,18 @@ function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="B
 	return Result(r,String(r.body))
 end
 
-function GraphQLClient(url::String, auth::String="Bearer 0000", headers::Dict=Dict())
+function GraphQLClient(url::String; auth::String="Bearer 0000", headers::Dict=Dict())
 
 	my_url::String= url
 	my_auth::String= auth
+	my_headersextras::Dict= headers
 
 	function serverUrl(url::String)
 		my_url = url
+	end
+
+	function setheaders(headers::Dict)
+	    my_headersextras=headers
 	end
 
 	function serverAuth(auth::String)
@@ -43,9 +49,9 @@ function GraphQLClient(url::String, auth::String="Bearer 0000", headers::Dict=Di
 
 	function Query(data::String; vars::Dict=Dict())
 
-		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=headers)
+		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=my_headersextras)
 
 	end
 
-	return Client(Query,serverUrl,serverAuth)
+	return Client(Query,serverUrl,setheaders,serverAuth)
 end

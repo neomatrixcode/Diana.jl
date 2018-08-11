@@ -185,11 +185,18 @@ else
   println(r.Data)
 end
 ```
-### Change server
+### Change serverUrl
 ```julia
 client.serverUrl("https://api.graph.cool/simple/v1/movies")
 ```
-
+### Change headers
+```julia
+client.headers(Dict("header"=>"value"))
+```
+### Change serverAuth
+```julia
+client.serverAuth("Bearer my-jwt-token")
+```
 #### Note
  The lexer is built based on the [Tokenize](https://github.com/KristofferC/Tokenize.jl) package code and the Parser on the [graphql-js](https://github.com/graphql/graphql-js) package
 
