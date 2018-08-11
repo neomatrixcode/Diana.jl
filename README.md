@@ -198,6 +198,42 @@ client.headers(Dict("header"=>"value"))
 ```julia
 client.serverAuth("Bearer my-jwt-token")
 ```
+
+### Query get
+```julia
+query="https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D"
+r = Queryclient(query)
+if (r.Info.status == 200) println(r.Data) end
+```
+
+
+### link
+It is possible to get links to the graphql query editor
+
+```julia
+query = """
+{
+  neomatrix{
+    nombre
+    linkedin
+  }
+}
+"""
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,getlink=true)
+```
+result:
+```
+"https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D%0A"
+```
+or
+```julia
+r = client.Query(query,getlink=true)
+```
+result:
+```
+"https://api.graph.cool/simple/v1/movies?query=%7B%0A%20%20Movie%28title%3A%20%22Inception%22%29%7B%0A%20%20%20%20actors%7B%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A"
+```
+
 #### Note
  The lexer is built based on the [Tokenize](https://github.com/KristofferC/Tokenize.jl) package code and the Parser on the [graphql-js](https://github.com/graphql/graphql-js) package
 

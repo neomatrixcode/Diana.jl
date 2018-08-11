@@ -1,33 +1,49 @@
 using HTTP
 using JSON
 
-mutable struct Client
+struct Client
 	Query::Function
 	serverUrl::Function
 	headers::Function
 	serverAuth::Function
 end
 
-mutable struct Result
+struct Result
 	Info
 	Data::String
 end
 
 
-function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict())
+function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false)
 
-	myjson = Dict("query"=>data,"variables" => vars,"operationName" => Dict())
+	if (getlink == true)
+		#------------
+		link =url*"?query="*HTTP.escapeuri(data)
 
-	my_headers = HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth])
+		if length(vars)>0
+			link=link*"&variables="*HTTP.escapeuri(JSON.json(vars))
+		end
+		return link
+		#------------
+	else
 
-	for (key, value) in headers
-		HTTP.setheader(my_headers,key => value )
+		myjson = Dict("query"=>data,"variables" => vars,"operationName" => Dict())
+		my_headers = HTTP.mkheaders(["Accept" => "application/json","Content-Type" => "application/json" ,"Authorization" => auth])
+		for (key, value) in headers
+			HTTP.setheader(my_headers,key => value )
+		end
+		r = HTTP.post(url,my_headers,JSON.json(myjson))
+		return Result(r,String(r.body))
+
 	end
+end
 
-	r = HTTP.post(url,my_headers,JSON.json(myjson))
 
+function Queryclient(queryurl::String)
+	r=HTTP.get(queryurl)
 	return Result(r,String(r.body))
 end
+
 
 function GraphQLClient(url::String; auth::String="Bearer 0000", headers::Dict=Dict())
 
@@ -47,9 +63,9 @@ function GraphQLClient(url::String; auth::String="Bearer 0000", headers::Dict=Di
 		my_auth= auth
 	end
 
-	function Query(data::String; vars::Dict=Dict())
+	function Query(data::String; vars::Dict=Dict(),getlink::Bool=false)
 
-		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=my_headersextras)
+		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=my_headersextras,getlink=getlink)
 
 	end
 
