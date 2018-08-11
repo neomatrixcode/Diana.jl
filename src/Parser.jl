@@ -1,12 +1,12 @@
 #  return the ast o un syntax error, unexpected IDENTIFIER, expecting fragment or mutation or query or { on line
 abstract type Node end
-mutable struct Document <:Node
+struct Document <:Node
 	kind::String
   definitions
   Document(d)=new("Document",d)
 end
 
-mutable struct OperationDefinition <:Node
+struct OperationDefinition <:Node
 	kind::String
 	operation::String
 	name
@@ -15,26 +15,26 @@ mutable struct OperationDefinition <:Node
 	selectionSet
 	OperationDefinition(op,name,vardef,direc,selec)=new("OperationDefinition",op,name,vardef,direc,selec)
 end
-mutable struct SelectionSet <:Node
+struct SelectionSet <:Node
 	kind::String
 	selections
 	#loc
 	SelectionSet(sel) = new("SelectionSet",sel)
 end
-mutable struct Name <:Node
+struct Name <:Node
 	kind::String
 	value::String
 	#loc
 	Name(val)= new("Name",val)
 end
-mutable struct Argument <:Node
+struct Argument <:Node
 	kind::String# "Argument";
 	name::Name
 	value #[ Literal | Variable | Reference ];
 	#loc
 	Argument(n::Name,x)= new("Argument",n,x)
 end
-mutable struct VariableDefinition <:Node
+struct VariableDefinition <:Node
 	kind::String
 	variable
 	tipe
@@ -42,19 +42,19 @@ mutable struct VariableDefinition <:Node
 	#loc
 	VariableDefinition(va,tipe,defval)=new("VariableDefinition",va,tipe,defval)
 end
-mutable struct Variable <:Node
+struct Variable <:Node
 	kind::String# "Variable";
 	name
 	Variable(n)= new("Variable",n)
 end
-mutable struct FragmentSpread <:Node
+struct FragmentSpread <:Node
 	kind::String
 	name
 	directives
 	#loc
 	FragmentSpread(n,d)=new("FragmentSpread",n,d)
 end
-mutable struct InlineFragment <:Node
+struct InlineFragment <:Node
 	kind::String
 	typeCondition
 	directives
@@ -62,7 +62,7 @@ mutable struct InlineFragment <:Node
     #loc
     InlineFragment(typecon,direc,selset)=InlineFragment("InlineFragment",typecon,direc,selset)
 end
-mutable struct FragmentDefinition <:Node
+struct FragmentDefinition <:Node
 	kind::String
 	name
 	typeCondition
@@ -71,108 +71,108 @@ mutable struct FragmentDefinition <:Node
 		#loc
 		FragmentDefinition(n,t,d,s)=new("FragmentDefinition",n,t,d,s)
 	end
-mutable struct IntValue <:Node
+struct IntValue <:Node
 	kind::String
 	value
 	#loc
 	IntValue(v)=new("IntValue",v)
 end
-mutable struct FloatValue <:Node
+struct FloatValue <:Node
 	kind::String
 	value
 	#loc
 	FloatValue(v)=new("FloatValue",v)
 end
-mutable struct StringValue <:Node
+struct StringValue <:Node
 	kind::String
 	value
 	#loc
 	StringValue(v)=new("StringValue",v)
 end
-mutable struct BooleanValue <:Node
+struct BooleanValue <:Node
 	kind::String
 	value
 	#loc
 	BooleanValue(v)=new("BooleanValue",v)
 end
-mutable struct NullValue <:Node
+struct NullValue <:Node
 	kind::String
 	#loc
 	NullValue()=new("NullValue")
 end
-mutable struct EnumValue <:Node
+struct EnumValue <:Node
 	kind::String
 	value
 	#loc
 	EnumValue(v)=new("EnumValue",v)
 end
-mutable struct List_ <:Node
+struct List_ <:Node
 	kind::String
 	value_s
 	#loc
 	List_(vals)=new("List",vals)
 end
-mutable struct Object_ <:Node
+struct Object_ <:Node
 	kind::String
 	fields
 	#loc
 	Object_(f)=new("Object",f)
 end
-mutable struct Object_Field <:Node
+struct Object_Field <:Node
 	kind::String
 	name
 	value
 	#loc
 	Object_Field(n,v)=new("Object_Field",n,v)
 end
-mutable struct Directive <:Node
+struct Directive <:Node
 	kind::String
 	name
 	arguments
 	#loc
 	Directive(n,a) = new("Directive",n,a)
 end
-mutable struct ListType <:Node
+struct ListType <:Node
     kind::String
     tipe
     #loc
     ListType(t)=new("ListType",t)
 end
 
-mutable struct NonNullType <:Node
+struct NonNullType <:Node
     kind::String
     tipe
     #loc
     NonNullType(t)=new("NonNullType",t)
 end
-mutable struct NamedType <:Node
+struct NamedType <:Node
    kind::String
    name
    #loc
    NamedType(n)=new("NamedType",n)
 end
-mutable struct SchemaDefinition <:Node
+struct SchemaDefinition <:Node
 	kind::String
     directives
     operationTypes
     #loc
     SchemaDefinition(d,o)=new("SchemaDefinition",d,o)
 end
-mutable struct OperationTypeDefinition <:Node
+struct OperationTypeDefinition <:Node
     kind::String
     operation
     tipe
     #loc
     OperationTypeDefinition(o,t)=new("OperationTypeDefinition",o,t)
 end
-mutable struct ScalarTypeDefinition <:Node
+struct ScalarTypeDefinition <:Node
     kind::String
     name
     directives
     #loc
     ScalarTypeDefinition(n,d)=new("ScalarTypeDefinition",n,d)
 end
-mutable struct ObjectTypeDefinition <:Node
+struct ObjectTypeDefinition <:Node
 	kind::String
 	name
 	interfaces
@@ -181,7 +181,7 @@ mutable struct ObjectTypeDefinition <:Node
 	#loc
 	ObjectTypeDefinition(n,i,d,f)=new("ObjectTypeDefinition",n,i,d,f)
 end
-mutable struct FieldDefinition <:Node
+struct FieldDefinition <:Node
 	kind::String# "Field";
 	name
 	arguments
@@ -191,7 +191,7 @@ mutable struct FieldDefinition <:Node
 	FieldDefinition(n,arg,ti,dir)= new("FieldDefinition",n,arg,ti,dir)
 end
 
-mutable struct Field <:Node
+struct Field <:Node
      kind::String
     alias
     name
@@ -201,7 +201,7 @@ mutable struct Field <:Node
     #loc
     Field(a,n,arg,d,s)=new("Field",a,n,arg,d,s)
 end
-mutable struct InputValueDefinition <:Node
+struct InputValueDefinition <:Node
     kind::String
     name
     tipe
@@ -210,7 +210,7 @@ mutable struct InputValueDefinition <:Node
     #loc
     InputValueDefinition(n,t,dfv,dir)=new("InputValueDefinition",n,t,dfv,dir)
 end
-mutable struct InterfaceTypeDefinition <:Node
+struct InterfaceTypeDefinition <:Node
     kind::String
     name
     directives
@@ -218,7 +218,7 @@ mutable struct InterfaceTypeDefinition <:Node
     #loc
     InterfaceTypeDefinition(n,d,f)=new("InterfaceTypeDefinition",n,d,f)
 end
-mutable struct UnionTypeDefinition <:Node
+struct UnionTypeDefinition <:Node
 	kind::String
     name
     directives
@@ -226,7 +226,7 @@ mutable struct UnionTypeDefinition <:Node
     #loc
     UnionTypeDefinition(n,d,t)=new("UnionTypeDefinition",n,d,t)
 end
-mutable struct EnumTypeDefinition <:Node
+struct EnumTypeDefinition <:Node
     kind::String
     name
     directives
@@ -234,14 +234,14 @@ mutable struct EnumTypeDefinition <:Node
     #loc
     EnumTypeDefinition(n,d,v)=new("EnumTypeDefinition",n,d,v)
 end
-mutable struct EnumValueDefinition <:Node
+struct EnumValueDefinition <:Node
     kind::String
     name
     directives
     #loc
     EnumValueDefinition(n,d)=new("EnumValueDefinition",n,d)
 end
-mutable struct InputObjectTypeDefinition <:Node
+struct InputObjectTypeDefinition <:Node
     kind::String
     name
     directives
@@ -249,13 +249,13 @@ mutable struct InputObjectTypeDefinition <:Node
     #loc
     InputObjectTypeDefinition(n,d,f)=new("InputObjectTypeDefinition",n,d,f)
 end
-mutable struct TypeExtensionDefinition <:Node
+struct TypeExtensionDefinition <:Node
     kind::String
     definition
     #loc
     TypeExtensionDefinition(d)=new("TypeExtensionDefinition",d)
 end
-mutable struct DirectiveDefinition <:Node
+struct DirectiveDefinition <:Node
     kind::String
     name
     arguments
