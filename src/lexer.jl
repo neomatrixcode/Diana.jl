@@ -3,15 +3,9 @@ module Lexers
 include("utilities.jl")
 global const charstore = IOBuffer()
 
-#using Compat
-#import Compat.String
-
 import ..Tokens
 import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
-
 import ..Tokens:  NAME
-
-
 export tokenize
 
 @inline iswhitespace(c::Char) = Base.isspace(c)

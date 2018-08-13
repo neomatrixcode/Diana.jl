@@ -206,7 +206,6 @@ r = Queryclient(query)
 if (r.Info.status == 200) println(r.Data) end
 ```
 
-
 ### link
 It is possible to get links to the graphql query editor
 
@@ -232,6 +231,42 @@ r = client.Query(query,getlink=true)
 result:
 ```
 "https://api.graph.cool/simple/v1/movies?query=%7B%0A%20%20Movie%28title%3A%20%22Inception%22%29%7B%0A%20%20%20%20actors%7B%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A"
+```
+
+### validating query
+It is possible to validate the query locally before sending the request, only basic validations are carried out.
+```julia
+query = """
+{
+  neomatrix{
+    nombre
+    linkedin
+  }
+}
+"""
+r = Queryclient(query,check=true)
+```
+result:
+```
+"ok"
+```
+```julia
+ query = """
+       {
+         }neomatrix{
+             nombre
+                 linkedin
+                   }
+                   }
+               """
+  r = Queryclient(query,true)
+```
+result:
+```
+ERROR: {"errors":[{"locations": [{"column": 3,"line": 2}],"message": "Syntax Error GraphQL request (3:2) Expected NAME, found } "}]}
+```
+```julia
+r = client.Query(query,check=true)
 ```
 
 #### Note

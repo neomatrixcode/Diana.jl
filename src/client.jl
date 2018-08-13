@@ -13,8 +13,13 @@ struct Result
 	Data::String
 end
 
+function Queryclient(data::String,check::Bool)
+	if (check)
+		return Validatequery(Parse(data))
+	end
+end
 
-function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false)
+function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false,check::Bool=false)
 
 	if (getlink == true)
 		#------------
@@ -63,8 +68,10 @@ function GraphQLClient(url::String; auth::String="Bearer 0000", headers::Dict=Di
 		my_auth= auth
 	end
 
-	function Query(data::String; vars::Dict=Dict(),getlink::Bool=false)
-
+	function Query(data::String; vars::Dict=Dict(),getlink::Bool=false,check::Bool=false)
+		if (check)
+		    return Queryclient(data,check)
+		end
 		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=my_headersextras,getlink=getlink)
 
 	end

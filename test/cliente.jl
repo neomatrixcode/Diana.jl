@@ -1,4 +1,15 @@
 query = """
+       {
+         neomatrix{
+             nombre
+                 linkedin
+                   }
+                   }
+               """
+r = Queryclient(query,true)
+@test r == "ok"
+
+query = """
 {
   neomatrix{
     nombre
@@ -29,6 +40,10 @@ r = client.Query(query2,vars=Dict("title" => "Inception"))
 
 @test r.Info.status == 200
 @test r.Data == "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
+
+
+r = client.Query(query2,check=true)
+@test r == "ok"
 
 query2 = """
 {

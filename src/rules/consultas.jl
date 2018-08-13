@@ -3,125 +3,262 @@ struct GraphqlError <: Exception
            msg
        end
 
-struct Rules
-    rule
-    leave
-    function Rules()
-        datos=Dict()
-        datos["n_operation"]=0
-        datos["anonimo"]=false
-        datos["name_fragments"]=Dict()
-        datos["name_operations"]=Dict()
-        datos["used_fragments"]=Dict()
-        datos["cycles_fragments"]=Dict()
-		datos["ultimateFragmentSpread"]=""
-		function rule(node::TypeExtensionDefinition)
-			return throw(GraphqlError("GraphQL cannot execute a request containing a TypeExtensionDefinition."))
+struct NotExtensionOnOperation
+	enter
+	leave
+	function NotExtensionOnOperation()
+		function enter(node)
+			if (node.kind== "TypeExtensionDefinition")
+				return throw(GraphqlError("GraphQL cannot execute a request containing a TypeExtensionDefinition."))
+			end
 		end
+		function leave(node)
 
-		function rule(node::ObjectTypeDefinition)
-			return throw(GraphqlError("GraphQL cannot execute a request containing a ObjectTypeDefinition."))
 		end
+		new(enter,leave)
+	end
+end
 
-		function rule(node::SchemaDefinition)
-			return throw(GraphqlError("GraphQL cannot execute a request containing a SchemaDefinition."))
+struct NotTypeOnOperation
+	enter
+	leave
+	function NotTypeOnOperation()
+		function enter(node)
+			if (node.kind== "ObjectTypeDefinition")
+				return throw(GraphqlError("GraphQL cannot execute a request containing a ObjectTypeDefinition."))
+			end
 		end
+		function leave(node)
 
-		function rule(node::FragmentDefinition)
-			datos["ultimateFragmentSpread"]=nothing
-			if (node.typeCondition[2].name.value == "Subscription")
-				if (length(node.selectionSet.selections)>1)
-					return throw(GraphqlError("subscription must select only one top level field"))
+		end
+		new(enter,leave)
+	end
+end
+
+struct NotSchemaOnOperation
+	enter
+	leave
+	function NotSchemaOnOperation()
+		function enter(node)
+			if (node.kind== "SchemaDefinition")
+				return throw(GraphqlError("GraphQL cannot execute a request containing a SchemaDefinition."))
+			end
+		end
+		function leave(node)
+
+		end
+		new(enter,leave)
+	end
+end
+
+
+struct FragmentSubscription
+	enter
+	leave
+	function FragmentSubscription()
+		function enter(node)
+			if (node.kind== "FragmentDefinition")
+				if (node.typeCondition[2].name.value == "Subscription")
+
+					if (length(node.selectionSet.selections)>1)
+						return throw(GraphqlError("subscription must select only one top level field"))
+					end
 				end
 			end
-
-
-			valor= node.name.value
-			if(haskey(datos["name_fragments"], "$(valor)"))
-				return throw(GraphqlError("There can only be one fragment named \'$(valor)\'."))
-			else
-				datos["name_fragments"]["$(valor)"]=false
-			end
 		end
+		function leave(node)
 
-		function rule(node::FragmentSpread)
-			nombre = node.name.value
-			datos["used_fragments"]["$(nombre)"]=true
-			datos["ultimateFragmentSpread"] = nombre
 		end
+		new(enter,leave)
+	end
+end
 
-		function leave(x::FragmentDefinition)
-			if (typeof(datos["ultimateFragmentSpread"])<:String)
-				datos["cycles_fragments"][x.name.value]=datos["ultimateFragmentSpread"]
-			end
-		end
 
-		function leave(x::Document)
-			#=for nombre in keys(datos["name_fragments"])
-				if !(haskey(datos["used_fragments"], nombre))
-				    return throw(GraphqlError("Fragment $(nombre) is not used."))
-				end
-			end
-
-			for nombre in keys(datos["used_fragments"])
-				if !(haskey(datos["name_fragments"], nombre))
-				    return throw(GraphqlError("Unknown fragment $(nombre)."))
-				end
-			end=#
-
-			for (key, value) in datos["cycles_fragments"]
-                inicio = key
-                traza=""
-    			while(haskey(datos["cycles_fragments"], value))
-    				traza=traza*",$(value)"
-    				value = datos["cycles_fragments"][value]
-                    if (value == inicio)
-    					return throw(GraphqlError("Cannot spread fragment $(inicio) within itself via $(traza)."))
-                    end
-    			end
-    			break
- 			end
-
-		   for (key, value) in merge(datos["name_fragments"], datos["used_fragments"])
-    			if(value==false)
-    				return throw(GraphqlError("Fragment $(key) is not used."))
-    			end
- 			end
-
-		    for (key, value) in merge(datos["used_fragments"],datos["name_fragments"])
-    			if(value==true)
-    				return throw(GraphqlError("Unknown fragment $(key)."))
-    			end
- 			end
-		end
-
-		function rule(node::OperationDefinition)
-			valor = node.name
-			#----------------------------------[
-			datos["n_operation"]=datos["n_operation"]+1
-            #-----------------------------------]
-		    if (typeof(valor)<: Name)
-			    valor= valor.value
-				if(haskey(datos["name_operations"], "$(valor)"))
-					return throw(GraphqlError("There can only be one operation named \'$(valor)\'."))
+struct FragmentNames
+	enter
+	leave
+	function FragmentNames()
+		nombres=[]
+		function enter(node)
+			if (node.kind== "FragmentDefinition")
+				valor= node.name.value
+				if(valor in nombres)
+					return throw(GraphqlError("There can only be one fragment named \'$(valor)\'."))
 				else
-					datos["name_operations"]["$(valor)"]=true
+					push!(nombres,valor)
 				end
-			else#--------------------------------[
-                   datos["anonimo"]=true
-				#---------------------------------]
-		    end
-
-		    if (node.operation == "subscription")
-		    	if (length(node.selectionSet.selections)>1)
-		    		return throw(GraphqlError("subscription must select only one top level field"))
-		    	end
-		    end
-
-		    if ((datos["anonimo"]==true) && (datos["n_operation"]>1))
-				return throw(GraphqlError("This anonymous operation must be the only defined operation."))
 			end
 		end
-        new(rule,leave)
-    end
+		function leave(node)
+
+		end
+		new(enter,leave)
+	end
+end
+
+struct OperationNames
+	enter
+	leave
+	function OperationNames()
+		nombres=[]
+		function enter(node)
+			if (node.kind== "OperationDefinition")
+				valor= node.name
+				if (typeof(valor)<: Name)
+					valor= valor.value
+					if(valor in nombres)
+						return throw(GraphqlError("There can only be one operation named \'$(valor)\'."))
+					else
+						push!(nombres,valor)
+					end
+				end
+			end
+		end
+		function leave(node)
+
+		end
+		new(enter,leave)
+	end
+end
+
+struct OperationAnonymous
+	enter
+	leave
+	function OperationAnonymous()
+		n_operation = 0
+		anonimo= false
+		function enter(node)
+			if (node.kind== "OperationDefinition")
+				valor = node.name
+				n_operation=n_operation+1
+				if !(typeof(valor)<: Name)
+					anonimo=true
+				end
+				if ((anonimo== true) && (n_operation>1))
+					return throw(GraphqlError("This anonymous operation must be the only defined operation."))
+				end
+			end
+		end
+		function leave(node)
+
+		end
+		new(enter,leave)
+	end
+end
+
+struct SubscriptionFields
+	enter
+	leave
+	function SubscriptionFields()
+		function enter(node)
+			if (node.kind== "OperationDefinition")
+				if (node.operation == "subscription")
+					if (length(node.selectionSet.selections)>1)
+						return throw(GraphqlError("subscription must select only one top level field"))
+					end
+				end
+			end
+		end
+		function leave(node)
+
+		end
+		new(enter,leave)
+	end
+end
+
+
+struct FragmentUnknowNotUsed
+	enter
+	leave
+	function FragmentUnknowNotUsed()
+		nombres=[]
+		usados=[]
+		yausados=[]
+		texto = ""
+		function enter(node)
+			if (node.kind== "FragmentSpread") #usados
+				nombre = node.name.value
+				if( nombre in nombres)
+					deleteat!(nombres,findfirst(isequal(nombre), nombres))
+				else
+					if !(nombre in yausados)
+					push!(usados,nombre)
+					end
+				end
+			end
+			if (node.kind== "FragmentDefinition")
+				valor= node.name.value
+				if(valor in usados)
+					deleteat!(usados,findfirst(isequal(valor), usados))
+					if(!(valor in yausados))
+					    push!(yausados,valor)
+					end
+				else
+					push!(nombres,valor)
+				end
+			end
+		end
+		function leave(node)
+			if (node.kind=="Document")
+				if (length(nombres)>0)
+				  for n in nombres
+				      texto=texto*" "*n
+				  end
+				  return throw(GraphqlError("Fragment$(texto) is not used."))
+				end
+				if (length(usados)>0)
+				    for n in usados
+				      texto=texto*" "*n
+				    end
+ 				  return throw(GraphqlError("Unknown fragment$(texto)."))
+				end
+			end
+		end
+		new(enter,leave)
+	end
+end
+
+
+struct FragmentCycles
+	enter
+	leave
+	function FragmentCycles()
+		nombrescycles=[]
+		usadoscycles=[]
+		inicio = ""
+		traza = ""
+		leerspread =false
+		function enter(node)
+			if (node.kind== "FragmentSpread") #usadoscycles
+				if (leerspread == true)
+				nombre = node.name.value
+				push!(usadoscycles,nombre)
+				end
+			end
+
+			if (node.kind== "FragmentDefinition")
+				leerspread =true
+				valor= node.name.value
+				push!(nombrescycles,valor)
+			end
+		end
+
+		function leave(node)
+			if (node.kind== "FragmentDefinition")
+				leerspread =false
+			end
+			if (node.kind=="Document")
+				if (length(nombrescycles)>0)
+				if (length(nombrescycles)==length(usadoscycles))
+					inicio = nombrescycles[1]
+					for l in nombrescycles[2:end]
+					    traza=traza*" "*l
+					end
+				    return throw(GraphqlError("Cannot spread fragment $(inicio) within itself via $(traza)."))
+				end
+				end
+			end
+		end
+		new(enter,leave)
+	end
 end
