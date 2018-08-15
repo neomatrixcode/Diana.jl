@@ -44,9 +44,17 @@ Roadmap
 - [x] Client
 - [x] Lexer
 - [x] Parser
-- [ ] Validator
-- [ ] Schemas / Types
-- [ ] Execute
+- [x] Query validation
+- [x] Schemas / Types
+- [WIP] Query execution
+  - [] Scalar types
+  - [] Arguments
+  - [] Multiple forms of resolution
+  - [] Complex types (List, Object, etc)
+  - [] Fragments in queries
+  - [] Extract variable values
+- [ ] Introspection
+- [ ] Directives
 
 ## Contributing
 ## Your pull requests are more than welcome!!!
