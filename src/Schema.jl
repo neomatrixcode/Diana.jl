@@ -1,14 +1,15 @@
-
+using JSON
 
 mutable struct schema
   execute::Function
 end
 
 function Schema(_schema, resolvers)
-my_schema = Parse(_schema)
+#my_schema = Parse(_schema)
 
     function execute(query::String)
-
+      myquery = Parse(query)
+      return JSON.json(ExecuteQuery(myquery, resolvers))
       #=Validatequery(Parse(query))
       validatelosdos()
       operationName = GetOperation(document, operationName)

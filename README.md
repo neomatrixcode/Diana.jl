@@ -47,12 +47,12 @@ Roadmap
 - [x] Query validation
 - [x] Schemas / Types
 - [WIP] Query execution
-  - [] Scalar types
-  - [] Arguments
-  - [] Multiple forms of resolution
-  - [] Complex types (List, Object, etc)
-  - [] Fragments in queries
-  - [] Extract variable values
+  - [ ] Scalar types
+  - [ ] Arguments
+  - [ ] Multiple forms of resolution
+  - [ ] Complex types (List, Object, etc)
+  - [ ] Fragments in queries
+  - []  Extract variable values
 - [ ] Introspection
 - [ ] Directives
 
@@ -392,5 +392,76 @@ result:
 ```
 
 
+Execute
+----------
+```julia
+using Diana
 
+schema= """
+type Persona {
+  nombre: String
+  edad: Int
+}
 
+type Query{
+  persona: Persona
+  neomatrix: Persona
+}
+
+schema {
+  query: Query
+}
+
+"""
+
+resolvers=Dict(
+ "Query_neomatrix" => (ctx)->(return Dict("nombre"=>"josue","edad"=>5) )
+,"Query_persona" => (ctx)->(return Dict("nombre"=>"Diana","edad"=>15))
+,"Persona_nombre" => (ctx)->(return ctx["nombre"])
+,"Persona_edad" => (ctx)->(return ctx["edad"])
+)
+
+my_schema = Schema(schema, resolvers)
+
+query= """
+query{
+  neomatrix{
+  nombre
+  }
+}
+"""
+data = my_schema.execute(query)
+
+```
+result:
+```
+{"datos":{
+  "neomatrix":{
+    "nombre":"josue"
+    }
+  }
+}"
+```
+
+```julia
+
+query= """
+  query{
+    persona{
+      nombre
+      }
+  }
+"""
+
+data = my_schema.execute(query)
+
+```
+result:
+```
+{"datos":{
+  "persona":{
+    "nombre":"Diana"
+    }
+  }
+}
+```
