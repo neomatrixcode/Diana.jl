@@ -9,6 +9,7 @@ function Schema(_schema, resolvers)
 
     function execute(query::String)
       myquery = Parse(query)
+      Validatequery(myquery)
       return JSON.json(ExecuteQuery(myquery, resolvers))
       #=Validatequery(Parse(query))
       validatelosdos()

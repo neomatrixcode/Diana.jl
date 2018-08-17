@@ -1,23 +1,38 @@
 struct resol
 	exec_root
 	exec_foil
+	argstodict
 	function resol(resolvers)
 		n_campos=["query","persona","neomatrix"]
 		tipos   =["Query","Persona","Persona"]
 		ctx = Dict()
-		arg = Dict()
+		args = Dict()
+		obj= ""
+        inf= ""
 		executed =[]
-		function exec_root(nombrecampo,raiz)# neomatrix, query
+		function exec_root(nombrecampo,raiz,infor)# neomatrix, query
+			inf= infor
 			nombretipo= tipos[findfirst(isequal(nombrecampo), n_campos)]
 			tiporaiz = tipos[findfirst(isequal(raiz), n_campos)]
-			ctx[nombretipo] = resolvers[tiporaiz*"_"*nombrecampo](ctx)
+			ctx[nombretipo] = resolvers[tiporaiz*"_"*nombrecampo](obj,args,ctx,inf)
 		end
 
 		function exec_foil(nombrecampo,raiz)# nombre, neomatrix
 			tiporaiz= tipos[findfirst(isequal(raiz), n_campos)]
-			return resolvers[tiporaiz*"_"*nombrecampo](ctx[tiporaiz])
+			return resolvers[tiporaiz*"_"*nombrecampo](obj,args,ctx[tiporaiz],inf)
 		end
-		new(exec_root,exec_foil)
+
+		function argstodict(arguments::Array)
+			for i in arguments
+				dato= i.value[2].value
+				if dato[1]=='\"'
+					args[i.name.value] = dato[2:end-1]
+				else
+					args[i.name.value] = dato
+			    end
+	       	end
+		end
+		new(exec_root,exec_foil,argstodict)
 	end
 end
 
@@ -37,6 +52,10 @@ struct executor
 		nombres[1]="query"
 		function enter(node)
 			if (node.kind=="Field")
+
+				if (typeof(node.arguments)<:Array)
+					exec_resol.argstodict(node.arguments)
+				end
 				if (typeof(node.selectionSet)<:Node)
 					nivel = nivel+1
 					ncampo= node.name.value
@@ -45,7 +64,7 @@ struct executor
 					expresiones[nivel]= exp
 					nombres[nivel] = ncampo
 					eval(:(($exp)=Dict()))
-					exec_resol.exec_root(ncampo,nombres[nivel-1])
+					exec_resol.exec_root(ncampo,nombres[nivel-1],node)
 				else
 					exp = expresiones[nivel]
 					campo = node.name.value

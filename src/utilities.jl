@@ -157,7 +157,7 @@ function readutf(io, offset = 0)
     end
     trailing = utf8_trailing(ch + 1)
     c::UInt32 = 0
-    for j = 1:trailing
+    for j = Base.OneTo(trailing)#1:trailing
         c += ch
         c <<= 6
         ch = reinterpret(UInt8,io.data[io.ptr+j])

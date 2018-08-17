@@ -46,13 +46,14 @@ Roadmap
 - [x] Parser
 - [x] Query validation
 - [x] Schemas / Types
+  - [ ]Schemas validation
 - [WIP] Query execution
+  - [x] Arguments
   - [ ] Scalar types
-  - [ ] Arguments
   - [ ] Multiple forms of resolution
   - [ ] Complex types (List, Object, etc)
   - [ ] Fragments in queries
-  - []  Extract variable values
+  - [ ] Extract variable values
 - [ ] Introspection
 - [ ] Directives
 
