@@ -86,3 +86,58 @@ query = """
 
 r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,getlink=true)
 @test r == "https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D%0A"
+
+
+query = """
+       query consulta{
+          neomatrix{
+            nombre
+            linkedin
+          }
+        }
+
+       query hola{
+          neomatrix{
+            nombre
+          }
+       }
+       """
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,operationName="hola")
+@test r.Data == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\"}}}"
+
+query = """
+query consulta{
+  Movie(title: "Inception"){
+    actors{
+      name
+    }
+  }
+}
+query hola{
+  Movie(title: "Inception"){
+    actors{
+      name
+    }
+  }
+}
+"""
+r = client.Query(query,operationName="consulta")
+
+@test r.Data == "{\"data\":{\"Movie\":{\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
+
+query = """
+query consulta{
+  neomatrix{
+    nombre
+  }
+}
+query hola{
+  neomatrix{
+    nombre
+    linkedin
+  }
+}
+"""
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,getlink=true,operationName="consulta")
+
+@test r == "https://neomatrix.herokuapp.com/graphql?query=query%20consulta%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%7D%0A%7D%0Aquery%20hola%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D%0A&operationName=consulta"

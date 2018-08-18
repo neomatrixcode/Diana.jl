@@ -56,6 +56,8 @@ Roadmap
   - [ ] Extract variable values
 - [ ] Introspection
 - [ ] Directives
+- [ ] Depth of the query7
+- [ ] Middleware
 
 ## Contributing
 ## Your pull requests are more than welcome!!!
@@ -195,6 +197,52 @@ else
   println(r.Data)
 end
 ```
+```julia
+query = """
+       query consulta{
+          neomatrix{
+            nombre
+            linkedin
+          }
+        }
+
+       query hola{
+          neomatrix{
+            nombre
+          }
+       }
+       """
+  r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,operationName="hola")
+  if (r.Info.status == 200) println(r.Data) end
+```
+result:
+```
+{"data":{"neomatrix":{"nombre":"Acevedo Maldonado Josue"}}}
+```
+```julia
+query = """
+query consulta{
+  Movie(title: "Inception"){
+    actors{
+      name
+    }
+  }
+}
+query hola{
+  Movie(title: "Inception"){
+    actors{
+      name
+    }
+  }
+}
+"""
+r = client.Query(query,operationName="consulta")
+if (r.Info.status == 200) println(r.Data) end
+```
+result:
+```
+{"data":{"Movie":{"actors":[{"name":"Leonardo DiCaprio"},{"name":"Ellen Page"},{"name":"Tom Hardy"},{"name":"Joseph Gordon-Levitt"},{"name":"Marion Cotillard"}]}}}
+```
 ### Change serverUrl
 ```julia
 client.serverUrl("https://api.graph.cool/simple/v1/movies")
@@ -240,6 +288,26 @@ r = client.Query(query,getlink=true)
 result:
 ```
 "https://api.graph.cool/simple/v1/movies?query=%7B%0A%20%20Movie%28title%3A%20%22Inception%22%29%7B%0A%20%20%20%20actors%7B%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A"
+```
+```julia
+query = """
+query consulta{
+  neomatrix{
+    nombre
+  }
+}
+query hola{
+  neomatrix{
+    nombre
+    linkedin
+  }
+}
+"""
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,getlink=true,operationName="consulta")
+```
+result:
+```
+"https://neomatrix.herokuapp.com/graphql?query=query%20consulta%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%7D%0A%7D%0Aquery%20hola%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%20%20%20linkedin%0A%20%20%20%20%7D%0A%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20&operationName=consulta"
 ```
 
 ### validating query
