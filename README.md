@@ -46,7 +46,7 @@ Roadmap
 - [x] Parser
 - [x] Query validation
 - [x] Schemas / Types
-  - [ ]Schemas validation
+  - [ ] Schemas validation
 - [x] Query execution
   - [x] Arguments
   - [ ] Scalar types
@@ -56,7 +56,7 @@ Roadmap
   - [ ] Extract variable values
 - [ ] Introspection
 - [ ] Directives
-- [ ] Depth of the query7
+- [ ] Depth of the query
 - [ ] Middleware
 
 ## Contributing
@@ -100,6 +100,28 @@ result:
     }
   }
 }
+```
+```julia
+query = """
+       query consulta{
+          neomatrix{
+            nombre
+            linkedin
+          }
+        }
+
+       query hola{
+          neomatrix{
+            nombre
+          }
+       }
+       """
+  r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,operationName="hola")
+  if (r.Info.status == 200) println(r.Data) end
+```
+result:
+```
+{"data":{"neomatrix":{"nombre":"Acevedo Maldonado Josue"}}}
 ```
 
 ```julia
@@ -197,28 +219,7 @@ else
   println(r.Data)
 end
 ```
-```julia
-query = """
-       query consulta{
-          neomatrix{
-            nombre
-            linkedin
-          }
-        }
 
-       query hola{
-          neomatrix{
-            nombre
-          }
-       }
-       """
-  r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,operationName="hola")
-  if (r.Info.status == 200) println(r.Data) end
-```
-result:
-```
-{"data":{"neomatrix":{"nombre":"Acevedo Maldonado Josue"}}}
-```
 ```julia
 query = """
 query consulta{
@@ -263,7 +264,7 @@ r = Queryclient(query)
 if (r.Info.status == 200) println(r.Data) end
 ```
 
-### link
+### Link
 It is possible to get links to the graphql query editor
 
 ```julia
@@ -310,7 +311,7 @@ result:
 "https://neomatrix.herokuapp.com/graphql?query=query%20consulta%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%7D%0A%7D%0Aquery%20hola%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%20%20%20linkedin%0A%20%20%20%20%7D%0A%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20&operationName=consulta"
 ```
 
-### validating query
+### Validating query
 It is possible to validate the query locally before sending the request, only basic validations are carried out.
 ```julia
 query = """
