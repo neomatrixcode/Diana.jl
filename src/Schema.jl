@@ -5,12 +5,12 @@ mutable struct schema
 end
 
 function Schema(_schema, resolvers)
-#my_schema = Parse(_schema)
-
+my_schema = Parse(_schema)
+tnb = gettypes(my_schema)
     function execute(query::String)
       myquery = Parse(query)
       Validatequery(myquery)
-      return JSON.json(ExecuteQuery(myquery, resolvers))
+      return JSON.json(ExecuteQuery(myquery, resolvers, tnb))
       #=Validatequery(Parse(query))
       validatelosdos()
       operationName = GetOperation(document, operationName)

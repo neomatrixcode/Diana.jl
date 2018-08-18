@@ -34,7 +34,7 @@ Roadmap
  + graphql client
 
 #### Version 0.1.0
-  + Update to julia 0.7
+  + Update to julia 1.0
   + Creation of schemas / types
   + Validator
   + Schemas / Types
@@ -47,7 +47,7 @@ Roadmap
 - [x] Query validation
 - [x] Schemas / Types
   - [ ]Schemas validation
-- [WIP] Query execution
+- [x] Query execution
   - [x] Arguments
   - [ ] Scalar types
   - [ ] Multiple forms of resolution
@@ -416,11 +416,13 @@ schema {
 """
 
 resolvers=Dict(
- "Query_neomatrix" => (ctx)->(return Dict("nombre"=>"josue","edad"=>5) )
-,"Query_persona" => (ctx)->(return Dict("nombre"=>"Diana","edad"=>15))
-,"Persona_nombre" => (ctx)->(return ctx["nombre"])
-,"Persona_edad" => (ctx)->(return ctx["edad"])
-)
+        "Query_neomatrix" => (obj,args,ctx,info)->(return Dict("nombre"=>"josue","edad"=>5) )
+        ,"Query_persona" => (obj,args,ctx,info)->begin
+        return Dict("nombre"=>"Diana","edad"=>15)
+        end
+        ,"Persona_nombre" => (obj,args,ctx,info)->(return ctx["nombre"])
+        ,"Persona_edad" => (obj,args,ctx,info)->(return ctx["edad"])
+        )
 
 my_schema = Schema(schema, resolvers)
 

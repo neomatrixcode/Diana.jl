@@ -2,9 +2,9 @@ struct resol
 	exec_root
 	exec_foil
 	argstodict
-	function resol(resolvers)
-		n_campos=["query","persona","neomatrix"]
-		tipos   =["Query","Persona","Persona"]
+	function resol(resolvers,tipos)
+		n_campos= tipos[1]
+		tipos   = tipos[2]
 		ctx = Dict()
 		args = Dict()
 		obj= ""
@@ -41,14 +41,14 @@ struct executor
 	enter
 	leave
 	salida
-	function executor(exec_resol)
+	function executor(exec_resol,deep)
 		nivel=1
 		salida=Dict()
 		salida["datos"]=Dict()
 		ex= :($salida["datos"])
-		expresiones = Array{Expr}(undef, 4)
+		expresiones = Array{Expr}(undef, deep)
 		expresiones[1]= ex
-		nombres=Array{String}(undef, 4)
+		nombres=Array{String}(undef, deep)
 		nombres[1]="query"
 		function enter(node)
 			if (node.kind=="Field")
@@ -86,8 +86,9 @@ struct executor
 	end
 end
 
-function ExecuteQuery(query, myresolvers)
-	exec= executor(resol(myresolvers))
+function ExecuteQuery(query, myresolvers, types_nb)
+	r = deepquery(query)
+	exec= executor(resol(myresolvers,types_nb),r)
 	visitante(query,exec)
 	return exec.salida
 end

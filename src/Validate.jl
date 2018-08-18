@@ -1,5 +1,6 @@
 include("Visitor.jl")
 include("rules/consultas.jl")
+include("rules/schema.jl")
 
 import Base.length
 function length(x::Node)
@@ -12,6 +13,12 @@ end
 
 function Base.iterate(l::Node, isdone::Any)
     return l
+end
+
+function deepquery(documentAST)
+	gd =getdeep()
+    visitante(documentAST,gd)
+    return gd.valordeep()
 end
 
 function Validatequery(documentAST)
@@ -33,3 +40,10 @@ function Validatequery(documentAST)
 				}"""
       end
 end
+
+function gettypes(schema)
+	gt=getfield_types()
+    visitante(schema,gt)
+    return gt.notbasic_types
+end
+
