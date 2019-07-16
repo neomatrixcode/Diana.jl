@@ -40,6 +40,11 @@ Roadmap
   + Schemas / Types
   + Execute
 
+#### Version 0.2.0
+  + LEXER REWRITING
+  + PARSER REWRITING
+  + QUERY EXECUTION REWRITING
+
 ## TODO
 - [x] Client
 - [x] Lexer
