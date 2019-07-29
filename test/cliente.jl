@@ -40,7 +40,7 @@ r = client.Query(query2,vars=Dict("title" => "Inception"))
 
 @test r.Info.status == 200
 @test r.Data == "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
-=#
+
 
 r = client.Query(query2,check=true)
 @test r == "ok"
@@ -67,7 +67,7 @@ r = client.Query(query2,getlink=true)
 
 @test client.serverAuth("Bearer my-jwt-token") == "Bearer my-jwt-token"
 
-
+=#
 
 query="https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D"
 r = Queryclient(query)
