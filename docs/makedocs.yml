@@ -1,0 +1,9 @@
+site_name:        Diana.jl
+repo_url:         https://github.com/codeneomatrix/Diana.jl
+site_description: Diana Docs
+site_author:      Josue Acevedo Maldonado
+
+theme: material
+
+extra_css:
+  - assets/Documenter.css
