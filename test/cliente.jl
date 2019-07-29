@@ -105,6 +105,7 @@ query = """
 r = Queryclient("https://neomatrix.herokuapp.com/graphql",query,operationName="hola")
 @test r.Data == "{\"data\":{\"neomatrix\":{\"nombre\":\"Acevedo Maldonado Josue\"}}}"
 
+client = GraphQLClient("https://api.graph.cool/simple/v1/movies",auth="Bearer my-jwt-token",headers=Dict("header"=>"value"))
 query = """
 query consulta{
   Movie(title: "Inception"){
