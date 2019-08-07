@@ -8,8 +8,8 @@ include("Validate.jl")
 include("Schema.jl")
 include("execute.jl")
 
-import .Lexers: Tokenize,Tokensgraphql
+import .Lexers: Tokensgraphql
 
-export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse,Schema,Validatequery,Schema
+export Queryclient, GraphQLClient,Tokensgraphql,Parse,Schema,Validatequery,Schema
 
 end # module

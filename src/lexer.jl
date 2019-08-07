@@ -8,7 +8,7 @@ import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
 import ..Tokens:  NAME
 export tokenize
 
-@inline iswhitespace(c::Char) = Base.isspace(c)
+caracter_ignored(c::Char) = Base.isspace(c) #'\n   \t'
 
 mutable struct Lexer
     io::IO
@@ -30,24 +30,10 @@ end
 Lexer(io::IO) = Lexer(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
 Lexer(str::AbstractString) = Lexer(IOBuffer(str))
 
-"""
-    Tokenize(x)
-
-Returns an `Iterable` containing the tokenized input. Can be reverted by e.g.
-`join(untokenize.(Tokenize(x)))`.
-"""
-function Tokenize(x)
- x=replace(x, r"#.*\n" => "\n") # quit comments
- x=replace(x, "," => "\n") # quit comma
- Lexer(x)
-end
-
 function Tokensgraphql(x)
- x=replace(x, r"#.*\n" => "\n") # quit comments
- x=replace(x, "," => "\n") # quit comma
- #@time collect(Lexer(y))
- filter(x -> (x.kind != Tokens.WHITESPACE), collect(Lexer(x)))
+    return Lexer(x)
 end
+
 # Iterator interface
 Base.IteratorSize(::Type{Lexer}) = Base.SizeUnknown()
 Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
@@ -201,33 +187,20 @@ consumed and `false` otherwise.
     return ok
 end
 
-"""
-    accept_batch(l::Lexer, f)
-
-Consumes all following characters until `accept(l, f)` is `false`.
-"""
-@inline function accept_batch(l::Lexer, f)
-    ok = false
-    while accept(l, f)
-        ok = true
-    end
-    return ok
-end
 
 """
-    emit(l::Lexer, kind::Kind,
-         str::String=extract_tokenstring(l), err::TokenError=Tokens.NO_ERR)
+    emit(l::Lexer, kind::Kind, str::String,
+                       err::TokenError=Tokens.NO_ERR)
 
 Returns a `Token` of kind `kind` with contents `str` and starts a new `Token`.
 """
-function emit(l::Lexer, kind::Kind,
-              str::String = extract_tokenstring(l), err::TokenError = Tokens.NO_ERR)
-    tok = Token(kind, (l.token_start_row, l.token_start_col),
-                (l.current_row, l.current_col - 1),
+function emit(l::Lexer, kind::Kind, str::String, err::TokenError = Tokens.NO_ERR)
+   tok= Token(kind, (l.token_start_row, l.token_start_col),
+                (l.current_row, l.current_col),
                 startpos(l), position(l) - 1,
                 str, err)
     l.last_token = kind
-    start_token!(l)
+    l.current_col += 1
     return tok
 end
 
@@ -236,8 +209,8 @@ end
 
 Returns an `ERROR` token with error `err` and starts a new `Token`.
 """
-function emit_error(l::Lexer, err::TokenError = Tokens.UNKNOWN)
-    return emit(l, Tokens.ERROR, extract_tokenstring(l), err)
+function emit_error(l::Lexer, str::String, err::TokenError = Tokens.UNKNOWN)
+    return emit(l, Tokens.ERROR,str, err)
 end
 
 """
@@ -269,36 +242,116 @@ end
 Returns the next `Token`.
 """
 function next_token(l::Lexer)
-    c = readchar(l)
+   c= readchar(l)
 
-    if eof(c); return emit(l, Tokens.ENDMARKER)
-    elseif iswhitespace(c); return  lex_whitespace(l)
-    elseif c == '['; return emit(l, Tokens.LSQUARE)
-    elseif c == ']'; return emit(l, Tokens.RSQUARE)
-    elseif c == '{'; return emit(l, Tokens.LBRACE)
-    elseif c == '}'; return emit(l, Tokens.RBRACE)
-    elseif c == '('; return emit(l, Tokens.LPAREN)
-    elseif c == ')'; return emit(l, Tokens.RPAREN)
-    elseif c == '|'; return emit(l, Tokens.PIPE)
-    elseif c == '@'; return emit(l, Tokens.AT)
-    elseif c == '$'; return emit(l, Tokens.DOLLAR)
-    elseif c == '='; return emit(l, Tokens.EQUALS)
-    elseif c == '!'; return emit(l, Tokens.BANG)
-    elseif c == ':'; return emit(l, Tokens.COLON)
-    elseif c == '&'; return emit(l, Tokens.AMP)
-    elseif c == '"'; return lex_quote(l);
-    elseif c == '.'; return lex_dot(l);
-    elseif is_identifier_start_char(c); return lex_identifier(l, c)
-    elseif isdigit(c); return lex_digit(l)
-    else emit_error(l)
+
+   if c == ','
+      l.current_col += 1
+      c= readchar(l)
+   end
+
+    while c == '#'
+      while c!='\n'
+        l.current_col += 1
+        c= readchar(l)
+      end
+      l.current_row += 1
+      l.current_col = 1
+     c= readchar(l)
+   end
+
+    while caracter_ignored(c)
+        if c == '\n'
+            l.current_row += 1
+            l.current_col = 1
+        elseif c== '\t'
+           l.current_col += 5
+        elseif c== ' '
+            l.current_col += 1
+        else
+           l.current_col += 1
+         end
+        c= readchar(l)
     end
+
+
+    l.token_startpos = position(l)
+    l.token_start_row = l.current_row
+    if l.current_col == 1
+        l.token_start_col = 1
+    else
+        l.token_start_col = l.current_col
+    end
+
+
+    println(">>>>  ",c," (",l.token_start_row,",", l.token_start_col,") {",l.current_row,",", l.current_col ,"} [ ",startpos(l)," - ", position(l)-1," ]")
+
+    if eof(c); return emit(l,Tokens.ENDMARKER,"eof")
+    elseif c == '['; return emit(l, Tokens.LSQUARE,"[")
+    elseif c == ']'; return emit(l, Tokens.RSQUARE,"]")
+    elseif c == '{'; return emit(l, Tokens.LBRACE,"{")
+    elseif c == '}'; return emit(l, Tokens.RBRACE,"}")
+    elseif c == '('; return emit(l, Tokens.LPAREN,"(")
+    elseif c == ')'; return emit(l, Tokens.RPAREN,")")
+    elseif c == '|'; return emit(l, Tokens.PIPE,"|")
+    elseif c == '@'; return emit(l, Tokens.AT,"@")
+    elseif c == '$'; return emit(l, Tokens.DOLLAR,"\$")
+    elseif c == '='; return emit(l, Tokens.EQUALS,"=")
+    elseif c == '!'; return emit(l, Tokens.BANG,"!")
+    elseif c == ':'; return emit(l, Tokens.COLON,":")
+    elseif c == '&'; return emit(l, Tokens.AMP,"&")
+    elseif c == '"'; return lex_quote(l,c);
+    elseif is_identifier_start_char(c); return lex_identifier(l, c)
+    else return emit_error(l,string(c))
+    end
+
+
+    #=
+
+    elseif c == '.'; return lex_dot(l);
+    elseif isdigit(c); return lex_digit(l)
+    end=#
+end
+
+# Parse a token starting with a quote.
+# A '"' has been consumed
+function lex_quote(l::Lexer, c::Char)
+
+    s= ""
+    s*=c
+    c= readchar(l)
+    l.current_col += 1
+
+    while c!='"'
+        s*=c
+        c= readchar(l)
+        l.current_col += 1
+    end
+    s*="\""
+    #if accept(l, "\"") && accept(l, "\"")
+    return emit(l, Tokens.STRING, s)
 end
 
 
-# Lex whitespace, a whitespace char has been consumed
-function lex_whitespace(l::Lexer)
-    accept_batch(l, iswhitespace)
-    return emit(l, Tokens.WHITESPACE)
+function lex_identifier(l::Lexer, c::Char)
+    s= ""
+
+    while is_identifier_char(c)
+        s*=c
+        c= readchar(l)
+        l.current_col += 1
+    end
+    l.current_col -= 1
+    seek(l, prevpos(l))
+
+    if s == "query"; return emit(l, NAME,s)
+    elseif s == "mutation"; return emit(l, NAME,s)
+    elseif s == "subscription"; return emit(l, NAME,s)
+    elseif s == "fragment"; return emit(l, NAME,s)
+    elseif s == "directive"; return emit(l, NAME,s)
+    else
+        return emit(l, NAME,s)
+    end
 end
 
 function accept_integer(l::Lexer)
@@ -321,8 +374,6 @@ end
 function lex_digit(l::Lexer)
     backup!(l)
     longest, kind = position(l), Tokens.ERROR
-
-    # accept_batch(l, isdigit)
     accept_integer(l)
 
     if accept(l, '.')
@@ -330,7 +381,7 @@ function lex_digit(l::Lexer)
             backup!(l)
             return emit(l, Tokens.INT)
         elseif !(isdigit(peekchar(l)) ||
-            iswhitespace(peekchar(l)) ||
+            caracter_ignored(peekchar(l)) ||
             is_identifier_start_char(peekchar(l))
             || peekchar(l) == '('
             || peekchar(l) == ')'
@@ -349,14 +400,13 @@ function lex_digit(l::Lexer)
             backup!(l)
             return emit(l, Tokens.INT)
         end
-        # accept_batch(l, isdigit)
         accept_integer(l)
 
         if accept(l, '.')
             if peekchar(l) == '.' # 1.23..3.21 is valid
                 backup!(l)
                 return emit(l, Tokens.FLOAT)
-            elseif !(isdigit(peekchar(l)) || iswhitespace(peekchar(l)) || is_identifier_start_char(peekchar(l)))
+            elseif !(isdigit(peekchar(l)) || caracter_ignored(peekchar(l)) || is_identifier_start_char(peekchar(l)))
                 backup!(l)
                 return emit(l, Tokens.FLOAT)
             else # 3213.313.3123 is an error
@@ -392,37 +442,8 @@ function lex_digit(l::Lexer)
 end
 
 
-# Parse a token starting with a quote.
-# A '"' has been consumed
-function lex_quote(l::Lexer, doemit=true)
-        if read_string(l, Tokens.STRING)
-            return doemit ? emit(l, Tokens.STRING) : EMPTY_TOKEN
-        else
-            return doemit ? emit_error(l, Tokens.EOF_STRING) : EMPTY_TOKEN
-        end
-end
 
-# We just consumed a "
-function read_string(l::Lexer, kind::Tokens.Kind)
-    while true
-        c = readchar(l)
-        if c == '\\'
-            eof(readchar(l)) && return false
-            continue
-        end
-        if c == '"'
-            if kind == Tokens.STRING
-                return true
-            else
-                if accept(l, "\"") && accept(l, "\"")
-                    return true
-                end
-            end
-        elseif eof(c)
-            return false
-        end
-    end
-end
+
 
 function lex_dot(l::Lexer)
     if accept(l, '.')
@@ -430,23 +451,6 @@ function lex_dot(l::Lexer)
             return emit(l, Tokens.SPREAD)
         end
     end
-end
-
-function tryread(l, str, k, c)
-    for s in str
-        c = readchar(l)
-        if c != s
-            if !is_identifier_char(c)
-                backup!(l)
-                return emit(l, NAME)
-            end
-            return readrest(l, c)
-        end
-    end
-    if is_identifier_char(peekchar(l))
-        return readrest(l, c)
-    end
-    return emit(l, k)
 end
 
 function readrest(l, c)
@@ -473,21 +477,6 @@ function _doret(l, c)
     end
 end
 #se queda
-function lex_identifier(l, c)
-    if c == 'q'
-        return tryread(l, ('u', 'e', 'r', 'y'), NAME, c)
-    elseif c == 'm'
-        return tryread(l, ('u', 't', 'a', 't','i','o','n'), NAME, c)
-    elseif c == 's'
-        return tryread(l, ('u', 'b', 's', 'c','r','i','p', 't','i','o','n'), NAME, c)
-    elseif c == 'f'
-        return tryread(l, ('r', 'a', 'g', 'm','e','n','t'), NAME, c)
 
-    elseif c == 'd'
-        return tryread(l, ('i', 'r', 'e', 'c','t','i','v','e'), NAME, c)
-    else
-        return _doret(l, c)
-    end
-end
 
 end # module
