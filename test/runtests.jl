@@ -5,5 +5,6 @@ using Test
 include("cliente.jl");
 include("validationast.jl");
 include("parser.jl");
+include("lexer.jl");
 end;
 

@@ -1,14 +1,9 @@
 module Lexing
-
 include("utilities.jl")
-#global const charstore = IOBuffer()
 
 import ..Tokens
 import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
 import ..Tokens:  NAME
-export tokenize
-
-
 
 mutable struct Lexer
     io::IO
@@ -34,7 +29,7 @@ Tokensgraphql(x) = collect(Lexer(x))
 caracter_ignored(c::Char) = Base.isspace(c) #'\n   \t'
 # Iterator interface
 Base.IteratorSize(::Type{Lexer}) = Base.SizeUnknown()
-#Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
+Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
 Base.eltype(::Type{Lexer}) = Token
 
 function Base.iterate(l::Lexer)
@@ -65,13 +60,6 @@ Return the latest `Token`'s starting position.
 """
 startpos(l::Lexer) = l.token_startpos
 
-#="""
-    startpos!(l::Lexer, i::Integer)
-
-Set a new starting position.
-"""
-startpos!(l::Lexer, i::Integer) = l.token_startpos = i
-=#
 """
     prevpos(l::Lexer)
 
@@ -88,12 +76,6 @@ prevpos!(l::Lexer, i::Integer) = l.prevpos = i
 
 Base.seekstart(l::Lexer) = seek(l.io, l.io_startpos)
 
-"""
-    seek2startpos!(l::Lexer)
-
-Sets the lexer's current position to the beginning of the latest `Token`.
-"""
-seek2startpos!(l::Lexer) = seek(l, startpos(l))
 
 """
     peekchar(l::Lexer)
@@ -118,16 +100,6 @@ eof(l::Lexer) = eof(l.io)
 
 Base.seek(l::Lexer, pos) = seek(l.io, pos)
 
-#="""
-    prevchar(l::Lexer)
-
-Returns the previous character. Does not change the lexer's state.
-"""
-function prevchar(l::Lexer)
-    backup!(l)
-    return readchar(l)
-end
-=#
 """
     readchar(l::Lexer)
 
@@ -137,38 +109,6 @@ function readchar(l::Lexer)
     prevpos!(l, position(l))
     c = readchar(l.io)
     return c
-end
-
-"""
-    backup!(l::Lexer)
-
-Decrements the current position and sets the previous position to `-1`, unless
-the previous position already is `-1`.
-"""
-function backup!(l::Lexer)
-    prevpos(l) == -1 && error("prevpos(l) == -1\n Cannot backup! multiple times.")
-    seek(l, prevpos(l))
-    prevpos!(l, -1)
-end
-
-"""
-    accept(l::Lexer, f::Union{Function, Char, Vector{Char}, String})
-
-Consumes the next character `c` if either `f::Function(c)` returns true, `c == f`
-for `c::Char` or `c in f` otherwise. Returns `true` if a character has been
-consumed and `false` otherwise.
-"""
-@inline function accept(l::Lexer, f::Union{Function, Char, Vector{Char}, String})
-    c = peekchar(l)
-    if isa(f, Function)
-        ok = f(c)
-    elseif isa(f, Char)
-        ok = c == f
-    else
-        ok = c in f
-    end
-    ok && readchar(l)
-    return ok
 end
 
 
@@ -244,7 +184,6 @@ function next_token(l::Lexer)
         c= readchar(l)
     end
 
-
     l.token_startpos = position(l)
     l.token_start_row = l.current_row
     if l.current_col == 1
@@ -252,8 +191,6 @@ function next_token(l::Lexer)
     else
         l.token_start_col = l.current_col
     end
-
-    #println(">>>>  ",c," (",l.token_start_row,",", l.token_start_col,") {",l.current_row,",", l.current_col ,"} [ ",startpos(l)," - ", position(l)-1," ]")
 
     if eof(c); return emit(l,Tokens.ENDMARKER,"eof")
     elseif c == '['; return emit(l, Tokens.LSQUARE,"[")
@@ -272,12 +209,11 @@ function next_token(l::Lexer)
     elseif c == '"'; return lex_quote(l,c);
     elseif is_identifier_start_char(c); return lex_identifier(l, c)
     elseif c == '.'; return lex_dot(l);
-    else return emit_error(l,string(c))
+    elseif c == '-'; return lex_digit(l,c);
+    elseif isdigit(c); return lex_digit(l,c)
+    else return emit_error(l,string(c,c))
     end
 
-    #=
-    elseif isdigit(c); return lex_digit(l)
-    end=#
 end
 
 function lex_quote(l::Lexer, c::Char)
@@ -348,14 +284,7 @@ function lex_identifier(l::Lexer, c::Char)
     end
     l.current_col -= 1
     seek(l, prevpos(l))
-    #=if s == "query"; return emit(l, NAME,s)
-    elseif s == "mutation"; return emit(l, NAME,s)
-    elseif s == "subscription"; return emit(l, NAME,s)
-    elseif s == "fragment"; return emit(l, NAME,s)
-    elseif s == "directive"; return emit(l, NAME,s)
-    else=#
-        return emit(l, NAME,s)
-    #end
+    return emit(l, NAME,s)
 end
 
 function lex_dot(l::Lexer)
@@ -367,91 +296,70 @@ function lex_dot(l::Lexer)
     return emit_error(l," ")
 end
 
-function accept_integer(l::Lexer)
-    !isdigit(peekchar(l)) && return false
-    while true
-        if !accept(l, isdigit)
-            if accept(l, '_')
-                if !isdigit(peekchar(l))
-                    backup!(l)
-                    return true
-                end
-            else
-                return true
-            end
-        end
-    end
-end
 
 # A digit has been consumed
-function lex_digit(l::Lexer)
-    backup!(l)
-    longest, kind = position(l), Tokens.ERROR
-    accept_integer(l)
+function lex_digit(l::Lexer, c::Char)
+    s=""
+    isfloat=false
+    s*=c
+    c= readchar(l)
+    l.current_col += 1
 
-    if accept(l, '.')
-        if peekchar(l) == '.' # 43.. -> [43, ..]
-            backup!(l)
-            return emit(l, Tokens.INT)
-        elseif !(isdigit(peekchar(l)) ||
-            caracter_ignored(peekchar(l)) ||
-            is_identifier_start_char(peekchar(l))
-            || peekchar(l) == '('
-            || peekchar(l) == ')'
-            || peekchar(l) == '['
-            || peekchar(l) == ']'
-            || peekchar(l) == '{'
-            || peekchar(l) == '}'
-            || peekchar(l) == ','
-            || peekchar(l) == ';'
-            || peekchar(l) == '@'
-            || peekchar(l) == '`'
-            || peekchar(l) == '"'
-            || peekchar(l) == ':'
-            || peekchar(l) == '?'
-            || eof(l))
-            backup!(l)
-            return emit(l, Tokens.INT)
-        end
-        accept_integer(l)
-
-        if accept(l, '.')
-            if peekchar(l) == '.' # 1.23..3.21 is valid
-                backup!(l)
-                return emit(l, Tokens.FLOAT)
-            elseif !(isdigit(peekchar(l)) || caracter_ignored(peekchar(l)) || is_identifier_start_char(peekchar(l)))
-                backup!(l)
-                return emit(l, Tokens.FLOAT)
-            else # 3213.313.3123 is an error
-                return emit_error(l)
-            end
-        elseif position(l) > longest # 323213.3232 candidate
-            longest, kind = position(l), Tokens.FLOAT
-        end
-
-        if accept(l, "eEf") # 1313.[0-9]*e
-            accept(l, "+-")
-            if accept_integer(l) && position(l) > longest
-                longest, kind = position(l), Tokens.FLOAT
-            end
-        end
-    elseif accept(l, "eEf")
-        accept(l, "+-")
-        if accept_integer(l) && position(l) > longest
-            longest, kind = position(l), Tokens.FLOAT
-        else
-            backup!(l)
-            return emit(l, Tokens.INT)
-        end
-    elseif position(l) > longest
-        longest, kind = position(l), Tokens.INT
+    while isdigit(c)
+        s*=c
+        c= readchar(l)
+        l.current_col += 1
     end
 
-    seek2startpos!(l)
+    if c=='.'
+        s*=c
+        c= readchar(l)
+        l.current_col += 1
+        isfloat=true
+        if isdigit(c)
+            s*=c
+            c= readchar(l)
+            l.current_col += 1
+            while isdigit(c)
+                s*=c
+                c= readchar(l)
+                l.current_col += 1
+            end
+        else
+            return emit_error(l,c)
+        end
+    end
 
-    seek(l, longest)
+    if ((c=='e') || (c== 'E'))
+        s*=c
+        c= readchar(l)
+        l.current_col += 1
+        isfloat=true
+        if ((c=='+') || (c=='-'))
+            s*=c
+            c= readchar(l)
+            l.current_col += 1
+        end
+        if isdigit(c)
+            s*=c
+            c= readchar(l)
+            l.current_col += 1
+            while isdigit(c)
+                s*=c
+                c= readchar(l)
+                l.current_col += 1
+            end
+        else
+            return emit_error(l,c)
+        end
+    end
 
-    return emit(l, kind)
+    l.current_col -= 1
+    seek(l, prevpos(l))
+
+    if isfloat==true
+        return emit(l, Tokens.FLOAT,s)
+    end
+    return emit(l, Tokens.INT, s)
 end
-
 end # module
