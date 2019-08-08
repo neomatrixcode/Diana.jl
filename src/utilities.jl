@@ -29,31 +29,6 @@ struct GraphQLError <:Exception
     msg::String
 end
 
-import Base.Unicode
-
-@inline function utf8_trailing(i)
-    if i < 193
-        return 0
-    elseif i < 225
-        return 1
-    elseif i < 241
-        return 2
-    elseif i < 249
-        return 3
-    elseif i < 253
-        return 4
-    else
-        return 5
-    end
-end
-
-const utf8_offset = [0x00000000
-                    0x00003080
-                    0x000e2080
-                    0x03c82080
-                    0xfa082080
-                    0x82082080]
-
 const EOF_CHAR = typemax(Char)
 
 function is_cat_id_start(ch::Char, cat::Integer)
@@ -144,60 +119,7 @@ function is_identifier_start_char(c::Char)
     return is_cat_id_start(c, cat)
 end
 
-
-function peekchar(io::Base.GenericIOBuffer)
-    if !io.readable || io.ptr > io.size
-        return EOF_CHAR
-    end
-    ch= readutf(io)
-    return ch
-end
-
-function readutf(io, offset = 0)
-    ch = convert(UInt8,io.data[io.ptr + offset])
-    if ch < 0x80
-        return convert(Char,ch)
-    end
-    trailing = utf8_trailing(ch + 1)
-    c::UInt32 = 0
-    for j = Base.OneTo(trailing)#1:trailing
-        c += ch
-        c <<= 6
-        ch = reinterpret(UInt8,io.data[io.ptr+j])
-    end
-    c += ch
-    c -= Base.utf8_offset[trailing+1]
-    return convert(Char, c), trailing
-end
-
-function dpeekchar(io::IOBuffer)
-    if !io.readable || io.ptr > io.size
-        return EOF_CHAR, EOF_CHAR
-    end
-    ch1, trailing = readutf(io)
-    offset = trailing + 1
-
-    if io.ptr + offset > io.size
-        return ch1, EOF_CHAR
-    end
-    ch2, _ = readutf(io, offset)
-
-    return ch1, ch2
-end
-
-# this implementation is copied from Base
-
-
-peekchar(s::IOStream) = begin
-  _CHTMP = Ref{Char}()
-    if ccall(:ios_peekutf8, Int32, (Ptr{Nothing}, Ptr{Char}), s, _CHTMP) < 0
-        return EOF_CHAR
-    end
-    return _CHTMP[]
-end
-
 eof(io::IO) = Base.eof(io)
 eof(c::Char) = c === EOF_CHAR
 
 readchar(io::IO) = eof(io) ? EOF_CHAR : read(io, Char)
-takechar(io::IO) = (readchar(io); io)

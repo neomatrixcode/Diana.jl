@@ -1,4 +1,3 @@
-#  return the ast o un syntax error, unexpected IDENTIFIER, expecting fragment or mutation or query or { on line
 abstract type Node end
 struct Document <:Node
 	kind::String
@@ -324,7 +323,7 @@ function expect(lexer, kind)
 		lexer.advance()
 		return token
 	end
-	return throw(ErrorException("{\"errors\":[{\"locations\": [{\"column\": $(token.startpos[2]),\"line\": $(token.startpos[1])}],\"message\": \"Syntax Error GraphQL request ($(token.startpos[2]):$(token.startpos[1])) Expected $kind, found $token \"}]}"))
+	return throw(GraphQLError("{\"errors\":[{\"locations\": [{\"column\": $(token.startpos[2]),\"line\": $(token.startpos[1])}],\"message\": \"Syntax Error GraphQL request ($(token.startpos[2]):$(token.startpos[1])) Expected $kind, found $token \"}]}"))
 end
 
 """
@@ -338,7 +337,7 @@ function expectKeyword(lexer, value::String)
     lexer.advance()
     return token
   end
-  return throw(ErrorException("Expected $value, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])"))
+  return throw(GraphQLError("Expected $value, found $token in: line $(token.startpos[1]) , col $(token.startpos[2])"))
 end
 
 """
@@ -391,14 +390,7 @@ function Parse(str)
 	return parseDocument(Lexer(str))
 end
 
-"""
-	#if length(errors)>0
-	#	println("Syntax Error GraphQL request (x:x) Unexpected character")
-	#	errors
-		# {"errors":[{"locations":[{"column":5,"line":3}],"message":"Syntax Error GraphQL request (3:5) Unexpected character \"\".\n\n2:   neomatrix{\n
-		3:     nombre\n       ^\n4:     linkedin\n"}]}
-  Document : Definition+
-"""
+
  function parseDocument(lexer::Lexer)
  	start_token = lexer.token()
  	definitions = []
@@ -467,7 +459,7 @@ function parseDefinition(lexer::Lexer)
       end
     end
 
-  return throw(ErrorException(unexpected(lexer)))
+  return throw(GraphQLError(unexpected(lexer)))
 end
 
 """
@@ -620,7 +612,7 @@ function parseOperationType(lexer::Lexer)
 		return "subscription"
 	end
 
-	return throw(ErrorException(unexpected(operationToken)))
+	return throw(GraphQLError(unexpected(operationToken)))
 end
 
 """
@@ -696,7 +688,7 @@ end
 """
 function parseFragmentName(lexer::Lexer)
   if (lexer.token().val == "on")
-    return throw(ErrorException(unexpected(lexer)))
+    return throw(GraphQLError(unexpected(lexer)))
   end
   return parseName(lexer)
 end
@@ -766,7 +758,7 @@ function parseValueLiteral(lexer::Lexer, isConst::Bool)
       #break
     end
 
-  return throw(ErrorException(unexpected(lexer)))
+  return throw(GraphQLError(unexpected(lexer)))
 end
 
 function parseConstValue(lexer::Lexer) ##export
@@ -896,7 +888,7 @@ function parseTypeSystemDefinition(lexer::Lexer)
       if(lexer.token().val=="directive") return parseDirectiveDefinition(lexer) end
   end
 
-  return throw(ErrorException(unexpected(lexer)))
+  return throw(GraphQLError(unexpected(lexer)))
 end
 
 """

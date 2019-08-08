@@ -8,6 +8,6 @@ include("Validate.jl")
 include("Schema.jl")
 include("execute.jl")
 
-export Queryclient, GraphQLClient,Tokensgraphql,Parse,Schema,Validatequery,Schema
+export Queryclient, GraphQLClient,Tokensgraphql,Parse,Schema,Validatequery
 
 end # module

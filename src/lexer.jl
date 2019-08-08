@@ -1,8 +1,6 @@
-
 include("utilities.jl")
-
 import ..Tokens
-import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
+import ..Tokens: Token, Kind, TokenError
 import ..Tokens:  NAME
 
 mutable struct Lexing
@@ -25,7 +23,13 @@ end
 Lexing(io::IO) = Lexing(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
 Lexing(str::AbstractString) = Lexing(IOBuffer(str))
 
-Tokensgraphql(x) = collect(Lexing(x))
+"""
+    Tokensgraphql(x::String)
+
+Given an origin string, this returns the set of tokens that make up that source.
+"""
+Tokensgraphql(x::String) = collect(Lexing(x))
+
 caracter_ignored(c::Char) = Base.isspace(c) #'\n   \t'
 # Iterator interface
 Base.IteratorSize(::Type{Lexing}) = Base.SizeUnknown()
@@ -114,12 +118,18 @@ end
 """
     emit_error(l::Lexing, str::String, err::TokenError=Tokens.UNKNOWN)
 
-Returns an `ERROR` token with error `err` and starts a new `Token`.
+Throws Diana.GraphQLError if a lexical error is found.
 """
+#Returns an `ERROR` token with error `err` and starts a new `Token`.
 function emit_error(l::Lexing, str::String, err::TokenError = Tokens.UNKNOWN)
     return throw(GraphQLError("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
 
+"""
+    emit_error(l::Lexing, str::Char, err::TokenError=Tokens.UNKNOWN)
+
+Throws Diana.GraphQLError if a lexical error is found.
+"""
 function emit_error(l::Lexing, str::Char, err::TokenError = Tokens.UNKNOWN)
     if caracter_ignored(str)
        return throw(GraphQLError("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(escape_string(string(str))) \"}]}"))
