@@ -385,7 +385,7 @@ function many(lexer::Lexer, openKind, parseFn::Function, closeKind)
  end
 """
 Given a GraphQL source, parses it into a Document.
-Throws GraphQLError if a syntax error is encountered.
+Throws Diana.GraphQLError if a syntax error is encountered.
  """
 function Parse(str)
 	return parseDocument(Lexer(str))
@@ -569,7 +569,7 @@ end
 """
   Given a string containing a GraphQL value (ex. `[42]`), parse the AST for
   that value.
-  Throws GraphQLError if a syntax error is encountered.
+  Throws Diana.GraphQLError if a syntax error is encountered.
 
   This is useful within tools that operate upon GraphQL Values directly and
   in isolation of complete GraphQL documents.
@@ -586,7 +586,7 @@ end
 """
   Given a string containing a GraphQL Type (ex. `[Int!]`), parse the AST for
   that type.
-  Throws GraphQLError if a syntax error is encountered.
+  Throws Diana.GraphQLError if a syntax error is encountered.
 
   This is useful within tools that operate upon GraphQL Types directly and
   in isolation of complete GraphQL documents.
