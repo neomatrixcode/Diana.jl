@@ -1,11 +1,11 @@
-module Lexing
+
 include("utilities.jl")
 
 import ..Tokens
 import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
 import ..Tokens:  NAME
 
-mutable struct Lexer
+mutable struct Lexing
     io::IO
     io_startpos::Int
 
@@ -22,17 +22,17 @@ mutable struct Lexer
     last_token::Tokens.Kind
 end
 
-Lexer(io::IO) = Lexer(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
-Lexer(str::AbstractString) = Lexer(IOBuffer(str))
+Lexing(io::IO) = Lexing(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
+Lexing(str::AbstractString) = Lexing(IOBuffer(str))
 
-Tokensgraphql(x) = collect(Lexer(x))
+Tokensgraphql(x) = collect(Lexing(x))
 caracter_ignored(c::Char) = Base.isspace(c) #'\n   \t'
 # Iterator interface
-Base.IteratorSize(::Type{Lexer}) = Base.SizeUnknown()
-Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
-Base.eltype(::Type{Lexer}) = Token
+Base.IteratorSize(::Type{Lexing}) = Base.SizeUnknown()
+Base.IteratorEltype(::Type{Lexing}) = Base.HasEltype()
+Base.eltype(::Type{Lexing}) = Token
 
-function Base.iterate(l::Lexer)
+function Base.iterate(l::Lexing)
     seek(l.io, l.io_startpos)
     l.token_startpos = position(l)
     l.token_start_row = 1
@@ -45,50 +45,50 @@ function Base.iterate(l::Lexer)
     return t, t.kind == Tokens.ENDMARKER
 end
 
-function Base.iterate(l::Lexer, isdone::Any)
+function Base.iterate(l::Lexing, isdone::Any)
     isdone && return nothing
     t = next_token(l)
     return t, t.kind == Tokens.ENDMARKER
 end
 
-Base.show(io::IO, l::Lexer) = print(io, typeof(l), " at position: ", position(l))
+Base.show(io::IO, l::Lexing) = print(io, typeof(l), " at position: ", position(l))
 
 """
-    startpos(l::Lexer)
+    startpos(l::Lexing)
 
 Return the latest `Token`'s starting position.
 """
-startpos(l::Lexer) = l.token_startpos
+startpos(l::Lexing) = l.token_startpos
 
 """
-    prevpos(l::Lexer)
+    prevpos(l::Lexing)
 
 Return the lexer's previous position.
 """
-prevpos(l::Lexer) = l.prevpos
+prevpos(l::Lexing) = l.prevpos
 
 """
-    position(l::Lexer)
+    position(l::Lexing)
 
 Returns the current position.
 """
-Base.position(l::Lexer) = Base.position(l.io)
+Base.position(l::Lexing) = Base.position(l.io)
 
 """
-    eof(l::Lexer)
+    eof(l::Lexing)
 
 Determine whether the end of the lexer's underlying buffer has been reached.
 """
-eof(l::Lexer) = eof(l.io)
+eof(l::Lexing) = eof(l.io)
 
-Base.seek(l::Lexer, pos) = seek(l.io, pos)
+Base.seek(l::Lexing, pos) = seek(l.io, pos)
 
 """
-    readchar(l::Lexer)
+    readchar(l::Lexing)
 
 Returns the next character and increments the current position.
 """
-function readchar(l::Lexer)
+function readchar(l::Lexing)
     l.prevpos = position(l)
     c = readchar(l.io)
     return c
@@ -96,12 +96,12 @@ end
 
 
 """
-    emit(l::Lexer, kind::Kind, str::String,
+    emit(l::Lexing, kind::Kind, str::String,
                        err::TokenError=Tokens.NO_ERR)
 
 Returns a `Token` of kind `kind` with contents `str` and starts a new `Token`.
 """
-function emit(l::Lexer, kind::Kind, str::String, err::TokenError = Tokens.NO_ERR)
+function emit(l::Lexing, kind::Kind, str::String, err::TokenError = Tokens.NO_ERR)
    tok= Token(kind, (l.token_start_row, l.token_start_col),
                 (l.current_row, l.current_col),
                 startpos(l), position(l) - 1,
@@ -112,15 +112,15 @@ function emit(l::Lexer, kind::Kind, str::String, err::TokenError = Tokens.NO_ERR
 end
 
 """
-    emit_error(l::Lexer, str::String, err::TokenError=Tokens.UNKNOWN)
+    emit_error(l::Lexing, str::String, err::TokenError=Tokens.UNKNOWN)
 
 Returns an `ERROR` token with error `err` and starts a new `Token`.
 """
-function emit_error(l::Lexer, str::String, err::TokenError = Tokens.UNKNOWN)
+function emit_error(l::Lexing, str::String, err::TokenError = Tokens.UNKNOWN)
     return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
 
-function emit_error(l::Lexer, str::Char, err::TokenError = Tokens.UNKNOWN)
+function emit_error(l::Lexing, str::Char, err::TokenError = Tokens.UNKNOWN)
     if caracter_ignored(str)
        return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(escape_string(string(str))) \"}]}"))
     end
@@ -131,11 +131,11 @@ end
 
 
 """
-    next_token(l::Lexer)
+    next_token(l::Lexing)
 
 Returns the next `Token`.
 """
-function next_token(l::Lexer)
+function next_token(l::Lexing)
    c= readchar(l)
 
    if c == ','
@@ -207,7 +207,7 @@ function next_token(l::Lexer)
 
 end
 
-function lex_quote(l::Lexer, c::Char)
+function lex_quote(l::Lexing, c::Char)
     multiline= false
     s= ""
     s*=c
@@ -266,7 +266,7 @@ function lex_quote(l::Lexer, c::Char)
     return emit(l, Tokens.STRING, s)
 end
 
-function lex_identifier(l::Lexer, c::Char)
+function lex_identifier(l::Lexing, c::Char)
     s= ""
     while is_identifier_char(c)
         s*=c
@@ -278,7 +278,7 @@ function lex_identifier(l::Lexer, c::Char)
     return emit(l, NAME,s)
 end
 
-function lex_dot(l::Lexer)
+function lex_dot(l::Lexing)
     if readchar(l) == '.'
         if readchar(l) == '.'
             return emit(l, Tokens.SPREAD, "...")
@@ -289,7 +289,7 @@ end
 
 
 # A digit has been consumed
-function lex_digit(l::Lexer, c::Char)
+function lex_digit(l::Lexing, c::Char)
     s=""
     isfloat=false
     s*=c
@@ -353,4 +353,3 @@ function lex_digit(l::Lexer, c::Char)
     end
     return emit(l, Tokens.INT, s)
 end
-end # module

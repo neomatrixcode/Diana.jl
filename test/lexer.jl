@@ -200,8 +200,8 @@ b= Tokensgraphql(
 }
 """)
 catch e
-  if e isa Diana.Lexing.ErrorGraphql
-        @test string(e) ==  "Diana.Lexing.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 14,\\\"line\\\": 2}],\\\"message\\\": \\\"Syntax Error GraphQL request (2:14) Unexpected character ) \\\"}]}\")"
+  if e isa Diana.ErrorGraphql
+        @test string(e) ==  "Diana.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 14,\\\"line\\\": 2}],\\\"message\\\": \\\"Syntax Error GraphQL request (2:14) Unexpected character ) \\\"}]}\")"
   else
    	 @test string(e) == ""
   end
@@ -219,8 +219,8 @@ b= Tokensgraphql(
 }
 """)
 catch e
-  if e isa Diana.Lexing.ErrorGraphql
-        @test string(e) ==  "Diana.Lexing.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 25,\\\"line\\\": 5}],\\\"message\\\": \\\"Syntax Error GraphQL request (5:25) Unexpected character , \\\"}]}\")"
+  if e isa Diana.ErrorGraphql
+        @test string(e) ==  "Diana.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 25,\\\"line\\\": 5}],\\\"message\\\": \\\"Syntax Error GraphQL request (5:25) Unexpected character , \\\"}]}\")"
   else
    	 @test string(e) == ""
   end
@@ -238,8 +238,8 @@ b= Tokensgraphql(
 }
 """)
 catch e
-  if e isa Diana.Lexing.ErrorGraphql
-        @test string(e) ==  "Diana.Lexing.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 40,\\\"line\\\": 5}],\\\"message\\\": \\\"Syntax Error GraphQL request (5:40) Unexpected character e \\\"}]}\")"
+  if e isa Diana.ErrorGraphql
+        @test string(e) ==  "Diana.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 40,\\\"line\\\": 5}],\\\"message\\\": \\\"Syntax Error GraphQL request (5:40) Unexpected character e \\\"}]}\")"
   else
    	 @test string(e) == ""
   end
@@ -257,8 +257,8 @@ b= Tokensgraphql(
 }
 """)
 catch e
-  if e isa Diana.Lexing.ErrorGraphql
-        @test string(e) == "Diana.Lexing.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 42,\\\"line\\\": 5}],\\\"message\\\": \\\"Syntax Error GraphQL request (5:42) Unexpected character \\\\n \\\"}]}\")"
+  if e isa Diana.ErrorGraphql
+        @test string(e) == "Diana.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 42,\\\"line\\\": 5}],\\\"message\\\": \\\"Syntax Error GraphQL request (5:42) Unexpected character \\\\n \\\"}]}\")"
    else
    	 @test string(e) == ""
   end

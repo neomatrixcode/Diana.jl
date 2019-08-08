@@ -18,9 +18,8 @@ Parse("""
 }
 """)
 catch e
-  if e isa Diana.Lexing.ErrorGraphql
-     s=string(e)
-        @test s ==  "Diana.Lexing.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 1,\\\"line\\\": 2}],\\\"message\\\": \\\"Syntax Error GraphQL request (2:1) Unexpected character % \\\"}]}\")"
+  if e isa Diana.ErrorGraphql
+    @test string(e) ==  "Diana.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 1,\\\"line\\\": 2}],\\\"message\\\": \\\"Syntax Error GraphQL request (2:1) Unexpected character % \\\"}]}\")"
   end
 end
 
@@ -42,9 +41,8 @@ query {
 }
 """)
 catch e
-        s=string(e)
-        @test s == "ErrorException(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 11,\\\"line\\\": 6}],\\\"message\\\": \\\"Syntax Error GraphQL request (11:6) Expected NAME, found } \\\"}]}\")"
-      end
+  @test string(e) == "ErrorException(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 11,\\\"line\\\": 6}],\\\"message\\\": \\\"Syntax Error GraphQL request (11:6) Expected NAME, found } \\\"}]}\")"
+end
 
 
 @test "$(Parse(
