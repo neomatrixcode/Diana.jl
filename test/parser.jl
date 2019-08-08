@@ -18,8 +18,8 @@ Parse("""
 }
 """)
 catch e
-  if e isa Diana.ErrorGraphql
-    @test string(e) ==  "Diana.ErrorGraphql(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 1,\\\"line\\\": 2}],\\\"message\\\": \\\"Syntax Error GraphQL request (2:1) Unexpected character % \\\"}]}\")"
+  if e isa Diana.GraphQLError
+    @test string(e) ==  "Diana.GraphQLError(\"{\\\"errors\\\":[{\\\"locations\\\": [{\\\"column\\\": 1,\\\"line\\\": 2}],\\\"message\\\": \\\"Syntax Error GraphQL request (2:1) Unexpected character % \\\"}]}\")"
   end
 end
 

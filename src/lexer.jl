@@ -117,15 +117,15 @@ end
 Returns an `ERROR` token with error `err` and starts a new `Token`.
 """
 function emit_error(l::Lexing, str::String, err::TokenError = Tokens.UNKNOWN)
-    return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
+    return throw(GraphQLError("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
 
 function emit_error(l::Lexing, str::Char, err::TokenError = Tokens.UNKNOWN)
     if caracter_ignored(str)
-       return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(escape_string(string(str))) \"}]}"))
+       return throw(GraphQLError("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(escape_string(string(str))) \"}]}"))
     end
 
-    return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
+    return throw(GraphQLError("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
 
 

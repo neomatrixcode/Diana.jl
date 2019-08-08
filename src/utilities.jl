@@ -25,7 +25,7 @@ The JuliaParser.jl package is licensed under the MIT "Expat" License:
 > TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 > SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 =#
-struct ErrorGraphql <:Exception
+struct GraphQLError <:Exception
     msg::String
 end
 

@@ -293,9 +293,6 @@ struct Lexer
     end
 end
 
-function createLexer(str)
-	return Lexer(str)
-end
 
 """
   Determines if the next token is of a given kind
@@ -391,8 +388,7 @@ Given a GraphQL source, parses it into a Document.
 Throws GraphQLError if a syntax error is encountered.
  """
 function Parse(str)
-	lexer = createLexer(str)
-	return parseDocument(lexer)
+	return parseDocument(Lexer(str))
 end
 
 """
@@ -582,7 +578,7 @@ end
 """
 function parseValue(source::String)   ##export
   sourceObj = source;
-  lexer = createLexer(sourceObj)
+  lexer = Lexer(sourceObj)
   value = parseValueLiteral(lexer, false)
   expect(lexer, Tokens.ENDMARKER)
   return value
