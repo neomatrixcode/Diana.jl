@@ -33,7 +33,7 @@ Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
 Base.eltype(::Type{Lexer}) = Token
 
 function Base.iterate(l::Lexer)
-    seekstart(l)
+    seek(l.io, l.io_startpos)
     l.token_startpos = position(l)
     l.token_start_row = 1
     l.token_start_col = 1
@@ -68,23 +68,6 @@ Return the lexer's previous position.
 prevpos(l::Lexer) = l.prevpos
 
 """
-    prevpos!(l::Lexer, i::Integer)
-
-Set the lexer's previous position.
-"""
-prevpos!(l::Lexer, i::Integer) = l.prevpos = i
-
-Base.seekstart(l::Lexer) = seek(l.io, l.io_startpos)
-
-
-"""
-    peekchar(l::Lexer)
-
-Returns the next character without changing the lexer's state.
-"""
-peekchar(l::Lexer) = peekchar(l.io)
-
-"""
     position(l::Lexer)
 
 Returns the current position.
@@ -106,7 +89,7 @@ Base.seek(l::Lexer, pos) = seek(l.io, pos)
 Returns the next character and increments the current position.
 """
 function readchar(l::Lexer)
-    prevpos!(l, position(l))
+    l.prevpos = position(l)
     c = readchar(l.io)
     return c
 end
@@ -134,7 +117,6 @@ end
 Returns an `ERROR` token with error `err` and starts a new `Token`.
 """
 function emit_error(l::Lexer, str::String, err::TokenError = Tokens.UNKNOWN)
-
     return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
 
@@ -145,6 +127,7 @@ function emit_error(l::Lexer, str::Char, err::TokenError = Tokens.UNKNOWN)
 
     return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
+
 
 
 """
@@ -176,12 +159,20 @@ function next_token(l::Lexer)
             l.current_col = 1
         elseif c== '\t'
            l.current_col += 5
-        elseif c== ' '
-            l.current_col += 1
         else
            l.current_col += 1
          end
         c= readchar(l)
+
+        while c == '#'
+          while c!='\n'
+            l.current_col += 1
+            c= readchar(l)
+          end
+          l.current_row += 1
+          l.current_col = 1
+         c= readchar(l)
+       end
     end
 
     l.token_startpos = position(l)
@@ -211,7 +202,7 @@ function next_token(l::Lexer)
     elseif c == '.'; return lex_dot(l);
     elseif c == '-'; return lex_digit(l,c);
     elseif isdigit(c); return lex_digit(l,c)
-    else return emit_error(l,string(c,c))
+    else return emit_error(l,string(c))
     end
 
 end
