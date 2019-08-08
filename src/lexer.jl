@@ -1,14 +1,14 @@
-module Lexers
+module Lexing
 
 include("utilities.jl")
-global const charstore = IOBuffer()
+#global const charstore = IOBuffer()
 
 import ..Tokens
 import ..Tokens: Token, Kind, TokenError,  EMPTY_TOKEN
 import ..Tokens:  NAME
 export tokenize
 
-caracter_ignored(c::Char) = Base.isspace(c) #'\n   \t'
+
 
 mutable struct Lexer
     io::IO
@@ -30,13 +30,11 @@ end
 Lexer(io::IO) = Lexer(io, position(io), 1, 1, -1, 0, 1, 1, position(io), Tokens.ERROR)
 Lexer(str::AbstractString) = Lexer(IOBuffer(str))
 
-function Tokensgraphql(x)
-    return Lexer(x)
-end
-
+Tokensgraphql(x) = collect(Lexer(x))
+caracter_ignored(c::Char) = Base.isspace(c) #'\n   \t'
 # Iterator interface
 Base.IteratorSize(::Type{Lexer}) = Base.SizeUnknown()
-Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
+#Base.IteratorEltype(::Type{Lexer}) = Base.HasEltype()
 Base.eltype(::Type{Lexer}) = Token
 
 function Base.iterate(l::Lexer)
@@ -58,9 +56,7 @@ function Base.iterate(l::Lexer, isdone::Any)
     return t, t.kind == Tokens.ENDMARKER
 end
 
-function Base.show(io::IO, l::Lexer)
-    print(io, typeof(l), " at position: ", position(l))
-end
+Base.show(io::IO, l::Lexer) = print(io, typeof(l), " at position: ", position(l))
 
 """
     startpos(l::Lexer)
@@ -69,13 +65,13 @@ Return the latest `Token`'s starting position.
 """
 startpos(l::Lexer) = l.token_startpos
 
-"""
+#="""
     startpos!(l::Lexer, i::Integer)
 
 Set a new starting position.
 """
 startpos!(l::Lexer, i::Integer) = l.token_startpos = i
-
+=#
 """
     prevpos(l::Lexer)
 
@@ -122,19 +118,7 @@ eof(l::Lexer) = eof(l.io)
 
 Base.seek(l::Lexer, pos) = seek(l.io, pos)
 
-"""
-    start_token!(l::Lexer)
-
-Updates the lexer's state such that the next  `Token` will start at the current
-position.
-"""
-function start_token!(l::Lexer)
-    l.token_startpos = position(l)
-    l.token_start_row = l.current_row
-    l.token_start_col = l.current_col
-end
-
-"""
+#="""
     prevchar(l::Lexer)
 
 Returns the previous character. Does not change the lexer's state.
@@ -143,7 +127,7 @@ function prevchar(l::Lexer)
     backup!(l)
     return readchar(l)
 end
-
+=#
 """
     readchar(l::Lexer)
 
@@ -205,36 +189,23 @@ function emit(l::Lexer, kind::Kind, str::String, err::TokenError = Tokens.NO_ERR
 end
 
 """
-    emit_error(l::Lexer, err::TokenError=Tokens.UNKNOWN)
+    emit_error(l::Lexer, str::String, err::TokenError=Tokens.UNKNOWN)
 
 Returns an `ERROR` token with error `err` and starts a new `Token`.
 """
 function emit_error(l::Lexer, str::String, err::TokenError = Tokens.UNKNOWN)
-    return emit(l, Tokens.ERROR,str, err)
+
+    return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
 
-"""
-    extract_tokenstring(l::Lexer)
-
-Returns all characters since the start of the current `Token` as a `String`.
-"""
-function extract_tokenstring(l::Lexer)
-    global charstore
-    curr_pos = position(l)
-    seek2startpos!(l)
-
-    while position(l) < curr_pos
-        c = readchar(l)
-        l.current_col += 1
-        if c == '\n'
-            l.current_row += 1
-            l.current_col = 1
-         end
-        write(charstore, c)
+function emit_error(l::Lexer, str::Char, err::TokenError = Tokens.UNKNOWN)
+    if caracter_ignored(str)
+       return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(escape_string(string(str))) \"}]}"))
     end
-    str = String(take!(charstore))
-    return str
+
+    return throw(ErrorGraphql("{\"errors\":[{\"locations\": [{\"column\": $(l.current_col),\"line\": $(l.current_row)}],\"message\": \"Syntax Error GraphQL request ($(l.current_row):$(l.current_col)) Unexpected character $(str) \"}]}"))
 end
+
 
 """
     next_token(l::Lexer)
@@ -243,7 +214,6 @@ Returns the next `Token`.
 """
 function next_token(l::Lexer)
    c= readchar(l)
-
 
    if c == ','
       l.current_col += 1
@@ -283,8 +253,7 @@ function next_token(l::Lexer)
         l.token_start_col = l.current_col
     end
 
-
-    println(">>>>  ",c," (",l.token_start_row,",", l.token_start_col,") {",l.current_row,",", l.current_col ,"} [ ",startpos(l)," - ", position(l)-1," ]")
+    #println(">>>>  ",c," (",l.token_start_row,",", l.token_start_col,") {",l.current_row,",", l.current_col ,"} [ ",startpos(l)," - ", position(l)-1," ]")
 
     if eof(c); return emit(l,Tokens.ENDMARKER,"eof")
     elseif c == '['; return emit(l, Tokens.LSQUARE,"[")
@@ -302,40 +271,76 @@ function next_token(l::Lexer)
     elseif c == '&'; return emit(l, Tokens.AMP,"&")
     elseif c == '"'; return lex_quote(l,c);
     elseif is_identifier_start_char(c); return lex_identifier(l, c)
+    elseif c == '.'; return lex_dot(l);
     else return emit_error(l,string(c))
     end
 
-
     #=
-
-    elseif c == '.'; return lex_dot(l);
     elseif isdigit(c); return lex_digit(l)
     end=#
 end
 
-# Parse a token starting with a quote.
-# A '"' has been consumed
 function lex_quote(l::Lexer, c::Char)
-
+    multiline= false
     s= ""
     s*=c
     c= readchar(l)
     l.current_col += 1
 
-    while c!='"'
-        s*=c
+    if c=='"'
         c= readchar(l)
-        l.current_col += 1
+        if c=='"'
+         c= readchar(l)
+         multiline= true
+        else
+         return emit_error(l,string(c))
+        end
+    end
+
+    while c!='"'
+        if multiline==true
+
+            if c == '\n'
+                l.current_row += 1
+                l.current_col = 1
+            elseif c== '\t'
+               l.current_col += 4
+            end
+
+            s*=c
+            l.current_col += 1
+            c= readchar(l)
+        else
+            if c=='\n'
+                return emit_error(l,c)
+            else
+                s*=c
+                l.current_col += 1
+                c= readchar(l)
+            end
+        end
     end
     s*="\""
-    #if accept(l, "\"") && accept(l, "\"")
+    if (multiline==true)
+        c= readchar(l)
+        if c=='"'
+            l.current_col += 1
+            c= readchar(l)
+            if c=='"'
+                l.current_col += 1
+            else
+                return emit_error(l,string(c))
+            end
+        else
+            return emit_error(l,string(c))
+        end
+    end
+
     return emit(l, Tokens.STRING, s)
 end
 
-
 function lex_identifier(l::Lexer, c::Char)
     s= ""
-
     while is_identifier_char(c)
         s*=c
         c= readchar(l)
@@ -343,15 +348,23 @@ function lex_identifier(l::Lexer, c::Char)
     end
     l.current_col -= 1
     seek(l, prevpos(l))
-
-    if s == "query"; return emit(l, NAME,s)
+    #=if s == "query"; return emit(l, NAME,s)
     elseif s == "mutation"; return emit(l, NAME,s)
     elseif s == "subscription"; return emit(l, NAME,s)
     elseif s == "fragment"; return emit(l, NAME,s)
     elseif s == "directive"; return emit(l, NAME,s)
-    else
+    else=#
         return emit(l, NAME,s)
+    #end
+end
+
+function lex_dot(l::Lexer)
+    if readchar(l) == '.'
+        if readchar(l) == '.'
+            return emit(l, Tokens.SPREAD, "...")
+        end
     end
+    return emit_error(l," ")
 end
 
 function accept_integer(l::Lexer)
@@ -440,43 +453,5 @@ function lex_digit(l::Lexer)
 
     return emit(l, kind)
 end
-
-
-
-
-
-function lex_dot(l::Lexer)
-    if accept(l, '.')
-        if accept(l, '.')
-            return emit(l, Tokens.SPREAD)
-        end
-    end
-end
-
-function readrest(l, c)
-    while is_identifier_char(c)
-        if c == '!' && peekchar(l) == '='
-            backup!(l)
-            break
-        elseif !is_identifier_char(peekchar(l))
-            break
-        end
-        c = readchar(l)
-    end
-
-    return emit(l, NAME)
-end
-
-
-function _doret(l, c)
-    if !is_identifier_char(c)
-        backup!(l)
-        return emit(l, NAME)
-    else
-        return readrest(l, c)
-    end
-end
-#se queda
-
 
 end # module
