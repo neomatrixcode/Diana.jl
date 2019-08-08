@@ -577,8 +577,7 @@ end
   Consider providing the results to the utility function: valueFromAST().
 """
 function parseValue(source::String)   ##export
-  sourceObj = source;
-  lexer = Lexer(sourceObj)
+  lexer = Lexer(source)
   value = parseValueLiteral(lexer, false)
   expect(lexer, Tokens.ENDMARKER)
   return value
