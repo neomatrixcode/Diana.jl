@@ -22,23 +22,11 @@ function deepquery(documentAST)
 end
 
 function Validatequery(documentAST)
-	queryRules=[NotExtensionOnOperation(),NotTypeOnOperation(),NotSchemaOnOperation(),FragmentSubscription(),FragmentNames(),OperationNames(),OperationAnonymous(),SubscriptionFields(),FragmentUnknowNotUsed(),FragmentCycles()]
+	queryRules=[NotExtensionOnOperation(),#=NotTypeOnOperation(),=#NotSchemaOnOperation(),FragmentSubscription(),FragmentNames(),OperationNames(),OperationAnonymous(),SubscriptionFields(),FragmentUnknowNotUsed(),FragmentCycles()]
 
-	try
 	visitante.([documentAST],queryRules)
 	return "ok"
-	catch e
-        s=string(e.msg)
-        #println(s)
-        return """{
-				  \"data\": null,
-				  \"errors\": [
-				    {
-				      \"message\": $(s)
-				    }
-				  ]
-				}"""
-      end
+
 end
 
 function gettypes(schema)

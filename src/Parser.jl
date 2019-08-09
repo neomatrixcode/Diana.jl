@@ -348,7 +348,7 @@ Given a GraphQL source, parses it into a Document.
 Throws Diana.GraphQLError if a syntax error is encountered.
  """
 function Parse(str)
-	return @time parseDocument(Lexer(str))
+	return parseDocument(Lexer(str))
 end
 
 

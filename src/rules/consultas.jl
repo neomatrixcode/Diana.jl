@@ -37,7 +37,7 @@ struct NotExtensionOnOperation
 	function NotExtensionOnOperation()
 		function enter(node)
 			if (node.kind== "TypeExtensionDefinition")
-				return throw(GraphqlError("GraphQL cannot execute a request containing a TypeExtensionDefinition."))
+				throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a TypeExtensionDefinition.\"}]}"))
 			end
 		end
 		function leave(node)
@@ -53,7 +53,7 @@ struct NotTypeOnOperation
 	function NotTypeOnOperation()
 		function enter(node)
 			if (node.kind== "ObjectTypeDefinition")
-				return throw(GraphqlError("GraphQL cannot execute a request containing a ObjectTypeDefinition."))
+				return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a ObjectTypeDefinition.\"}]}"))
 			end
 		end
 		function leave(node)
@@ -69,7 +69,7 @@ struct NotSchemaOnOperation
 	function NotSchemaOnOperation()
 		function enter(node)
 			if (node.kind== "SchemaDefinition")
-				return throw(GraphqlError("GraphQL cannot execute a request containing a SchemaDefinition."))
+				return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a SchemaDefinition.\"}]}"))
 			end
 		end
 		function leave(node)
@@ -80,6 +80,7 @@ struct NotSchemaOnOperation
 end
 
 
+
 struct FragmentSubscription
 	enter
 	leave
@@ -87,9 +88,8 @@ struct FragmentSubscription
 		function enter(node)
 			if (node.kind== "FragmentDefinition")
 				if (node.typeCondition[2].name.value == "Subscription")
-
 					if (length(node.selectionSet.selections)>1)
-						return throw(GraphqlError("subscription must select only one top level field"))
+						return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"subscription must select only one top level field\"}]}"))
 					end
 				end
 			end
@@ -111,7 +111,7 @@ struct FragmentNames
 			if (node.kind== "FragmentDefinition")
 				valor= node.name.value
 				if(valor in nombres)
-					return throw(GraphqlError("There can only be one fragment named \'$(valor)\'."))
+					return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"There can only be one fragment named \'$(valor)\'.\"}]}"))
 				else
 					push!(nombres,valor)
 				end
@@ -135,7 +135,7 @@ struct OperationNames
 				if (typeof(valor)<: Name)
 					valor= valor.value
 					if(valor in nombres)
-						return throw(GraphqlError("There can only be one operation named \'$(valor)\'."))
+						return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"There can only be one operation named \'$(valor)\'.\"}]}"))
 					else
 						push!(nombres,valor)
 					end
@@ -163,7 +163,7 @@ struct OperationAnonymous
 					anonimo=true
 				end
 				if ((anonimo== true) && (n_operation>1))
-					return throw(GraphqlError("This anonymous operation must be the only defined operation."))
+					return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"This anonymous operation must be the only defined operation.\"}]}"))
 				end
 			end
 		end
@@ -182,7 +182,7 @@ struct SubscriptionFields
 			if (node.kind== "OperationDefinition")
 				if (node.operation == "subscription")
 					if (length(node.selectionSet.selections)>1)
-						return throw(GraphqlError("subscription must select only one top level field"))
+						return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"subscription must select only one top level field.\"}]}"))
 					end
 				end
 			end
@@ -232,13 +232,13 @@ struct FragmentUnknowNotUsed
 				  for n in nombres
 				      texto=texto*" "*n
 				  end
-				  return throw(GraphqlError("Fragment$(texto) is not used."))
+				  return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"Fragment $(texto) is not used.\"}]}"))
 				end
 				if (length(usados)>0)
 				    for n in usados
 				      texto=texto*" "*n
 				    end
- 				  return throw(GraphqlError("Unknown fragment$(texto)."))
+ 				  return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"Unknown fragment $(texto).\"}]}"))
 				end
 			end
 		end
@@ -282,7 +282,7 @@ struct FragmentCycles
 					for l in nombrescycles[2:end]
 					    traza=traza*" "*l
 					end
-				    return throw(GraphqlError("Cannot spread fragment $(inicio) within itself via $(traza)."))
+				    return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"Cannot spread fragment $(inicio) within itself via $(traza).\"}]}"))
 				end
 				end
 			end

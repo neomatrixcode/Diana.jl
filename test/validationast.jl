@@ -1,17 +1,88 @@
+
+query= """
+       {
+         dog {
+             name
+               }
+               }"""
+
+@time Validatequery(Parse(query)) == "ok"
+
+query= """
+type Query {
+  dog: Dog
+}
+
+enum DogCommand { SIT, DOWN, HEEL }
+
+type Dog implements Pet {
+  name: String!
+  nickname: String
+  barkVolume: Int
+  doesKnowCommand(dogCommand: DogCommand!): Boolean!
+  isHousetrained(atOtherHomes: Boolean): Boolean!
+  owner: Human
+}
+
+interface Sentient {
+  name: String!
+}
+
+interface Pet {
+  name: String!
+}
+
+type Alien implements Sentient {
+  name: String!
+  homePlanet: String
+}
+
+type Human implements Sentient {
+  name: String!
+}
+
+enum CatCommand { JUMP }
+
+type Cat implements Pet {
+  name: String!
+  nickname: String
+  doesKnowCommand(catCommand: CatCommand!): Boolean!
+  meowVolume: Int
+}
+
+union CatOrDog = Cat | Dog
+union DogOrHuman = Dog | Human
+union HumanOrAlien = Human | Alien
+"""
+
+@time Validatequery(Parse(query)) == "ok"
+
+
 query="""
 extend type Hello {
   world2: String
 }
 """
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": GraphQL cannot execute a request containing a TypeExtensionDefinition.\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e.msg) =="{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a TypeExtensionDefinition.\"}]}"
+  end
+end
 
 query="""
 type Hello {
   world2: String
 }
 """
-
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": GraphQL cannot execute a request containing a ObjectTypeDefinition.\n    }\n  ]\n}"
+try
+ Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"GraphQL cannot execute a request containing a ObjectTypeDefinition.\\\"}]}\")"
+  end
+end
 
 query="""
 schema {
@@ -19,7 +90,13 @@ schema {
   }
 """
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": GraphQL cannot execute a request containing a SchemaDefinition.\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"GraphQL cannot execute a request containing a SchemaDefinition.\\\"}]}\")"
+  end
+end
 
 query="""
 {
@@ -36,7 +113,13 @@ query getName {
   }
 }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": This anonymous operation must be the only defined operation.\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"This anonymous operation must be the only defined operation.\\\"}]}\")"
+  end
+end
 
 query="""
 query getName {
@@ -53,7 +136,13 @@ query getName {
   }
 }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": There can only be one operation named 'getName'.\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"There can only be one operation named 'getName'.\\\"}]}\")"
+  end
+end
 
 query="""
 query dogOperation {
@@ -68,7 +157,14 @@ mutation dogOperation {
   }
 }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": There can only be one operation named 'dogOperation'.\n    }\n  ]\n}"
+
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"There can only be one operation named 'dogOperation'.\\\"}]}\")"
+  end
+end
 
 query="""
 subscription sub {
@@ -79,7 +175,13 @@ subscription sub {
   __typename
 }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": subscription must select only one top level field\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) == "Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"subscription must select only one top level field.\\\"}]}\")"
+  end
+end
 
 query="""
 subscription JAJA {
@@ -92,8 +194,13 @@ subscription JAJA {
                File
                }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": subscription must select only one top level field\n    }\n  ]\n}"
-
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"subscription must select only one top level field.\\\"}]}\")"
+  end
+end
 
 query= """
 fragment multipleSubscriptions on Subscription {
@@ -104,7 +211,13 @@ fragment multipleSubscriptions on Subscription {
   disallowedSecondRootField
 }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": subscription must select only one top level field\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"subscription must select only one top level field\\\"}]}\")"
+  end
+end
 
 query= """
  subscription{
@@ -112,7 +225,13 @@ query= """
          ...multipleSubscriptions
          }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": subscription must select only one top level field\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"subscription must select only one top level field.\\\"}]}\")"
+  end
+end
 
 query = """
 fragment nameFragment on Dog { # unused
@@ -125,8 +244,14 @@ fragment nameFragment on Dog { # unused
   }
 }
                  """
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": Fragment nameFragment is not used.\n    }\n  ]\n}"
 
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"Fragment  nameFragment is not used.\\\"}]}\")"
+  end
+end
 
 
 query = """
@@ -140,7 +265,14 @@ query = """
                  name
                  }
                  """
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": Unknown fragment fragmentotro.\n    }\n  ]\n}"
+
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"Unknown fragment  fragmentotro.\\\"}]}\")"
+  end
+end
 
 query = """
  fragment fragmentOne on Dog {
@@ -155,7 +287,14 @@ query = """
                }
 
                  """
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": Unknown fragment fragmentotro.\n    }\n  ]\n}"
+
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) == "Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"Unknown fragment  fragmentotro.\\\"}]}\")"
+  end
+end
 
 query = """
        {
@@ -179,7 +318,13 @@ query = """
                                    }
 """
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": There can only be one fragment named 'dogFragment'.\n    }\n  ]\n}"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"There can only be one fragment named 'dogFragment'.\\\"}]}\")"
+  end
+end
 
 query = """
        {
@@ -211,14 +356,11 @@ query = """
            ...ownerFragment
            }"""
 
-@test Validatequery(Parse(query)) == "{\n  \"data\": null,\n  \"errors\": [\n    {\n      \"message\": Cannot spread fragment dogFragment within itself via  ownerFragment a b c.\n    }\n  ]\n}"
 
-
-query= """
-       {
-         dog {
-             name
-               }
-               }"""
-
-@test Validatequery(Parse(query)) == "ok"
+try
+  Validatequery(Parse(query))
+catch e
+  if e isa Diana.GraphQLError
+    @test string(e) =="Diana.GraphQLError(\"{\\\"data\\\": null,\\\"errors\\\": [{\\\"message\\\": \\\"Cannot spread fragment dogFragment within itself via  ownerFragment a b c.\\\"}]}\")"
+  end
+end
