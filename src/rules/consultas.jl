@@ -1,9 +1,4 @@
 
-struct GraphqlError <: Exception
-           msg
-       end
-
-
 struct getdeep
 	enter
 	leave

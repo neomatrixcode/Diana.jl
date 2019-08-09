@@ -4,7 +4,6 @@ struct Document <:Node
   definitions
   Document(d)=new("Document",d)
 end
-
 struct OperationDefinition <:Node
 	kind::String
 	operation::String
@@ -17,20 +16,17 @@ end
 struct SelectionSet <:Node
 	kind::String
 	selections
-	#loc
 	SelectionSet(sel) = new("SelectionSet",sel)
 end
 struct Name <:Node
 	kind::String
 	value::String
-	#loc
 	Name(val)= new("Name",val)
 end
 struct Argument <:Node
 	kind::String# "Argument";
 	name::Name
 	value #[ Literal | Variable | Reference ];
-	#loc
 	Argument(n::Name,x)= new("Argument",n,x)
 end
 struct VariableDefinition <:Node
@@ -38,7 +34,6 @@ struct VariableDefinition <:Node
 	variable
 	tipe
 	defaultValue
-	#loc
 	VariableDefinition(va,tipe,defval)=new("VariableDefinition",va,tipe,defval)
 end
 struct Variable <:Node
@@ -50,126 +45,106 @@ struct FragmentSpread <:Node
 	kind::String
 	name
 	directives
-	#loc
 	FragmentSpread(n,d)=new("FragmentSpread",n,d)
 end
 struct InlineFragment <:Node
 	kind::String
 	typeCondition
 	directives
-    selectionSet
-    #loc
-    InlineFragment(typecon,direc,selset)=InlineFragment("InlineFragment",typecon,direc,selset)
+  selectionSet
+  InlineFragment(typecon,direc,selset)=InlineFragment("InlineFragment",typecon,direc,selset)
 end
 struct FragmentDefinition <:Node
 	kind::String
 	name
 	typeCondition
-		directives
-		selectionSet
-		#loc
-		FragmentDefinition(n,t,d,s)=new("FragmentDefinition",n,t,d,s)
-	end
+	directives
+	selectionSet
+	FragmentDefinition(n,t,d,s)=new("FragmentDefinition",n,t,d,s)
+end
 struct IntValue <:Node
 	kind::String
 	value
-	#loc
 	IntValue(v)=new("IntValue",v)
 end
 struct FloatValue <:Node
 	kind::String
 	value
-	#loc
 	FloatValue(v)=new("FloatValue",v)
 end
 struct StringValue <:Node
 	kind::String
 	value
-	#loc
 	StringValue(v)=new("StringValue",v)
 end
 struct BooleanValue <:Node
 	kind::String
 	value
-	#loc
 	BooleanValue(v)=new("BooleanValue",v)
 end
 struct NullValue <:Node
 	kind::String
-	#loc
 	NullValue()=new("NullValue")
 end
 struct EnumValue <:Node
 	kind::String
 	value
-	#loc
 	EnumValue(v)=new("EnumValue",v)
 end
 struct List_ <:Node
 	kind::String
 	value_s
-	#loc
 	List_(vals)=new("List",vals)
 end
 struct Object_ <:Node
 	kind::String
 	fields
-	#loc
 	Object_(f)=new("Object",f)
 end
 struct Object_Field <:Node
 	kind::String
 	name
 	value
-	#loc
 	Object_Field(n,v)=new("Object_Field",n,v)
 end
 struct Directive <:Node
 	kind::String
 	name
 	arguments
-	#loc
 	Directive(n,a) = new("Directive",n,a)
 end
 struct ListType <:Node
     kind::String
     tipe
-    #loc
     ListType(t)=new("ListType",t)
 end
-
 struct NonNullType <:Node
     kind::String
     tipe
-    #loc
     NonNullType(t)=new("NonNullType",t)
 end
 struct NamedType <:Node
    kind::String
    name
-   #loc
    NamedType(n)=new("NamedType",n)
 end
 struct SchemaDefinition <:Node
 	kind::String
-    directives
-    operationTypes
-    #loc
-    SchemaDefinition(d,o)=new("SchemaDefinition",d,o)
+  directives
+  operationTypes
+  SchemaDefinition(d,o)=new("SchemaDefinition",d,o)
 end
 struct OperationTypeDefinition <:Node
-    kind::String
-    operation
-    tipe
-    #loc
-    OperationTypeDefinition(o,t)=new("OperationTypeDefinition",o,t)
+  kind::String
+  operation
+  tipe
+  OperationTypeDefinition(o,t)=new("OperationTypeDefinition",o,t)
 end
 struct ScalarTypeDefinition <:Node
-    kind::String
-    name
-    directives
-    #loc
-    ScalarTypeDefinition(n,d)=new("ScalarTypeDefinition",n,d)
+  kind::String
+  name
+  directives
+  ScalarTypeDefinition(n,d)=new("ScalarTypeDefinition",n,d)
 end
 struct ObjectTypeDefinition <:Node
 	kind::String
@@ -177,7 +152,6 @@ struct ObjectTypeDefinition <:Node
 	interfaces
 	directives
 	fields
-	#loc
 	ObjectTypeDefinition(n,i,d,f)=new("ObjectTypeDefinition",n,i,d,f)
 end
 struct FieldDefinition <:Node
@@ -185,84 +159,72 @@ struct FieldDefinition <:Node
 	name
 	arguments
 	tipe
-    directives
-    #loc
+  directives
 	FieldDefinition(n,arg,ti,dir)= new("FieldDefinition",n,arg,ti,dir)
 end
-
 struct Field <:Node
-     kind::String
-    alias
-    name
-    arguments
-    directives
-    selectionSet
-    #loc
-    Field(a,n,arg,d,s)=new("Field",a,n,arg,d,s)
+  kind::String
+  alias
+  name
+  arguments
+  directives
+  selectionSet
+  Field(a,n,arg,d,s)=new("Field",a,n,arg,d,s)
 end
 struct InputValueDefinition <:Node
-    kind::String
-    name
-    tipe
-    defaultValue
-    directives
-    #loc
-    InputValueDefinition(n,t,dfv,dir)=new("InputValueDefinition",n,t,dfv,dir)
+  kind::String
+  name
+  tipe
+  defaultValue
+  directives
+  InputValueDefinition(n,t,dfv,dir)=new("InputValueDefinition",n,t,dfv,dir)
 end
 struct InterfaceTypeDefinition <:Node
-    kind::String
-    name
-    directives
-    fields
-    #loc
-    InterfaceTypeDefinition(n,d,f)=new("InterfaceTypeDefinition",n,d,f)
+  kind::String
+  name
+  directives
+  fields
+  InterfaceTypeDefinition(n,d,f)=new("InterfaceTypeDefinition",n,d,f)
 end
 struct UnionTypeDefinition <:Node
 	kind::String
-    name
-    directives
-    tipes
-    #loc
-    UnionTypeDefinition(n,d,t)=new("UnionTypeDefinition",n,d,t)
+  name
+  directives
+  tipes
+  UnionTypeDefinition(n,d,t)=new("UnionTypeDefinition",n,d,t)
 end
 struct EnumTypeDefinition <:Node
-    kind::String
-    name
-    directives
-    _values
-    #loc
-    EnumTypeDefinition(n,d,v)=new("EnumTypeDefinition",n,d,v)
+  kind::String
+  name
+  directives
+  _values
+  EnumTypeDefinition(n,d,v)=new("EnumTypeDefinition",n,d,v)
 end
 struct EnumValueDefinition <:Node
-    kind::String
-    name
-    directives
-    #loc
-    EnumValueDefinition(n,d)=new("EnumValueDefinition",n,d)
+  kind::String
+  name
+  directives
+  EnumValueDefinition(n,d)=new("EnumValueDefinition",n,d)
 end
 struct InputObjectTypeDefinition <:Node
-    kind::String
-    name
-    directives
-    fields
-    #loc
-    InputObjectTypeDefinition(n,d,f)=new("InputObjectTypeDefinition",n,d,f)
+  kind::String
+  name
+  directives
+  fields
+  InputObjectTypeDefinition(n,d,f)=new("InputObjectTypeDefinition",n,d,f)
 end
 struct TypeExtensionDefinition <:Node
-    kind::String
-    definition
-    #loc
-    TypeExtensionDefinition(d)=new("TypeExtensionDefinition",d)
+  kind::String
+  definition
+  TypeExtensionDefinition(d)=new("TypeExtensionDefinition",d)
 end
 struct DirectiveDefinition <:Node
-    kind::String
-    name
-    arguments
-    locations
-    #loc
-    DirectiveDefinition()=new("DirectiveDefinition")
+  kind::String
+  name
+  arguments
+  locations
+  DirectiveDefinition()=new("DirectiveDefinition")
 end
-
 struct Lexer
     token
     advance
@@ -291,7 +253,6 @@ struct Lexer
         new(current_token,advance,back)
     end
 end
-
 
 """
   Determines if the next token is of a given kind
@@ -387,7 +348,7 @@ Given a GraphQL source, parses it into a Document.
 Throws Diana.GraphQLError if a syntax error is encountered.
  """
 function Parse(str)
-	return parseDocument(Lexer(str))
+	return @time parseDocument(Lexer(str))
 end
 
 
@@ -494,7 +455,7 @@ end
 """
 function parseSelectionSet(lexer::Lexer)
   start_token= lexer.token()
-  return SelectionSet(many(lexer, Tokens.LBRACE, parseSelection,Tokens.RBRACE#=,loc(lexer, start_token)=#))
+  return SelectionSet(many(lexer, Tokens.LBRACE, parseSelection,Tokens.RBRACE))
 end
 
 """
@@ -554,7 +515,7 @@ end
 function parseArgument(lexer::Lexer)
   start_token = lexer.token()
   pN=parseName(lexer)
-  return Argument(pN,(expect(lexer, Tokens.COLON).val, parseValueLiteral(lexer, false))#=,loc(lexer, start_token)=#)
+  return Argument(pN,(expect(lexer, Tokens.COLON).val, parseValueLiteral(lexer, false)))
 end
 
 
@@ -627,7 +588,7 @@ end
 """
 function parseVariableDefinition(lexer::Lexer)
   start_token = lexer.token()
-  return VariableDefinition(parseVariable(lexer),((expect(lexer, Tokens.COLON)).val, parseTypeReference(lexer)),next_token(lexer, Tokens.EQUALS) ? parseValueLiteral(lexer, true) : nothing#=,loc(lexer, start_token)=#)
+  return VariableDefinition(parseVariable(lexer),((expect(lexer, Tokens.COLON)).val, parseTypeReference(lexer)),next_token(lexer, Tokens.EQUALS) ? parseValueLiteral(lexer, true) : nothing)
 end
 
 """
@@ -636,7 +597,7 @@ end
 function parseVariable(lexer::Lexer)
   start_token = lexer.token()
   expect(lexer, Tokens.DOLLAR)
-  return Variable(parseName(lexer)#=,loc(lexer, start_token)=#)
+  return Variable(parseName(lexer))
 end
 
 
@@ -653,7 +614,7 @@ function parseFragment(lexer::Lexer)
   start_token = lexer.token()
   expect(lexer, Tokens.SPREAD)
   if (peek(lexer, Tokens.NAME) && lexer.token().val !== "on")
-  	return FragmentSpread(parseFragmentName(lexer),parseDirectives(lexer)#=,loc(lexer, start_token)=#)
+  	return FragmentSpread(parseFragmentName(lexer),parseDirectives(lexer))
   end
 
   typeCondition = nothing
@@ -664,7 +625,7 @@ function parseFragment(lexer::Lexer)
   end
   pD=parseDirectives(lexer)
   pS=parseSelectionSet(lexer)
-  return InlineFragment(typeCondition,pD,pS#=,loc(lexer, start_token)=#)
+  return InlineFragment(typeCondition,pD,pS)
 end
 
 """
@@ -680,7 +641,7 @@ function parseFragmentDefinition(lexer::Lexer)
   v=((expectKeyword(lexer,"on").val), parseNamedType(lexer))
   pD=parseDirectives(lexer)
   pS=parseSelectionSet(lexer)
-  return FragmentDefinition(pFN,v,pD,pS#=,loc(lexer, start_token)=#)
+  return FragmentDefinition(pFN,v,pD,pS)
 end
 
 """
@@ -777,7 +738,7 @@ end
 function parseList(lexer::Lexer, isConst::Bool)
   start_token = lexer.token()
   item = isConst ? parseConstValue : parseValueValue
-  return List_(an_y(lexer, Tokens.LSQUARE, item, Tokens.RSQUARE)#=,loc(lexer, start_token)=#)
+  return List_(an_y(lexer, Tokens.LSQUARE, item, Tokens.RSQUARE))
 end
 
 """
@@ -792,7 +753,7 @@ function parseObject(lexer::Lexer, isConst::Bool)
   while (!next_token(lexer, Tokens.RBRACE))
     push!(fields,parseObjectField(lexer, isConst))
   end
-  return Object_(fields#=,loc(lexer, start_token)=#)
+  return Object_(fields)
 end
 
 """
@@ -800,7 +761,7 @@ end
 """
 function parseObjectField(lexer::Lexer, isConst::Bool)
   start_token = lexer.token()
-  return Object_Field(parseName(lexer),((expect(lexer, Tokens.COLON)).val, parseValueLiteral(lexer, isConst))#=,loc(lexer, start_token)=#)
+  return Object_Field(parseName(lexer),((expect(lexer, Tokens.COLON)).val, parseValueLiteral(lexer, isConst)))
 end
 
 """
@@ -822,7 +783,7 @@ end
 function parseDirective(lexer::Lexer)
   start_token = lexer.token()
   expect(lexer, Tokens.AT)
-  return Directive(parseName(lexer),parseArguments(lexer)#=,loc(lexer, start_token)=#)
+  return Directive(parseName(lexer),parseArguments(lexer))
 end
 
 """
@@ -839,12 +800,12 @@ function parseTypeReference(lexer::Lexer) ##export
   if(next_token(lexer, Tokens.LSQUARE))
     tipe = parseTypeReference(lexer)
     expect(lexer, Tokens.RSQUARE)
-    tipe = ListType(tipe#=,loc(lexer, start_token)=#)
+    tipe = ListType(tipe)
   else
     tipe = parseNamedType(lexer)
   end
   if (next_token(lexer, Tokens.BANG))
-  	return NonNullType(tipe#=,loc(lexer, start_token)=#)
+  	return NonNullType(tipe)
   end
   return tipe
 end
@@ -854,7 +815,7 @@ end
 """
 function parseNamedType(lexer::Lexer)  ##export
   start_token = lexer.token()
-  return NamedType(parseName(lexer)#=,loc(lexer, start_token)=#)
+  return NamedType(parseName(lexer))
 end
 
 
@@ -901,7 +862,7 @@ function parseSchemaDefinition(lexer::Lexer)
   expectKeyword(lexer,"schema")
   directives = parseDirectives(lexer)
   operationTypes = many(lexer,Tokens.LBRACE,parseOperationTypeDefinition,Tokens.RBRACE)
-  return SchemaDefinition(directives,operationTypes#=,loc(lexer, start_token)=#)
+  return SchemaDefinition(directives,operationTypes)
 end
 
 function parseOperationTypeDefinition(lexer::Lexer)
@@ -909,7 +870,7 @@ function parseOperationTypeDefinition(lexer::Lexer)
   operation = parseOperationType(lexer)
   expect(lexer, Tokens.COLON)
   tipe = parseNamedType(lexer)
-  return OperationTypeDefinition(operation,tipe#=,loc(lexer, start_token)=#)
+  return OperationTypeDefinition(operation,tipe)
 end
 
 """
@@ -920,7 +881,7 @@ function parseScalarTypeDefinition(lexer::Lexer)
   expectKeyword(lexer,"scalar")
   name = parseName(lexer)
   directives = parseDirectives(lexer)
-  return ScalarTypeDefinition(name,directives#=,loc(lexer, start_token)=#)
+  return ScalarTypeDefinition(name,directives)
 end
 
 """
@@ -934,7 +895,7 @@ function parseObjectTypeDefinition(lexer::Lexer)
   interfaces = parseImplementsInterfaces(lexer)
   directives = parseDirectives(lexer)
   fields = an_y(lexer,Tokens.LBRACE,parseFieldDefinition,Tokens.RBRACE)
-  return ObjectTypeDefinition(name,interfaces,directives,fields#=,loc(lexer, start_token)=#)
+  return ObjectTypeDefinition(name,interfaces,directives,fields)
 end
 
 """
@@ -967,7 +928,7 @@ function parseFieldDefinition(lexer::Lexer)
   expect(lexer, Tokens.COLON)
   tipe = parseTypeReference(lexer)
   directives = parseDirectives(lexer)
-  return FieldDefinition(name,args,tipe,directives#=,loc(lexer, start_token)=#)
+  return FieldDefinition(name,args,tipe,directives)
 end
 
 """
@@ -993,7 +954,7 @@ function parseInputValueDef(lexer::Lexer)
     defaultValue = parseConstValue(lexer)
   end
   directives = parseDirectives(lexer)
-  return InputValueDefinition(name,tipe,defaultValue,directives#=,loc(lexer, start_token)=#)
+  return InputValueDefinition(name,tipe,defaultValue,directives)
 end
 
 """
@@ -1006,7 +967,7 @@ function parseInterfaceTypeDefinition(lexer::Lexer)
   directives = parseDirectives(lexer)
   fields = an_y(lexer,Tokens.LBRACE,parseFieldDefinition,Tokens.RBRACE)
 
-  return InterfaceTypeDefinition(name,directives,fields#=,loc(lexer, start_token)=#)
+  return InterfaceTypeDefinition(name,directives,fields)
 end
 
 """
@@ -1075,7 +1036,7 @@ function parseInputObjectTypeDefinition(lexer::Lexer)
   name = parseName(lexer)
   directives = parseDirectives(lexer)
   fields = an_y(lexer,Tokens.LBRACE,parseInputValueDef,Tokens.RBRACE)
-  return InputObjectTypeDefinition(name,directives,fields#=,loc(lexer, start_token)=#)
+  return InputObjectTypeDefinition(name,directives,fields)
 end
 
 """
@@ -1086,7 +1047,7 @@ function parseTypeExtensionDefinition(lexer::Lexer)
   expectKeyword(lexer, "extend")
   definition = parseObjectTypeDefinition(lexer)
   TypeExtensionDefinition
-  return TypeExtensionDefinition(definition#=,loc(lexer, start_token)=#)
+  return TypeExtensionDefinition(definition)
 end
 
 """
@@ -1101,7 +1062,7 @@ function parseDirectiveDefinition(lexer::Lexer)
   args = parseArgumentDefs(lexer)
   expectKeyword(lexer, "on")
   locations = parseDirectiveLocations(lexer)
-  return DirectiveDefinition(name,args,locations#=,loc(lexer, start_token)=#)
+  return DirectiveDefinition(name,args,locations)
 end
 
 """
