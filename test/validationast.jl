@@ -6,7 +6,7 @@ query= """
                }
                }"""
 
-@time Validatequery(Parse(query)) == "ok"
+@test Validatequery(Parse(query)) == "ok"
 
 query= """
 type Query {
@@ -54,9 +54,7 @@ union CatOrDog = Cat | Dog
 union DogOrHuman = Dog | Human
 union HumanOrAlien = Human | Alien
 """
-
-@time Validatequery(Parse(query)) == "ok"
-
+@test Validatequery(Parse(query)) == "ok"
 
 query="""
 extend type Hello {

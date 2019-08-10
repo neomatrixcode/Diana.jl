@@ -1,5 +1,5 @@
 
-struct getdeep
+struct getdeep <:Rule
 	enter
 	leave
 	valordeep
@@ -18,7 +18,6 @@ struct getdeep
 					end
 				end
 			end
-
 		end
 		function leave(node)
 			if (node.kind=="Field")
@@ -31,7 +30,7 @@ struct getdeep
 	end
 end
 
-struct NotExtensionOnOperation
+struct NotExtensionOnOperation <:Rule
 	enter
 	leave
 	function NotExtensionOnOperation()
@@ -47,7 +46,7 @@ struct NotExtensionOnOperation
 	end
 end
 
-struct NotTypeOnOperation
+struct NotTypeOnOperation <:Rule
 	enter
 	leave
 	function NotTypeOnOperation()
@@ -63,7 +62,7 @@ struct NotTypeOnOperation
 	end
 end
 
-struct NotSchemaOnOperation
+struct NotSchemaOnOperation <:Rule
 	enter
 	leave
 	function NotSchemaOnOperation()
@@ -81,7 +80,7 @@ end
 
 
 
-struct FragmentSubscription
+struct FragmentSubscription <:Rule
 	enter
 	leave
 	function FragmentSubscription()
@@ -102,7 +101,7 @@ struct FragmentSubscription
 end
 
 
-struct FragmentNames
+struct FragmentNames <:Rule
 	enter
 	leave
 	function FragmentNames()
@@ -124,7 +123,7 @@ struct FragmentNames
 	end
 end
 
-struct OperationNames
+struct OperationNames <:Rule
 	enter
 	leave
 	function OperationNames()
@@ -149,7 +148,7 @@ struct OperationNames
 	end
 end
 
-struct OperationAnonymous
+struct OperationAnonymous <:Rule
 	enter
 	leave
 	function OperationAnonymous()
@@ -174,7 +173,7 @@ struct OperationAnonymous
 	end
 end
 
-struct SubscriptionFields
+struct SubscriptionFields <:Rule
 	enter
 	leave
 	function SubscriptionFields()
@@ -195,7 +194,7 @@ struct SubscriptionFields
 end
 
 
-struct FragmentUnknowNotUsed
+struct FragmentUnknowNotUsed <:Rule
 	enter
 	leave
 	function FragmentUnknowNotUsed()
@@ -247,7 +246,7 @@ struct FragmentUnknowNotUsed
 end
 
 
-struct FragmentCycles
+struct FragmentCycles <:Rule
 	enter
 	leave
 	function FragmentCycles()

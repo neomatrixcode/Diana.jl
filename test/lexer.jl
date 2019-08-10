@@ -29,7 +29,7 @@ end
 
 
 
-b=Tokensgraphql(
+b= Tokensgraphql(
 """
 {
   leftComparison: hero(episode: EMPIRE) {
@@ -60,7 +60,7 @@ while next !== nothing
 end
 @test s == " LBRACE { ((1, 1) , (1, 1) ) \n NAME leftComparison ((2, 3) , (2, 16) ) \n COLON : ((2, 17) , (2, 17) ) \n NAME hero ((2, 19) , (2, 22) ) \n LPAREN ( ((2, 23) , (2, 23) ) \n NAME episode ((2, 24) , (2, 30) ) \n COLON : ((2, 31) , (2, 31) ) \n NAME EMPIRE ((2, 33) , (2, 38) ) \n RPAREN ) ((2, 39) , (2, 39) ) \n LBRACE { ((2, 41) , (2, 41) ) \n SPREAD ... ((3, 5) , (3, 5) ) \n NAME comparisonFields ((3, 6) , (3, 21) ) \n RBRACE } ((4, 3) , (4, 3) ) \n NAME rightComparison ((5, 3) , (5, 17) ) \n COLON : ((5, 18) , (5, 18) ) \n NAME hero ((5, 20) , (5, 23) ) \n LPAREN ( ((5, 24) , (5, 24) ) \n NAME episode ((5, 25) , (5, 31) ) \n COLON : ((5, 32) , (5, 32) ) \n NAME JEDI ((5, 34) , (5, 37) ) \n RPAREN ) ((5, 38) , (5, 38) ) \n LBRACE { ((5, 40) , (5, 40) ) \n SPREAD ... ((6, 5) , (6, 5) ) \n NAME comparisonFields ((6, 6) , (6, 21) ) \n RBRACE } ((7, 3) , (7, 3) ) \n RBRACE } ((8, 1) , (8, 1) ) \n NAME fragment ((10, 1) , (10, 8) ) \n NAME comparisonFields ((10, 10) , (10, 25) ) \n NAME on ((10, 27) , (10, 28) ) \n NAME Character ((10, 30) , (10, 38) ) \n LBRACE { ((10, 40) , (10, 40) ) \n NAME name ((11, 3) , (11, 6) ) \n NAME appearsIn ((12, 3) , (12, 11) ) \n NAME friends ((13, 3) , (13, 9) ) \n LBRACE { ((13, 11) , (13, 11) ) \n NAME name ((14, 5) , (14, 8) ) \n RBRACE } ((15, 3) , (15, 3) ) \n RBRACE } ((16, 1) , (16, 1) ) \n ENDMARKER eof ((17, 1) , (17, 1) ) \n"
 
-b=Tokensgraphql(
+b= Tokensgraphql(
 """
 mutation {
   sendEmail(message: \"\"\"
