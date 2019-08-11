@@ -331,12 +331,12 @@ function lex_digit(l::Lexing, c::Char)
         end
     end
 
-    if ((c=='e') || (c== 'E'))
+    if ((c=='e') | (c== 'E'))
         s*=c
         c= readchar(l)
         l.current_col += 1
         isfloat=true
-        if ((c=='+') || (c=='-'))
+        if ((c=='+') | (c=='-'))
             s*=c
             c= readchar(l)
             l.current_col += 1

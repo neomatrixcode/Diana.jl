@@ -1,4 +1,4 @@
-struct getfield_types
+struct getfield_types <:Rule
 	enter
 	leave
 	basic_types
@@ -9,18 +9,28 @@ struct getfield_types
 		notbasic_types=[[],[]]
 		function enter(node)
 			if (node.kind == "FieldDefinition")
-				type = node.tipe.name.value
-				if(type in scalars_types)
+				thetype = node.tipe.name.value
+					  #=if parse_schema == true
+    if !haskey(tabla_simbolos,buffer)
+              push!(tabla_simbolos, name.value => Dict("tipo" =>tipe.name.value ))
+    end
+  end=#
+				if(thetype in scalars_types)
 				    push!(basic_types[1],node.name.value)
-				    push!(basic_types[2],type)
+				    push!(basic_types[2],thetype)
 				else
 					push!(notbasic_types[1],node.name.value)
-				    push!(notbasic_types[2],type)
+				    push!(notbasic_types[2],thetype)
 				end
 			end
 			if (node.kind == "OperationTypeDefinition")
 				push!(notbasic_types[1],node.operation)
 				push!(notbasic_types[2],node.tipe.name.value)
+				#=if parse_schema == true
+    if !haskey(tabla_simbolos,buffer)
+              push!(tabla_simbolos, operation => Dict("tipo" =>tipe.name.value ))
+    end
+  end=#
 			end
 		end
 		function leave(node)

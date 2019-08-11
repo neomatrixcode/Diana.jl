@@ -9,7 +9,7 @@ struct getdeep <:Rule
 		function valordeep()
 			return valor
 		end
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind=="Field")
 				if (typeof(node.selectionSet)<:Node)
 					nivel = nivel+1
@@ -19,7 +19,7 @@ struct getdeep <:Rule
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 			if (node.kind=="Field")
 				if (typeof(node.selectionSet)<:Node)
 					nivel = nivel-1
@@ -34,12 +34,12 @@ struct NotExtensionOnOperation <:Rule
 	enter
 	leave
 	function NotExtensionOnOperation()
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "TypeExtensionDefinition")
 				throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a TypeExtensionDefinition.\"}]}"))
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -50,12 +50,12 @@ struct NotTypeOnOperation <:Rule
 	enter
 	leave
 	function NotTypeOnOperation()
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "ObjectTypeDefinition")
 				return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a ObjectTypeDefinition.\"}]}"))
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -66,12 +66,12 @@ struct NotSchemaOnOperation <:Rule
 	enter
 	leave
 	function NotSchemaOnOperation()
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "SchemaDefinition")
 				return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"GraphQL cannot execute a request containing a SchemaDefinition.\"}]}"))
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -84,7 +84,7 @@ struct FragmentSubscription <:Rule
 	enter
 	leave
 	function FragmentSubscription()
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "FragmentDefinition")
 				if (node.typeCondition[2].name.value == "Subscription")
 					if (length(node.selectionSet.selections)>1)
@@ -93,7 +93,7 @@ struct FragmentSubscription <:Rule
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -106,7 +106,7 @@ struct FragmentNames <:Rule
 	leave
 	function FragmentNames()
 		nombres=[]
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "FragmentDefinition")
 				valor= node.name.value
 				if(valor in nombres)
@@ -116,7 +116,7 @@ struct FragmentNames <:Rule
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -128,7 +128,7 @@ struct OperationNames <:Rule
 	leave
 	function OperationNames()
 		nombres=[]
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "OperationDefinition")
 				valor= node.name
 				if (typeof(valor)<: Name)
@@ -141,7 +141,7 @@ struct OperationNames <:Rule
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -154,19 +154,19 @@ struct OperationAnonymous <:Rule
 	function OperationAnonymous()
 		n_operation = 0
 		anonimo= false
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "OperationDefinition")
 				valor = node.name
 				n_operation=n_operation+1
 				if !(typeof(valor)<: Name)
 					anonimo=true
 				end
-				if ((anonimo== true) && (n_operation>1))
+				if ((anonimo== true) & (n_operation>1))
 					return throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"This anonymous operation must be the only defined operation.\"}]}"))
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -177,7 +177,7 @@ struct SubscriptionFields <:Rule
 	enter
 	leave
 	function SubscriptionFields()
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "OperationDefinition")
 				if (node.operation == "subscription")
 					if (length(node.selectionSet.selections)>1)
@@ -186,7 +186,7 @@ struct SubscriptionFields <:Rule
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 
 		end
 		new(enter,leave)
@@ -202,7 +202,7 @@ struct FragmentUnknowNotUsed <:Rule
 		usados=[]
 		yausados=[]
 		texto = ""
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "FragmentSpread") #usados
 				nombre = node.name.value
 				if( nombre in nombres)
@@ -225,7 +225,7 @@ struct FragmentUnknowNotUsed <:Rule
 				end
 			end
 		end
-		function leave(node)
+		function leave(node::Node)
 			if (node.kind=="Document")
 				if (length(nombres)>0)
 				  for n in nombres
@@ -255,7 +255,7 @@ struct FragmentCycles <:Rule
 		inicio = ""
 		traza = ""
 		leerspread =false
-		function enter(node)
+		function enter(node::Node)
 			if (node.kind== "FragmentSpread") #usadoscycles
 				if (leerspread == true)
 				nombre = node.name.value
@@ -270,7 +270,7 @@ struct FragmentCycles <:Rule
 			end
 		end
 
-		function leave(node)
+		function leave(node::Node)
 			if (node.kind== "FragmentDefinition")
 				leerspread =false
 			end

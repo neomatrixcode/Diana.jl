@@ -5,6 +5,8 @@ struct GraphQLError <:Exception
     msg::String
 end
 
+tabla_simbolos = Dict()
+
 include("client.jl")
 include("token.jl")
 include("lexer.jl")

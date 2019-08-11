@@ -10,15 +10,9 @@ function deepquery(documentAST)
 end
 
 function Validatequery(documentAST)
-	queryRules=[NotExtensionOnOperation(),#=NotTypeOnOperation(),=#NotSchemaOnOperation(),FragmentSubscription(),FragmentNames(),OperationNames(),OperationAnonymous(),SubscriptionFields(),FragmentUnknowNotUsed(),FragmentCycles()]
+	queryRules=[NotExtensionOnOperation(),NotTypeOnOperation(),NotSchemaOnOperation(),FragmentSubscription(),FragmentNames(),OperationNames(),OperationAnonymous(),SubscriptionFields(),FragmentUnknowNotUsed(),FragmentCycles()]
     vi= Visitante(documentAST)
 	vi.visitante.(queryRules)
 	return "ok"
-end
-
-function gettypes(schema)
-	gt=getfield_types()
-    visitante(schema,gt)
-    return gt.notbasic_types
 end
 

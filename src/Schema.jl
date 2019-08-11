@@ -2,15 +2,18 @@ using JSON
 
 mutable struct schema
   execute::Function
+  tbn
 end
 
-function Schema(_schema, resolvers)
-my_schema = Parse(_schema)
-tnb = gettypes(my_schema)
+function Schema(_schema::String, resolvers)
+simbolos =getfield_types()
+vi= Visitante(Parse(_schema))
+vi.visitante(simbolos)
+
     function execute(query::String)
       myquery = Parse(query)
       Validatequery(myquery)
-      return JSON.json(ExecuteQuery(myquery, resolvers, tnb))
+      return JSON.json(ExecuteQuery(myquery, resolvers, simbolos))
       #=Validatequery(Parse(query))
       validatelosdos()
       operationName = GetOperation(document, operationName)
@@ -22,6 +25,6 @@ tnb = gettypes(my_schema)
      end=#
     end
 
- return schema(execute)
+ return schema(execute,simbolos)
 
 end

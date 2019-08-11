@@ -1,7 +1,7 @@
 abstract type Node end
 struct Document <:Node
 	kind::String
-  definitions
+  definitions::Array{Node,1}
   Document(d)=new("Document",d)
 end
 struct OperationDefinition <:Node
@@ -15,7 +15,7 @@ struct OperationDefinition <:Node
 end
 struct SelectionSet <:Node
 	kind::String
-	selections
+	selections::Array{Node,1}
 	SelectionSet(sel) = new("SelectionSet",sel)
 end
 struct Name <:Node
@@ -131,7 +131,7 @@ end
 struct SchemaDefinition <:Node
 	kind::String
   directives
-  operationTypes
+  operationTypes::Array{Node,1}
   SchemaDefinition(d,o)=new("SchemaDefinition",d,o)
 end
 struct OperationTypeDefinition <:Node
@@ -149,9 +149,9 @@ end
 struct ObjectTypeDefinition <:Node
 	kind::String
 	name
-	interfaces
+	interfaces::Array{Node,1}
 	directives
-	fields
+	fields::Array{Node,1}
 	ObjectTypeDefinition(n,i,d,f)=new("ObjectTypeDefinition",n,i,d,f)
 end
 struct FieldDefinition <:Node
@@ -183,21 +183,21 @@ struct InterfaceTypeDefinition <:Node
   kind::String
   name
   directives
-  fields
+  fields::Array{Node,1}
   InterfaceTypeDefinition(n,d,f)=new("InterfaceTypeDefinition",n,d,f)
 end
 struct UnionTypeDefinition <:Node
 	kind::String
   name
   directives
-  tipes
+  tipes::Array{Node,1}
   UnionTypeDefinition(n,d,t)=new("UnionTypeDefinition",n,d,t)
 end
 struct EnumTypeDefinition <:Node
   kind::String
   name
   directives
-  _values
+  _values::Array{Node,1}
   EnumTypeDefinition(n,d,v)=new("EnumTypeDefinition",n,d,v)
 end
 struct EnumValueDefinition <:Node
@@ -294,7 +294,7 @@ end
 """
 function expectKeyword(lexer, value::String)
   token = lexer.token()
-  if (token.kind === Tokens.NAME && token.val == value)
+  if ((token.kind === Tokens.NAME) & (token.val == value))
     lexer.advance()
     return token
   end
@@ -613,7 +613,7 @@ Implements the parsing rules in the Fragments section.
 function parseFragment(lexer::Lexer)
   start_token = lexer.token()
   expect(lexer, Tokens.SPREAD)
-  if (peek(lexer, Tokens.NAME) && lexer.token().val !== "on")
+  if ((peek(lexer, Tokens.NAME)) & (lexer.token().val !== "on"))
   	return FragmentSpread(parseFragmentName(lexer),parseDirectives(lexer))
   end
 
@@ -700,7 +700,7 @@ function parseValueLiteral(lexer::Lexer, isConst::Bool)
     end
 
     if(token.kind==Tokens.NAME)
-      if(token.val == "true" || token.val == "false")
+      if((token.val == "true" )| (token.val == "false"))
         lexer.advance()
         return BooleanValue(token.val == "true"#=,loc(lexer, token)=#)
       elseif(token.val == "null")
@@ -1094,10 +1094,10 @@ function Base.show(io::IO, x::Node)
       catch
         v=true
       end
-      if (elemento!=nothing && v)
+      if ((elemento!=nothing) & v)
         if(f == :kind)
           print(io,"Node :: ",elemento)
-        elseif(f == :value) || (f == :operation)
+        elseif(f == :value) | (f == :operation)
           print(io," ,",f ," : \e[92m",elemento,"\e[37m")
         else
           print(io," ,",f ," : ",elemento)

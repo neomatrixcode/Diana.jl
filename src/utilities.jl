@@ -30,9 +30,7 @@ const EOF_CHAR = typemax(Char)
 
 function is_identifier_char(c::Char)
   c == EOF_CHAR && return false
-    if ((c >= 'A' && c <= 'Z') ||
-        (c >= 'a' && c <= 'z') || c == '_' ||
-        (c >= '0' && c <= '9') )
+    if (((c >= 'A') & (c <= 'Z')) | ((c >= 'a') & (c <= 'z')) | (c == '_') | ((c >= '0') & (c <= '9')) )
         return true
     end
     return false
@@ -40,7 +38,7 @@ end
 
 function is_identifier_start_char(c::Char)
     c == EOF_CHAR && return false
-    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || c == '_')
+    if (((c >= 'A') & (c <= 'Z')) | ((c >= 'a') & (c <= 'z')) | (c == '_'))
         return true
     end
     return false

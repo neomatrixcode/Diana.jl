@@ -1,14 +1,11 @@
 struct Visitante
     visitante
 
-    function Visitante(ast)
+    function Visitante(ast::Node)
 
-    	function mivisitante(x::Array{Diana.Node,1},rule::Rule)
-    		#pmap(mivisitante, x)
-    		Threads.@threads for i = 1:length(x)
-		    @simd for c in x
-				   mivisitante(c,rule)
-			     end
+    	function mivisitante(x::Array{Node,1},rule::Rule)
+    		for c in x
+		     mivisitante(c,rule)
 			end
 		end
 
@@ -17,9 +14,9 @@ struct Visitante
 			rules.enter(x)
 			for f in fieldnames(t)
 				subarbol= getfield(x, f)
-				if( typeof(subarbol )<: Node)
+				if( (typeof(subarbol )<: Node) & !(isa(subarbol, Diana.Name) ) )
 					mivisitante(subarbol,rules)
-				elseif (typeof(subarbol) <: Array{Diana.Node,1})
+				elseif (typeof(subarbol) <: Array{Node,1})
 				    mivisitante(subarbol,rules)
 				end
 			end
@@ -32,27 +29,3 @@ struct Visitante
       new(visitante)
     end
 end
-
-
-#=function visitante(x::Node,rules)
-	t = typeof(x)
-	rules.enter(x)
-	for f in fieldnames(t)
-		if( typeof(getfield(x, f) )<: Node)
-			visitante(getfield(x, f),rules)
-		elseif (typeof(getfield(x, f)) <: Array)
-		    visitante(getfield(x, f),rules)
-		end
-	end
-	rules.leave(x)
-end=#
-
-#=function visitante(x::Array,f)
-    for c in x
-    	if (typeof(c) <: Node)
-		visitante(c,f)
-	    else
-	    	break
-    	end
-	end
-end=#
