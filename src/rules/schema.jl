@@ -1,40 +1,26 @@
 struct getfield_types <:Rule
-	enter
-	leave
-	basic_types
-	notbasic_types
+	enter::Function
+	leave::Function
+	simbolos::Dict
+    tipos::Dict
 	function getfield_types()
-		scalars_types=["String", "Int", "Float", "Boolean"]
-		basic_types=[[],[]]
-		notbasic_types=[[],[]]
+		simbolos= Dict()
+		tipos= Dict()
+		nombre=""
 		function enter(node)
+			if (node.kind == "ObjectTypeDefinition")
+				 nombre = node.name.value
+                 push!(tipos, nombre => Dict())
+			end
 			if (node.kind == "FieldDefinition")
-				thetype = node.tipe.name.value
-					  #=if parse_schema == true
-    if !haskey(tabla_simbolos,buffer)
-              push!(tabla_simbolos, name.value => Dict("tipo" =>tipe.name.value ))
-    end
-  end=#
-				if(thetype in scalars_types)
-				    push!(basic_types[1],node.name.value)
-				    push!(basic_types[2],thetype)
-				else
-					push!(notbasic_types[1],node.name.value)
-				    push!(notbasic_types[2],thetype)
-				end
+                 push!(tipos[nombre], node.name.value => Dict("tipo" =>node.tipe.name.value ) )
 			end
 			if (node.kind == "OperationTypeDefinition")
-				push!(notbasic_types[1],node.operation)
-				push!(notbasic_types[2],node.tipe.name.value)
-				#=if parse_schema == true
-    if !haskey(tabla_simbolos,buffer)
-              push!(tabla_simbolos, operation => Dict("tipo" =>tipe.name.value ))
-    end
-  end=#
+				push!(simbolos, node.operation => Dict("tipo" =>node.tipe.name.value ))
 			end
 		end
 		function leave(node)
 		end
-		new(enter,leave,basic_types,notbasic_types)
+		new(enter,leave,simbolos,tipos)
 	end
 end

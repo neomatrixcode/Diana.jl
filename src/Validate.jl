@@ -1,13 +1,5 @@
 include("Visitor.jl")
 include("rules/consultas.jl")
-include("rules/schema.jl")
-
-
-function deepquery(documentAST)
-	gd =getdeep()
-    visitante(documentAST,gd)
-    return gd.valordeep()
-end
 
 function Validatequery(documentAST)
 	queryRules=[NotExtensionOnOperation(),NotTypeOnOperation(),NotSchemaOnOperation(),FragmentSubscription(),FragmentNames(),OperationNames(),OperationAnonymous(),SubscriptionFields(),FragmentUnknowNotUsed(),FragmentCycles()]

@@ -1,30 +1,42 @@
+include("rules/schema.jl")
 using JSON
-
 mutable struct schema
   execute::Function
-  tbn
+  symbol_table::Dict
 end
 
 function Schema(_schema::String, resolvers)
-simbolos =getfield_types()
+symbol_extract =getfield_types()
 vi= Visitante(Parse(_schema))
-vi.visitante(simbolos)
+vi.visitante(symbol_extract)
+symbol_table = Dict("symbols"=>symbol_extract.simbolos,"types"=>symbol_extract.tipos)
 
-    function execute(query::String)
-      myquery = Parse(query)
-      Validatequery(myquery)
-      return JSON.json(ExecuteQuery(myquery, resolvers, simbolos))
-      #=Validatequery(Parse(query))
-      validatelosdos()
-      operationName = GetOperation(document, operationName)
-     function ExecuteRequest(schema, document, operationName, variableValues, initialValue)
+    function execute(query::String, operationName=nothing, coercedVariableValues=nothing, initialValue=nothing)
+      #si la solicitud no esta validada, validarla
+      document = Parse(query)
+      Validatequery(document)
+      #pero si esta misma solicitud ya se valido antes, pues solo recuperarla de cache
 
-      return ExecuteQuery(operation, schema, coercedVariableValues, initialValue)
-      return ExecuteMutation(operation, schema, coercedVariableValues, initialValue).
-      return Subscribe(operation, schema, coercedVariableValues, initialValue).
-     end=#
+       operation= ""
+
+       if operationName==nothing
+          operation= document
+      #else
+          #operation = GetOperation(document,operationName)
+      end
+      type_operation = "query"
+
+      if type_operation =="query"
+        return JSON.json(ExecuteQuery(operation, symbol_table["types"],resolvers, coercedVariableValues, initialValue))
+      elseif type_operation == "mutation"
+        return JSON.json(ExecuteMutation(operation, symbol_table, coercedVariableValues, initialValue))
+      elseif type_operation == "subscribe"
+        return JSON.json(Subscribe(operation, symbol_table, coercedVariableValues, initialValue))
+      end
+
+      return JSON.json("{}")#
     end
 
- return schema(execute,simbolos)
+ return schema(execute,symbol_table)
 
 end

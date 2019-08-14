@@ -1,7 +1,7 @@
 
 struct getdeep <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	valordeep
 	function getdeep()
 		valor=1
@@ -31,8 +31,8 @@ struct getdeep <:Rule
 end
 
 struct NotExtensionOnOperation <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function NotExtensionOnOperation()
 		function enter(node::Node)
 			if (node.kind== "TypeExtensionDefinition")
@@ -47,8 +47,8 @@ struct NotExtensionOnOperation <:Rule
 end
 
 struct NotTypeOnOperation <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function NotTypeOnOperation()
 		function enter(node::Node)
 			if (node.kind== "ObjectTypeDefinition")
@@ -63,8 +63,8 @@ struct NotTypeOnOperation <:Rule
 end
 
 struct NotSchemaOnOperation <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function NotSchemaOnOperation()
 		function enter(node::Node)
 			if (node.kind== "SchemaDefinition")
@@ -81,8 +81,8 @@ end
 
 
 struct FragmentSubscription <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function FragmentSubscription()
 		function enter(node::Node)
 			if (node.kind== "FragmentDefinition")
@@ -102,8 +102,8 @@ end
 
 
 struct FragmentNames <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function FragmentNames()
 		nombres=[]
 		function enter(node::Node)
@@ -124,8 +124,8 @@ struct FragmentNames <:Rule
 end
 
 struct OperationNames <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function OperationNames()
 		nombres=[]
 		function enter(node::Node)
@@ -149,8 +149,8 @@ struct OperationNames <:Rule
 end
 
 struct OperationAnonymous <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function OperationAnonymous()
 		n_operation = 0
 		anonimo= false
@@ -174,8 +174,8 @@ struct OperationAnonymous <:Rule
 end
 
 struct SubscriptionFields <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function SubscriptionFields()
 		function enter(node::Node)
 			if (node.kind== "OperationDefinition")
@@ -195,8 +195,8 @@ end
 
 
 struct FragmentUnknowNotUsed <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function FragmentUnknowNotUsed()
 		nombres=[]
 		usados=[]
@@ -247,8 +247,8 @@ end
 
 
 struct FragmentCycles <:Rule
-	enter
-	leave
+	enter::Function
+	leave::Function
 	function FragmentCycles()
 		nombrescycles=[]
 		usadoscycles=[]
