@@ -15,19 +15,6 @@ type Persona {
 }
  """
 
-#=
-schema = Dict(
-  "Query"   => Dict(
-    "persona"=>Dict("tipo"=>"Persona")
-     ,"neomatrix"=>Dict("tipo"=>"Persona")
-   )
-,
-  "Persona" => Dict(
-    "edad"=>Dict("tipo"=>"Int")
-    ,"nombre"=>Dict("tipo"=>"String")
-  )
-)
-=#
 
 #root : resultado del tipo anterior / principal
 #args : argumentos proporcionados al campo
@@ -117,3 +104,40 @@ end
 
 
 
+schema = Dict(
+  "Query"   => Dict(
+    "persona"=>Dict("tipo"=>"Persona")
+     ,"neomatrix"=>Dict("tipo"=>"Persona")
+   )
+,
+  "Persona" => Dict(
+    "edad"=>Dict("tipo"=>"Int")
+    ,"nombre"=>Dict("tipo"=>"String")
+  )
+)
+
+
+ resolvers=Dict(
+    "Query"=>Dict(
+        "neomatrix" => (root,args,ctx,info)->(return Dict("nombre"=>"josue","edad"=>25) )
+        ,"persona" => (root,args,ctx,info)->(return Dict("nombre"=>"Diana","edad"=>14))
+    )
+    ,"Persona"=>Dict(
+      "edad" => (root,args,ctx,info)->(return root["edad"])
+    )
+)
+
+
+ my_schema = Schema(schema, resolvers)
+
+
+query= """
+{
+  neomatrix{
+  	nombre
+  }
+}
+"""
+
+
+@test my_schema.execute(query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"josue\"}}}"

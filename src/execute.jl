@@ -130,20 +130,17 @@ struct ExecuteField
 			#rules.leave(x)
 		end
 
-	    function visitante(ast::Node)
-	    	path="[\"data\"]"
-			mivisitante(ast,path,"Query",nothing)
+	    function visitante(ast::Node, raiz::String)
+			mivisitante(ast,"[\"data\"]",raiz,nothing)
 	    end
       new(visitante,datos)
     end
 end
 
 
-
-
 function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers,context,coercedVariableValues=nothing, initialValue=nothing)
     resultexec = ExecuteField(symbol_table,resolvers,context)
-    resultexec.visitante(operation)
+    resultexec.visitante(operation,"Query")
     return resultexec.datos
 end
 
