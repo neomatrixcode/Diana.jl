@@ -140,7 +140,7 @@ end
 
 function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers,context,coercedVariableValues=nothing, initialValue=nothing)
     resultexec = ExecuteField(symbol_table,resolvers,context)
-    resultexec.visitante(operation,"Query")
+    resultexec.visitante(operation,symbol_table["query"])
     return resultexec.datos
 end
 

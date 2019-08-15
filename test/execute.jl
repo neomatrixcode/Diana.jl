@@ -105,12 +105,12 @@ end
 
 
 schema = Dict(
-  "Query"   => Dict(
+"query" => "Query"
+,"Query"   => Dict(
     "persona"=>Dict("tipo"=>"Persona")
      ,"neomatrix"=>Dict("tipo"=>"Persona")
    )
-,
-  "Persona" => Dict(
+,"Persona" => Dict(
     "edad"=>Dict("tipo"=>"Int")
     ,"nombre"=>Dict("tipo"=>"String")
   )
