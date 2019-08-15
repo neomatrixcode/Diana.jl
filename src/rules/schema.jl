@@ -13,7 +13,7 @@ struct getfield_types <:Rule
                  push!(tipos, nombre => Dict())
 			end
 			if (node.kind == "FieldDefinition")
-                 push!(tipos[nombre], node.name.value => Dict("tipo" =>node.tipe.name.value ) )
+                 push!(tipos[nombre], node.name.value => Dict("tipo" =>node.tipe.name.value) )
 			end
 			if (node.kind == "OperationTypeDefinition")
 				push!(simbolos, node.operation => Dict("tipo" =>node.tipe.name.value ))

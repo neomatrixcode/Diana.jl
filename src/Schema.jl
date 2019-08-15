@@ -5,11 +5,12 @@ mutable struct schema
   symbol_table::Dict
 end
 
-function Schema(_schema::String, resolvers)
+function Schema(_schema::String, resolvers, context=nothing)
 symbol_extract =getfield_types()
 vi= Visitante(Parse(_schema))
 vi.visitante(symbol_extract)
 symbol_table = Dict("symbols"=>symbol_extract.simbolos,"types"=>symbol_extract.tipos)
+#verificar los resolvers
 
     function execute(query::String, operationName=nothing, coercedVariableValues=nothing, initialValue=nothing)
       #si la solicitud no esta validada, validarla
@@ -27,7 +28,7 @@ symbol_table = Dict("symbols"=>symbol_extract.simbolos,"types"=>symbol_extract.t
       type_operation = "query"
 
       if type_operation =="query"
-        return JSON.json(ExecuteQuery(operation, symbol_table["types"],resolvers, coercedVariableValues, initialValue))
+        return JSON.json(ExecuteQuery(operation, symbol_table["types"],resolvers,context, coercedVariableValues, initialValue))
       elseif type_operation == "mutation"
         return JSON.json(ExecuteMutation(operation, symbol_table, coercedVariableValues, initialValue))
       elseif type_operation == "subscribe"
