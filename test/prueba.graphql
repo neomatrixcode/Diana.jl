@@ -1,0 +1,13 @@
+type Persona {
+  nombre: String
+  edad: Int
+  altura: Float
+  spooilers:Boolean
+}
+ type Query{
+  persona: Persona
+  neomatrix: Persona
+}
+ schema {
+  query: Query
+}

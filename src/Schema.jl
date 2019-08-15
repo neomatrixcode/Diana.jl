@@ -13,6 +13,12 @@ function GetOperation(document::Node,operationName::String)
 end
 
 function Schema(_schema::String, resolvers, context=nothing)
+if '.' in _schema
+  _schema = open(_schema) do file
+      read(file, String)
+    end
+end
+
 symbol_extract =getfield_types()
 vi= Visitante(Parse(_schema))
 vi.visitante(symbol_extract)

@@ -141,3 +141,39 @@ query= """
 
 
 @test my_schema.execute(query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"josue\"}}}"
+
+
+
+
+
+
+
+#root : resultado del tipo anterior / principal
+#args : argumentos proporcionados al campo
+#contexto : unobjeto mutable que se proporciona a todos los resolvers (pasar datos entre resolvers)
+#informacion : Información específica del campo relevante para la consulta (rara vez se usa)
+
+ resolvers=Dict(
+    "Query"=>Dict(
+        "neomatrix" => (root,args,ctx,info)->(return Dict("nombre"=>"josue","edad"=>25,"altura"=>10.5,"spooilers"=>false) )
+        ,"persona" => (root,args,ctx,info)->(return Dict("nombre"=>"Diana","edad"=>14,"altura"=>11.8,"spooilers"=>true))
+    )
+    ,"Persona"=>Dict(
+      "edad" => (root,args,ctx,info)->(return root["edad"])
+    )
+)
+
+
+ my_schema = Schema("prueba.graphql", resolvers)
+
+
+query= """
+query{
+  neomatrix{
+    nombre
+  }
+}
+"""
+
+
+@test my_schema.execute(query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"josue\"}}}"
