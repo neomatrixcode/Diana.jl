@@ -92,7 +92,7 @@ struct ExecuteField
             	    if (haskey(symbol_table[type_padre], nombre_nodo))
 			        	tipoactual= symbol_table[type_padre][nombre_nodo]["tipo"]
 			        else
-			        	throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"Field $(nombre_nodo) not exists.\"}]}"))
+			        	throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The $(nombre_nodo) field does not exists.\"}]}"))
 					end
 
                 args=Dict()
@@ -138,22 +138,22 @@ struct ExecuteField
 end
 
 
-function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers,context,coercedVariableValues=nothing, initialValue=nothing)
+function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers,context; coercedVariableValues=nothing, initialValue=nothing)
     resultexec = ExecuteField(symbol_table,resolvers,context)
     resultexec.visitante(operation,symbol_table["query"])
     return resultexec.datos
 end
 
-function ExecuteMutation(operation::Node, symbol_table::Dict, coercedVariableValues=nothing, initialValue=nothing)
+function ExecuteMutation(operation::Node, symbol_table::Dict; coercedVariableValues=nothing, initialValue=nothing)
 
 end
 
-function Subscribe(operation::Node, symbol_table::Dict, coercedVariableValues=nothing, initialValue=nothing)
+#function Subscribe(operation::Node, symbol_table::Dict; coercedVariableValues=nothing, initialValue=nothing)
 
-end
+#end
 
 
 
-function ExecuteQueryParallel(operation::Node, symbol_table::Dict, resolvers, coercedVariableValues=nothing, initialValue=nothing)
+#function ExecuteQueryParallel(operation::Node, symbol_table::Dict, resolvers; coercedVariableValues=nothing, initialValue=nothing)
 
-end
+#end

@@ -12,7 +12,7 @@ function GetOperation(document::Node,operationName::String)
   return operation
 end
 
-function Schema(_schema::String, resolvers, context=nothing)
+function Schema(_schema::String, resolvers; context=nothing)
 if '.' in _schema
   _schema = open(_schema) do file
       read(file, String)
@@ -24,17 +24,17 @@ vi= Visitante(Parse(_schema))
 vi.visitante(symbol_extract)
 symbol_table = symbol_extract.simbolos
 
-return Schema(symbol_table, resolvers, context)
+return Schema(symbol_table, resolvers, context=context)
 
 end
 
 
 
-function Schema(_schema::Dict, resolvers, context=nothing)
+function Schema(_schema::Dict, resolvers; context=nothing)
 
 symbol_table = _schema
 
-    function execute(query::String, operationName=nothing, coercedVariableValues=nothing, initialValue=nothing)
+    function execute(query::String; operationName=nothing, coercedVariableValues=nothing, initialValue=nothing)
       #si la solicitud no esta validada, validarla
       document = Parse(query)
 
@@ -54,11 +54,11 @@ symbol_table = _schema
           type_operation= document.definitions[1].operation
       else
           data = GetOperation(document,operationName)
-          if data.extracted_operation == nothing
+          if !haskey(data.found, "extracted_operation")
               throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"$(operationName) operation not found.\"}]}"))
           else
-            operation = data.extracted_operation
-            type_operation = data.operation_type
+            operation = data.found["extracted_operation"]
+            type_operation = data.found["operation_type"]
           end
       end
 
@@ -66,7 +66,7 @@ symbol_table = _schema
 
 
       if type_operation =="query"
-        return JSON.json(ExecuteQuery(operation, symbol_table,resolvers,context, coercedVariableValues, initialValue))
+        return JSON.json(ExecuteQuery(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
       elseif type_operation == "mutation"
         return JSON.json(ExecuteMutation(operation, symbol_table, coercedVariableValues, initialValue))
       elseif type_operation == "subscribe"

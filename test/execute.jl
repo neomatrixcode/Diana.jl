@@ -98,7 +98,7 @@ try
 my_schema.execute(query)
 catch e
   if e isa Diana.GraphQLError
-    @test string(e.msg) == "{\"data\": null,\"errors\": [{\"message\": \"Field jajaaj not exists.\"}]}"
+    @test string(e.msg) ==  "{\"data\": null,\"errors\": [{\"message\": \"The jajaaj field does not exists.\"}]}"
   end
 end
 
@@ -177,3 +177,42 @@ query{
 
 
 @test my_schema.execute(query) == "{\"data\":{\"neomatrix\":{\"nombre\":\"josue\"}}}"
+
+
+
+
+query= """
+query prueba1{
+  neomatrix{
+    nombre
+  }
+}
+
+query prueba2{
+  neomatrix{
+    edad
+  }
+}
+"""
+
+
+@test my_schema.execute(query, operationName="prueba1") == "{\"data\":{\"neomatrix\":{\"nombre\":\"josue\"}}}"
+
+
+
+query= """
+query prueba1{
+  neomatrix{
+    nombre
+  }
+}
+
+query prueba2{
+  neomatrix{
+    edad
+  }
+}
+"""
+
+
+@test my_schema.execute(query, operationName="prueba2") == "{\"data\":{\"neomatrix\":{\"edad\":25}}}"

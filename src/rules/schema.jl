@@ -28,26 +28,22 @@ end
 struct extract_operation <:Rule
   enter::Function
   leave::Function
-  extracted_operation::Union{Nothing,Node}
-  operation_type::String
+  found:: Dict
   function extract_operation(operationName::String)
-    extracted_operation= nothing
-    operation_type=""
+    active= true
+    found = Dict()
     function enter(node::Node)
-      if (node.kind == "OperationDefinition")
-
+      if (active==true) && (node.kind == "OperationDefinition")
         if node.name != nothing
-           if node.name.value == operationName
-               operation_type = node.operation
-               extracted_operation = node
-               quit()
+           if (node.name.value == operationName)
+              push!(found, "operation_type" => node.operation, "extracted_operation" => node)
+              active=false
            end
         end
-
       end
     end
     function leave(node::Node)
     end
-    new(enter,leave,operation_type,extracted_operation)
+    new(enter,leave,found)
   end
 end
