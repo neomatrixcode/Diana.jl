@@ -61,7 +61,7 @@ struct ExecuteField
     visitante
     datos::Dict
 
-    function ExecuteField(symbol_table, resolvers,ctx)
+    function ExecuteField(symbol_table::Dict, resolvers::Dict,ctx; Variables=nothing)
     	global datos=Dict("data"=>Dict())
 
 
@@ -110,10 +110,18 @@ struct ExecuteField
 			        			   	if typeof(data.value[2])<:Diana.Object_
 			        			   		push!(args, data.name.value => Dict() )
 			        			   		for i in data.value[2].fields
-			        			   		    push!(args[data.name.value], i.name.value => i.value[2].value )
+			        			   		    if typeof(i.value[2])<:Diana.Variable
+			        			   		    	push!(args[data.name.value], i.name.value => Variables[i.value[2].name.value] )
+			        			   			else
+			        			   		    	push!(args[data.name.value], i.name.value => i.value[2].value )
+			        			   			end
 			        			   		end
 			        			   	else
-			        			   		push!(args, data.name.value => data.value[2].value )
+			        			   			if typeof(data.value[2])<:Diana.Variable
+			        			   		    	push!(args, data.name.value => Variables[data.value[2].name.value] )
+			        			   			else
+			        			   		    	push!(args, data.name.value => data.value[2].value )
+			        			   			end
 			        			   	end
 			        			   end
 			        		    end
@@ -150,24 +158,24 @@ struct ExecuteField
 end
 
 
-function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers,context; coercedVariableValues=nothing, initialValue=nothing)
-    resultexec = ExecuteField(symbol_table,resolvers,context)
+function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers::Dict,context; Variables=nothing, initialValue=nothing)
+    resultexec = ExecuteField(symbol_table,resolvers,context,Variables=Variables)
     resultexec.visitante(operation,symbol_table["query"])
     return resultexec.datos
 end
 
-function ExecuteMutation(operation::Node, symbol_table::Dict, resolvers,context; coercedVariableValues=nothing, initialValue=nothing)
-	resultexec = ExecuteField(symbol_table,resolvers,context)
+function ExecuteMutation(operation::Node, symbol_table::Dict, resolvers::Dict,context; Variables=nothing, initialValue=nothing)
+	resultexec = ExecuteField(symbol_table,resolvers,context,Variables=Variables)
     resultexec.visitante(operation,symbol_table["mutation"])
     return resultexec.datos
 end
 
-#function Subscribe(operation::Node, symbol_table::Dict; coercedVariableValues=nothing, initialValue=nothing)
+#function Subscribe(operation::Node, symbol_table::Dict; Variables=nothing, initialValue=nothing)
 
 #end
 
 
 
-#function ExecuteQueryParallel(operation::Node, symbol_table::Dict, resolvers; coercedVariableValues=nothing, initialValue=nothing)
+#function ExecuteQueryParallel(operation::Node, symbol_table::Dict, resolvers; Variables=nothing, initialValue=nothing)
 
 #end

@@ -64,22 +64,22 @@ struct FragmentDefinition <:Node
 end
 struct IntValue <:Node
 	kind::String
-	value
+	value::Int64
 	IntValue(v)=new("IntValue",v)
 end
 struct FloatValue <:Node
 	kind::String
-	value
+	value::Float64
 	FloatValue(v)=new("FloatValue",v)
 end
 struct StringValue <:Node
 	kind::String
-	value
+	value::String
 	StringValue(v)=new("StringValue",v)
 end
 struct BooleanValue <:Node
 	kind::String
-	value
+	value::Bool
 	BooleanValue(v)=new("BooleanValue",v)
 end
 struct NullValue <:Node

@@ -34,7 +34,7 @@ function Schema(_schema::Dict, resolvers; context=nothing)
 
 symbol_table = _schema
 
-    function execute(query::String; operationName=nothing, coercedVariableValues=nothing, initialValue=nothing)
+    function execute(query::String; operationName=nothing, Variables=nothing, initialValue=nothing)
       #si la solicitud no esta validada, validarla
       document = Parse(query)
 
@@ -66,11 +66,11 @@ symbol_table = _schema
 
 
       if type_operation =="query"
-        return JSON.json(ExecuteQuery(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
+        return JSON.json(ExecuteQuery(operation, symbol_table,resolvers, context , Variables=Variables, initialValue=nothing))
       elseif type_operation == "mutation"
-        return JSON.json(ExecuteMutation(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
+        return JSON.json(ExecuteMutation(operation, symbol_table,resolvers, context , Variables=Variables, initialValue=nothing))
       #elseif type_operation == "subscribe"
-       # return JSON.json(Subscribe(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
+       # return JSON.json(Subscribe(operation, symbol_table,resolvers, context , Variables=nothing, initialValue=nothing))
       end
 
       return JSON.json("{}")#

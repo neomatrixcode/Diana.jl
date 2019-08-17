@@ -345,7 +345,17 @@ mutation {
 @test my_schema.execute(query) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"
 
 
+query= """
 
+mutation mutationwithvariarbles(\$miedad: Int){
+  addPerson(nombre: "bob", edad: \$miedad){
+    nombre,
+    edad
+  }
+}
+"""
+
+@test my_schema.execute(query,Variables=Dict("miedad"=>20)) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"
 
 
 schema = Dict(
@@ -508,3 +518,77 @@ mutation {
 """
 
 @test my_schema.execute(query) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"
+
+ schema= """
+type Persona {
+  nombre: String
+  edad: Int
+}
+ type Query{
+  persona: Persona
+  neomatrix: Persona
+}
+type DataInputType{
+  nombre: String
+  edad: Int
+}
+type Mutation{
+  addPerson(data:DataInputType): Persona
+}
+ schema {
+  query: Query
+  mutation:Mutation
+}
+ """
+
+
+ resolvers=Dict(
+    "Query"=>Dict(
+        "neomatrix" => (root,args,ctx,info)->(
+          return Dict("nombre"=>"josue","edad"=>25)
+          )
+        ,"persona" => (root,args,ctx,info)->(return Dict("nombre"=>"Diana","edad"=>14))
+    )
+    ,"Persona"=>Dict(
+      "edad" => (root,args,ctx,info)->(return root["edad"])
+    )
+    ,"Mutation"=>Dict(
+        "addPerson" => (root,args,ctx,info)->begin
+
+          println(ctx["data"])
+          return Dict("nombre"=>args["data"]["nombre"],"edad"=>args["data"]["edad"])
+          end
+    )
+)
+
+
+ my_schema = Schema(schema, resolvers, context=Dict("data"=>"datacontext"))
+
+
+
+ query= """
+
+mutation {
+  addPerson(data: {nombre: "bob", edad: 20}){
+    nombre,
+    edad
+  }
+}
+"""
+
+@test my_schema.execute(query) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"
+
+
+
+
+ query= """
+
+mutation mutationwithvariarbles(\$miedad: Int){
+  addPerson(data: {nombre: "bob", edad: \$miedad}){
+    nombre,
+    edad
+  }
+}
+"""
+
+@test my_schema.execute(query,Variables=Dict("miedad"=>20)) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"
