@@ -105,7 +105,7 @@ end
 
 Returns a `Token` of kind `kind` with contents `str` and starts a new `Token`.
 """
-function emit(l::Lexing, kind::Kind, str::String, err::TokenError = Tokens.NO_ERR)
+function emit(l::Lexing, kind::Kind, str::Union{String,Int64,Float64}, err::TokenError = Tokens.NO_ERR)
    tok= Token(kind, (l.token_start_row, l.token_start_col),
                 (l.current_row, l.current_col),
                 startpos(l), position(l) - 1,
@@ -220,7 +220,7 @@ end
 function lex_quote(l::Lexing, c::Char)
     multiline= false
     s= ""
-    s*=c
+    #s*=c
     c= readchar(l)
     l.current_col += 1
 
@@ -257,7 +257,7 @@ function lex_quote(l::Lexing, c::Char)
             end
         end
     end
-    s*="\""
+    #s*="\""
     if (multiline==true)
         c= readchar(l)
         if c=='"'
@@ -359,7 +359,7 @@ function lex_digit(l::Lexing, c::Char)
     seek(l, prevpos(l))
 
     if isfloat==true
-        return emit(l, Tokens.FLOAT,s)
+        return emit(l, Tokens.FLOAT,parse(Float64, s))
     end
-    return emit(l, Tokens.INT, s)
+    return emit(l, Tokens.INT, parse(Int64, s))
 end

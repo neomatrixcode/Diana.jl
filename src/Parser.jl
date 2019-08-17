@@ -499,7 +499,7 @@ end
 """
 function parseName(lexer::Lexer)
   token = expect(lexer, Tokens.NAME)
-  return Name(token.val#=,loc(lexer, token)=#)
+  return Name(token.val)
 end
 
 """
@@ -686,30 +686,30 @@ function parseValueLiteral(lexer::Lexer, isConst::Bool)
 
     if(token.kind==Tokens.INT)
       lexer.advance()
-      return IntValue(token.val#=,loc(lexer, token)=#)
+      return IntValue(token.val)
     end
 
     if(token.kind==Tokens.FLOAT)
       lexer.advance()
-      return FloatValue(token.val#=,loc(lexer, token)=#)
+      return FloatValue(token.val)
     end
 
     if(token.kind==Tokens.STRING)
       lexer.advance()
-      return StringValue(token.val#=,loc(lexer, token)=#)
+      return StringValue(token.val)
     end
 
     if(token.kind==Tokens.NAME)
       if((token.val == "true" )| (token.val == "false"))
         lexer.advance()
-        return BooleanValue(token.val == "true"#=,loc(lexer, token)=#)
+        return BooleanValue(token.val == "true")
       elseif(token.val == "null")
         lexer.advance()
         return NullValue(#=loc(lexer, token)=#)
       end
 
       lexer.advance()
-      return EnumValue(token.val#=,loc(lexer, token)=#)
+      return EnumValue(token.val)
     end
 
     if(token.kind==Tokens.DOLLAR)

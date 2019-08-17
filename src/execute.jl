@@ -105,6 +105,18 @@ struct ExecuteField
 
 			        	if (haskey(resolvers, type_padre)) && (haskey(resolvers[type_padre], nombre_nodo))
 			        			# args = obtiene los argumentos de la consulta
+			        			if length(node.arguments)>0
+			        			   for data in node.arguments
+			        			   	if typeof(data.value[2])<:Diana.Object_
+			        			   		push!(args, data.name.value => Dict() )
+			        			   		for i in data.value[2].fields
+			        			   		    push!(args[data.name.value], i.name.value => i.value[2].value )
+			        			   		end
+			        			   	else
+			        			   		push!(args, data.name.value => data.value[2].value )
+			        			   	end
+			        			   end
+			        		    end
                                 root= resolvers[type_padre][nombre_nodo](nothing,args,ctx,Dict("fieldName"=>nombre_nodo,"parentType"=>type_padre,"path"=>path,"returnType"=> tipoactual))
 			  	        end
 
@@ -144,8 +156,10 @@ function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers,context; co
     return resultexec.datos
 end
 
-function ExecuteMutation(operation::Node, symbol_table::Dict; coercedVariableValues=nothing, initialValue=nothing)
-
+function ExecuteMutation(operation::Node, symbol_table::Dict, resolvers,context; coercedVariableValues=nothing, initialValue=nothing)
+	resultexec = ExecuteField(symbol_table,resolvers,context)
+    resultexec.visitante(operation,symbol_table["mutation"])
+    return resultexec.datos
 end
 
 #function Subscribe(operation::Node, symbol_table::Dict; coercedVariableValues=nothing, initialValue=nothing)

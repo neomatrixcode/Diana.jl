@@ -21,7 +21,7 @@ struct Token
     endpos::Tuple{Int, Int}
     startbyte::Int # The byte where the token start in the buffer
     endbyte::Int # The byte where the token ended in the buffer
-    val::String #Compat.String # The actual string of the token
+    val::Union{String,Int64,Float64} #Compat.String # The actual string of the token
     token_error::TokenError
 end
 

@@ -11,7 +11,17 @@ struct getfield_types <:Rule
                  push!(simbolos, nombre => Dict())
       end
       if (node.kind == "FieldDefinition")
-                 push!(simbolos[nombre], node.name.value => Dict("tipo" =>node.tipe.name.value) )
+        nombrecampo= node.name.value
+        push!(simbolos[nombre], nombrecampo => Dict() )
+        push!(simbolos[nombre][nombrecampo], "tipo" =>node.tipe.name.value )
+
+        if length(node.arguments)>0
+          push!(simbolos[nombre][nombrecampo], "args" => Dict() )
+
+                 for data in node.arguments
+                     push!(simbolos[nombre][nombrecampo]["args"], data.name.value => data.tipe.name.value )
+                 end
+        end
       end
       if (node.kind == "OperationTypeDefinition")
         push!(simbolos, node.operation => node.tipe.name.value )

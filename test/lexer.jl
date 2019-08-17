@@ -25,7 +25,7 @@ while next !== nothing
    s*= " $(i.kind) $(i.val) ($(i.startpos) , $(i.endpos) ) \n"
    next = iterate(a, state)
 end
-@test s == " NAME query ((2, 1) , (2, 5) ) \n LBRACE { ((2, 7) , (2, 7) ) \n NAME Region ((3, 3) , (3, 8) ) \n LPAREN ( ((3, 9) , (3, 9) ) \n NAME name ((3, 10) , (3, 13) ) \n COLON : ((3, 14) , (3, 14) ) \n STRING \"The North\" ((3, 15) , (3, 25) ) \n RPAREN ) ((3, 26) , (3, 26) ) \n LBRACE { ((3, 28) , (3, 28) ) \n NAME NobleHouse ((4, 7) , (4, 16) ) \n LPAREN ( ((4, 17) , (4, 17) ) \n NAME name ((4, 18) , (4, 21) ) \n COLON : ((4, 22) , (4, 22) ) \n STRING \"Stark\" ((4, 23) , (4, 29) ) \n RPAREN ) ((4, 30) , (4, 30) ) \n LBRACE { ((4, 31) , (4, 31) ) \n NAME castle ((5, 9) , (5, 14) ) \n LBRACE { ((5, 15) , (5, 15) ) \n NAME name ((6, 11) , (6, 14) ) \n RBRACE } ((7, 9) , (7, 9) ) \n NAME members ((8, 9) , (8, 15) ) \n LBRACE { ((8, 16) , (8, 16) ) \n NAME name ((9, 11) , (9, 14) ) \n NAME alias ((10, 11) , (10, 15) ) \n RBRACE } ((11, 7) , (11, 7) ) \n RBRACE } ((12, 5) , (12, 5) ) \n RBRACE } ((13, 3) , (13, 3) ) \n RBRACE } ((14, 1) , (14, 1) ) \n ENDMARKER eof ((15, 1) , (15, 1) ) \n"
+@test s == " NAME query ((2, 1) , (2, 5) ) \n LBRACE { ((2, 7) , (2, 7) ) \n NAME Region ((3, 3) , (3, 8) ) \n LPAREN ( ((3, 9) , (3, 9) ) \n NAME name ((3, 10) , (3, 13) ) \n COLON : ((3, 14) , (3, 14) ) \n STRING The North ((3, 15) , (3, 25) ) \n RPAREN ) ((3, 26) , (3, 26) ) \n LBRACE { ((3, 28) , (3, 28) ) \n NAME NobleHouse ((4, 7) , (4, 16) ) \n LPAREN ( ((4, 17) , (4, 17) ) \n NAME name ((4, 18) , (4, 21) ) \n COLON : ((4, 22) , (4, 22) ) \n STRING Stark ((4, 23) , (4, 29) ) \n RPAREN ) ((4, 30) , (4, 30) ) \n LBRACE { ((4, 31) , (4, 31) ) \n NAME castle ((5, 9) , (5, 14) ) \n LBRACE { ((5, 15) , (5, 15) ) \n NAME name ((6, 11) , (6, 14) ) \n RBRACE } ((7, 9) , (7, 9) ) \n NAME members ((8, 9) , (8, 15) ) \n LBRACE { ((8, 16) , (8, 16) ) \n NAME name ((9, 11) , (9, 14) ) \n NAME alias ((10, 11) , (10, 15) ) \n RBRACE } ((11, 7) , (11, 7) ) \n RBRACE } ((12, 5) , (12, 5) ) \n RBRACE } ((13, 3) , (13, 3) ) \n RBRACE } ((14, 1) , (14, 1) ) \n ENDMARKER eof ((15, 1) , (15, 1) ) \n"
 
 
 
@@ -82,7 +82,7 @@ while next !== nothing
     s*= " $(i.kind) $(i.val) ($(i.startpos) , $(i.endpos) ) \n"
    next = iterate(b, state)
 end
-@test s ==  " NAME mutation ((1, 1) , (1, 8) ) \n LBRACE { ((1, 10) , (1, 10) ) \n NAME sendEmail ((2, 3) , (2, 11) ) \n LPAREN ( ((2, 12) , (2, 12) ) \n NAME message ((2, 13) , (2, 19) ) \n COLON : ((2, 20) , (2, 20) ) \n STRING \"\n    Hello,\n      World!\n\n    Yours,\n      GraphQL.\n  \" ((2, 22) , (8, 6) ) \n RPAREN ) ((8, 7) , (8, 7) ) \n RBRACE } ((9, 1) , (9, 1) ) \n ENDMARKER eof ((10, 1) , (10, 1) ) \n"
+@test s ==  " NAME mutation ((1, 1) , (1, 8) ) \n LBRACE { ((1, 10) , (1, 10) ) \n NAME sendEmail ((2, 3) , (2, 11) ) \n LPAREN ( ((2, 12) , (2, 12) ) \n NAME message ((2, 13) , (2, 19) ) \n COLON : ((2, 20) , (2, 20) ) \n STRING \n    Hello,\n      World!\n\n    Yours,\n      GraphQL.\n   ((2, 22) , (8, 6) ) \n RPAREN ) ((8, 7) , (8, 7) ) \n RBRACE } ((9, 1) , (9, 1) ) \n ENDMARKER eof ((10, 1) , (10, 1) ) \n"
 
 b= Tokensgraphql(
 """
@@ -185,7 +185,7 @@ while next !== nothing
     s*= " $(i.kind) $(i.val) ($(i.startpos) , $(i.endpos) ) \n"
    next = iterate(b, state)
 end
-@test s ==" LBRACE { ((1, 1) , (1, 1) ) \n NAME user ((2, 3) , (2, 6) ) \n LPAREN ( ((2, 7) , (2, 7) ) \n NAME id ((2, 8) , (2, 9) ) \n COLON : ((2, 10) , (2, 10) ) \n FLOAT 4.0 ((2, 12) , (2, 14) ) \n RPAREN ) ((2, 15) , (2, 15) ) \n LBRACE { ((2, 17) , (2, 17) ) \n NAME id ((3, 5) , (3, 6) ) \n NAME name ((4, 5) , (4, 8) ) \n NAME profilePic ((5, 5) , (5, 14) ) \n LPAREN ( ((5, 15) , (5, 15) ) \n NAME width ((5, 16) , (5, 20) ) \n COLON : ((5, 21) , (5, 21) ) \n FLOAT 1e50 ((5, 23) , (5, 26) ) \n NAME height ((5, 29) , (5, 34) ) \n COLON : ((5, 35) , (5, 35) ) \n FLOAT -6.0221413e23 ((5, 37) , (5, 49) ) \n RPAREN ) ((5, 50) , (5, 50) ) \n RBRACE } ((6, 3) , (6, 3) ) \n RBRACE } ((7, 1) , (7, 1) ) \n ENDMARKER eof ((8, 1) , (8, 1) ) \n"
+@test s ==" LBRACE { ((1, 1) , (1, 1) ) \n NAME user ((2, 3) , (2, 6) ) \n LPAREN ( ((2, 7) , (2, 7) ) \n NAME id ((2, 8) , (2, 9) ) \n COLON : ((2, 10) , (2, 10) ) \n FLOAT 4.0 ((2, 12) , (2, 14) ) \n RPAREN ) ((2, 15) , (2, 15) ) \n LBRACE { ((2, 17) , (2, 17) ) \n NAME id ((3, 5) , (3, 6) ) \n NAME name ((4, 5) , (4, 8) ) \n NAME profilePic ((5, 5) , (5, 14) ) \n LPAREN ( ((5, 15) , (5, 15) ) \n NAME width ((5, 16) , (5, 20) ) \n COLON : ((5, 21) , (5, 21) ) \n FLOAT 1.0e50 ((5, 23) , (5, 26) ) \n NAME height ((5, 29) , (5, 34) ) \n COLON : ((5, 35) , (5, 35) ) \n FLOAT -6.0221413e23 ((5, 37) , (5, 49) ) \n RPAREN ) ((5, 50) , (5, 50) ) \n RBRACE } ((6, 3) , (6, 3) ) \n RBRACE } ((7, 1) , (7, 1) ) \n ENDMARKER eof ((8, 1) , (8, 1) ) \n"
 
 
 try

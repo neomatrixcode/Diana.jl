@@ -68,9 +68,9 @@ symbol_table = _schema
       if type_operation =="query"
         return JSON.json(ExecuteQuery(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
       elseif type_operation == "mutation"
-        return JSON.json(ExecuteMutation(operation, symbol_table, coercedVariableValues, initialValue))
-      elseif type_operation == "subscribe"
-        return JSON.json(Subscribe(operation, symbol_table, coercedVariableValues, initialValue))
+        return JSON.json(ExecuteMutation(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
+      #elseif type_operation == "subscribe"
+       # return JSON.json(Subscribe(operation, symbol_table,resolvers, context , coercedVariableValues=nothing, initialValue=nothing))
       end
 
       return JSON.json("{}")#
