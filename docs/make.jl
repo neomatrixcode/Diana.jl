@@ -8,5 +8,5 @@ deploydocs(
 	repo = "github.com/codeneomatrix/Diana.jl.git",
 	devbranch = "master",
     devurl = "dev",
-    versions = ["stable" => "v^", "v#.#", devurl => devurl]
+    versions = ["stable" => "v^", "v#.#", "devurl" => devurl]
     )
