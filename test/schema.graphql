@@ -1,0 +1,52 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+}
+
+type RootQueryType {
+  currentUser: CurrentUser
+  billing: Billing
+}
+
+type RootMutationType {
+  registerUser(email: String!, invitationToken: String, password: String!): CurrentUser
+  registerCompany(name: String!): Company
+  resetPassword(password: String!, resetPasswordToken: String!): CurrentUser
+  login(email: String!, password: String!): CurrentUser
+  logout: CurrentUser
+  updateBilling(input: UpdateBillingInput!): Billing
+}
+
+type CurrentUser {
+  id: ID
+  authToken: String
+  firstName: String
+  lastName: String
+  email: String
+  mobile: String
+  isOwner: Boolean
+  company: Company
+}
+
+type Company {
+  id: ID
+  name: String
+}
+
+type Billing {
+  trialDaysLeft: Int
+  plan: BillingPlan
+  card: Card
+  nextPaymentDue: String
+}
+
+enum BillingPlan {
+  FREE
+  SOLO
+  TEAM
+}
+
+type Card {
+  lastFourDigits: String
+  type: String
+}

@@ -1,13 +1,3 @@
-query = """
-       {
-         neomatrix{
-             nombre
-                 linkedin
-                   }
-                   }
-               """
-r = Queryclient(query,true)
-@test r == "ok"
 
 query = """
 {

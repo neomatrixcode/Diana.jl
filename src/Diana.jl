@@ -1,4 +1,11 @@
 module Diana
+abstract type Rule end
+
+struct GraphQLError <:Exception
+    msg::String
+end
+
+tabla_simbolos = Dict()
 
 include("client.jl")
 include("token.jl")
@@ -8,8 +15,6 @@ include("Validate.jl")
 include("Schema.jl")
 include("execute.jl")
 
-import .Lexers: Tokenize,Tokensgraphql
-
-export Queryclient, GraphQLClient,Tokensgraphql,Tokenize,Parse,Schema,Validatequery,Schema
+export Queryclient, GraphQLClient,Tokensgraphql,Parse,Schema,Validatequery
 
 end # module

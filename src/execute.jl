@@ -1,94 +1,181 @@
-struct resol
-	exec_root
-	exec_foil
-	argstodict
-	function resol(resolvers,tipos)
-		n_campos= tipos[1]
-		tipos   = tipos[2]
-		ctx = Dict()
-		args = Dict()
-		obj= ""
-        inf= ""
-		executed =[]
-		function exec_root(nombrecampo,raiz,infor)# neomatrix, query
-			inf= infor
-			nombretipo= tipos[findfirst(isequal(nombrecampo), n_campos)]
-			tiporaiz = tipos[findfirst(isequal(raiz), n_campos)]
-			ctx[nombretipo] = resolvers[tiporaiz*"_"*nombrecampo](obj,args,ctx,inf)
+#=
+struct ExecuteFieldParallel
+	#enter::Function
+	#leave::Function
+	result::Dict
+
+	function ExecuteFieldParallel(resolvers)
+      result=Dict()
+		function strands_execution(strand)
+			#=
+
+			 query{
+	      event{
+	        attends{
+	          name
+	        }
+	      }
+        }
+
+			la hebra seria:  query - event - attends - name
+			se ejecuta el resolve   resolve["event"]["attends"] -> se alamacena el resultado en una cache para evitar
+			que se ejecuten muchas veces la misma consulta
+			si ya tienes los datos solo pasalos
+
+			y se pasa a la hoja "name" en lo campo root para la ejecucion de la hoja
+			se evita la ejecucion del resolve  resolve["query"]["event"]
+
+            soluciona el Multi-layered data fetching
+
+			aun pienso en como resolver el n+1 con este mismo enfoque
+
+
+	    query{
+	      event{ -> []
+	      	name
+	        attends{ -> []
+	          name
+	        }
+	      }
+        }
+
+			tal vez :
+
+			query - event - name =>  toda la tabla event
+
+			 query - event - attends - name => toda la tabla attends
+
+			 y despues que se fusionen los datos, pero quien sabe
+			=#
 		end
 
-		function exec_foil(nombrecampo,raiz)# nombre, neomatrix
-			tiporaiz= tipos[findfirst(isequal(raiz), n_campos)]
-			return resolvers[tiporaiz*"_"*nombrecampo](obj,args,ctx[tiporaiz],inf)
-		end
+		new(result)
 
-		function argstodict(arguments::Array)
-			for i in arguments
-				dato= i.value[2].value
-				if dato[1]=='\"'
-					args[i.name.value] = dato[2:end-1]
-				else
-					args[i.name.value] = dato
-			    end
-	       	end
-		end
-		new(exec_root,exec_foil,argstodict)
-	end
+    end
+
+
 end
+=#
+
+struct ExecuteField
+    visitante
+    datos::Dict
+
+    function ExecuteField(symbol_table::Dict, resolvers::Dict,ctx; Variables=nothing)
+    	global datos=Dict("data"=>Dict())
 
 
-struct executor
-	enter
-	leave
-	salida
-	function executor(exec_resol,deep)
-		nivel=1
-		salida=Dict()
-		salida["datos"]=Dict()
-		ex= :($salida["datos"])
-		expresiones = Array{Expr}(undef, deep)
-		expresiones[1]= ex
-		nombres=Array{String}(undef, deep)
-		nombres[1]="query"
-		function enter(node)
-			if (node.kind=="Field")
-
-				if (typeof(node.arguments)<:Array)
-					exec_resol.argstodict(node.arguments)
+    	function resolvefieldValue(nombrecampo::String,args::Dict,type_padre::String,root::Union{Nothing,Dict},path::String,tipoactual::String)
+				if (haskey(resolvers, type_padre)) && (haskey(resolvers[type_padre], nombrecampo))
+						return resolvers[type_padre][nombrecampo](root,args,ctx,Dict("fieldName"=>nombrecampo,"parentType"=>type_padre,"path"=>path,"dato=Type"=> tipoactual))
+				elseif (typeof(root)<:Dict) # si root es un diccionario
+			        	return root[nombrecampo]
+			    else
+					return "null"
 				end
-				if (typeof(node.selectionSet)<:Node)
-					nivel = nivel+1
-					ncampo= node.name.value
-					exp = expresiones[nivel-1]
-					exp= :(($exp)[$(ncampo)])
-					expresiones[nivel]= exp
-					nombres[nivel] = ncampo
-					eval(:(($exp)=Dict()))
-					exec_resol.exec_root(ncampo,nombres[nivel-1],node)
-				else
-					exp = expresiones[nivel]
-					campo = node.name.value
-					exp= :(($exp)[$(campo)])
-					resolve = exec_resol.exec_foil(campo,nombres[nivel])
-					eval(:(($exp)=$(resolve)))
-				end
+		end
+
+    	function mivisitante(x::Array{Node,1},path::String,type_padre::String,root::Union{Nothing,Dict})
+    		for c in x
+		     mivisitante(c,path,type_padre,root)
 			end
 		end
-		function leave(node)
-			if (node.kind=="Field")
-				if (typeof(node.selectionSet)<:Node)
-					nivel = nivel-1
+
+		function mivisitante(node::Node,path::String,type_padre::String,root::Union{Nothing,Dict})
+			t = typeof(node)
+
+            if (node.kind == "Field")
+
+            	nombre_nodo = node.name.value
+            	tipoactual= ""
+
+            	    if (haskey(symbol_table[type_padre], nombre_nodo))
+			        	tipoactual= symbol_table[type_padre][nombre_nodo]["tipo"]
+			        else
+			        	throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The $(nombre_nodo) field does not exists.\"}]}"))
+					end
+
+                args=Dict()
+			        			if length(node.arguments)>0
+			        			   for data in node.arguments
+			        			   	if typeof(data.value[2])<:Diana.Object_
+			        			   		push!(args, data.name.value => Dict() )
+			        			   		for i in data.value[2].fields
+			        			   		    if typeof(i.value[2])<:Diana.Variable
+			        			   		    	push!(args[data.name.value], i.name.value => Variables[i.value[2].name.value] )
+			        			   			else
+			        			   		    	push!(args[data.name.value], i.name.value => i.value[2].value )
+			        			   			end
+			        			   		end
+			        			   	else
+			        			   			if typeof(data.value[2])<:Diana.Variable
+			        			   		    	push!(args, data.name.value => Variables[data.value[2].name.value] )
+			        			   			else
+			        			   		    	push!(args, data.name.value => data.value[2].value )
+			        			   			end
+			        			   	end
+			        			   end
+			        		    end
+
+            		if ((tipoactual == "String") | (tipoactual == "ID"))
+            			eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => \"$(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual))\")"))
+            		elseif ( (tipoactual == "Float") | (tipoactual == "Int") | (tipoactual == "Boolean"))
+                             eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => $(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual)))"))
+			        else # el tipo lista [ ] apenas lo pondre
+
+			        	if (haskey(resolvers, type_padre)) && (haskey(resolvers[type_padre], nombre_nodo))
+
+                                root= resolvers[type_padre][nombre_nodo](nothing,args,ctx,Dict("fieldName"=>nombre_nodo,"parentType"=>type_padre,"path"=>path,"returnType"=> tipoactual))
+			  	        end
+
+						if !(nombre_nodo in collect(keys(eval(Meta.parse("datos$(path)")))))
+            				eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\"=>Dict())"))
+                        end
+
+            			path= path*"[\"$(nombre_nodo)\"]"
+			  	        type_padre= tipoactual
+
+	                end
+            end
+
+
+			for f in fieldnames(t)
+				subarbol= getfield(node, f)
+				if( (typeof(subarbol )<: Node) & !(isa(subarbol, Diana.Name) ) )
+					mivisitante(subarbol,path,type_padre,root)
+				elseif (typeof(subarbol) <: Array{Node,1})
+				    mivisitante(subarbol,path,type_padre,root)
 				end
 			end
-
+			#rules.leave(x)
 		end
-		new(enter,leave,salida)
-	end
+
+	    function visitante(ast::Node, raiz::String)
+			mivisitante(ast,"[\"data\"]",raiz,nothing)
+	    end
+      new(visitante,datos)
+    end
 end
 
-function ExecuteQuery(query, myresolvers, types_nb)
-	r = deepquery(query)
-	exec= executor(resol(myresolvers,types_nb),r)
-	visitante(query,exec)
-	return exec.salida
+
+function ExecuteQuery(operation::Node, symbol_table::Dict, resolvers::Dict,context; Variables=nothing, initialValue=nothing)
+    resultexec = ExecuteField(symbol_table,resolvers,context,Variables=Variables)
+    resultexec.visitante(operation,symbol_table["query"])
+    return resultexec.datos
 end
+
+function ExecuteMutation(operation::Node, symbol_table::Dict, resolvers::Dict,context; Variables=nothing, initialValue=nothing)
+	resultexec = ExecuteField(symbol_table,resolvers,context,Variables=Variables)
+    resultexec.visitante(operation,symbol_table["mutation"])
+    return resultexec.datos
+end
+
+#function Subscribe(operation::Node, symbol_table::Dict; Variables=nothing, initialValue=nothing)
+
+#end
+
+
+
+#function ExecuteQueryParallel(operation::Node, symbol_table::Dict, resolvers; Variables=nothing, initialValue=nothing)
+
+#end
