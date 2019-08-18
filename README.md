@@ -106,4 +106,4 @@ result = my_schema.execute(query)
 ## Documentation
 
 Documentation and links to additional resources are available at
-https://codeneomatrix.github.io/Diana.jl/stable
+https://codeneomatrix.github.io/Diana.jl/v0.2/
