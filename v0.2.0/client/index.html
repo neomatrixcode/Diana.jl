@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Client · Diana.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href><img class="logo" src="../assets/logo.png" alt="Diana.jl logo"/></a><h1>Diana.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Client</a><ul class="internal"><li><a class="toctext" href="#Simple-query-1">Simple query</a></li><li><a class="toctext" href="#Query-1">Query</a></li><li><a class="toctext" href="#Change-serverUrl-1">Change serverUrl</a></li><li><a class="toctext" href="#Change-headers-1">Change headers</a></li><li><a class="toctext" href="#Change-serverAuth-1">Change serverAuth</a></li><li><a class="toctext" href="#Query-get-1">Query get</a></li><li><a class="toctext" href="#Link-1">Link</a></li><li><a class="toctext" href="#Validating-query-1">Validating query</a></li></ul></li><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../server/">Server</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Client</a></li></ul><a class="edit-page" href="https://github.com/codeneomatrix/Diana.jl/blob/master/docs/src/client.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Client</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Client-1" href="#Client-1">Client</a></h1><p>Diana also provides a GraphQL client implementation.</p><h2><a class="nav-anchor" id="Simple-query-1" href="#Simple-query-1">Simple query</a></h2><pre><code class="language-julia">using Diana
+
+query = &quot;&quot;&quot;
+        {
+          neomatrix{
+            nombre
+            linkedin
+          }
+        }
+        &quot;&quot;&quot;
+
+r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,
+                query,
+                headers = Dict(&quot;header&quot; =&gt; &quot;value&quot;))
+r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-julia">{
+  &quot;data&quot;:{
+    &quot;neomatrix&quot;:{
+        &quot;nombre&quot;:&quot;Acevedo Maldonado Josue&quot;,
+        &quot;linkedin&quot;:&quot;https://www.linkedin.com/in/acevedo-maldonado-josue/&quot;
+    }
+  }
+}</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
+        query consulta {
+          neomatrix {
+            nombre
+            linkedin
+          }
+        }
+
+        query hola {
+          neomatrix {
+            nombre
+          }
+        }
+        &quot;&quot;&quot;
+r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,query,operationName=&quot;hola&quot;)
+r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-none">{&quot;data&quot;:{&quot;neomatrix&quot;:{&quot;nombre&quot;:&quot;Acevedo Maldonado Josue&quot;}}}</code></pre><h2><a class="nav-anchor" id="Query-1" href="#Query-1">Query</a></h2><pre><code class="language-julia">using Diana
+
+client = GraphQLClient(&quot;https://api.graph.cool/simple/v1/movies&quot;)
+client.serverAuth(&quot;Bearer my-jwt-token&quot;)
+client.headers(Dict(&quot;header&quot;=&gt;&quot;value&quot;))
+
+or
+
+client = GraphQLClient(&quot;https://api.graph.cool/simple/v1/movies&quot;,auth=&quot;Bearer my-jwt-token&quot;,headers=Dict(&quot;header&quot;=&gt;&quot;value&quot;))</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
+        {
+          Movie(title: &quot;Inception&quot;){
+            actors{
+              name
+            }
+          }
+        }
+        &quot;&quot;&quot;
+
+r = client.Query(query)
+r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-julia">{
+  &quot;data&quot;:{
+    &quot;Movie&quot;:{
+      &quot;actors&quot;:[
+        {
+          &quot;name&quot;:&quot;Leonardo DiCaprio&quot;
+        },
+        {
+          &quot;name&quot;:&quot;Ellen Page&quot;
+        },
+        {
+          &quot;name&quot;:&quot;Tom Hardy&quot;
+        },
+        {
+          &quot;name&quot;:&quot;Joseph Gordon-Levitt&quot;
+        },
+        {
+          &quot;name&quot;:&quot;Marion Cotillard&quot;
+        }
+      ]
+    }
+  }
+}</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
+        query getMovie(\$title: String!) {
+          Movie(title:\$title) {
+            releaseDate
+            actors {
+              name
+            }
+          }
+        }
+        &quot;&quot;&quot;
+r = client.Query(query, vars= Dict(&quot;title&quot; =&gt; &quot;Inception&quot;))
+
+println(r.Data)</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
+        query consulta {
+          Movie(title: &quot;Inception&quot;) {
+            actors{
+              name
+            }
+          }
+        }
+        query hola {
+          Movie(title: &quot;Inception&quot;) {
+            actors{
+              name
+            }
+          }
+        }
+        &quot;&quot;&quot;
+r = client.Query(query, operationName = &quot;consulta&quot;)
+r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-none">{&quot;data&quot;:{&quot;Movie&quot;:{&quot;actors&quot;:[{&quot;name&quot;:&quot;Leonardo DiCaprio&quot;},{&quot;name&quot;:&quot;Ellen Page&quot;},{&quot;name&quot;:&quot;Tom Hardy&quot;},{&quot;name&quot;:&quot;Joseph Gordon-Levitt&quot;},{&quot;name&quot;:&quot;Marion Cotillard&quot;}]}}}</code></pre><pre><code class="language-julia">using Diana
+github_endpoint = &quot;https://api.github.com/graphql&quot;
+github_user = # GitHub handle
+github_token = # GitHub personal token
+github_header = Dict(&quot;User-Agent&quot; =&gt; github_user)
+client = GraphQLClient(github_endpoint,
+                       auth = &quot;bearer $github_token&quot;,
+                       headers = github_header)
+query = &quot;&quot;&quot;
+        query A{
+          rateLimit {
+            cost
+            remaining
+            resetAt
+          }
+          repository(owner: &quot;JuliaLang&quot;, name: &quot;Julia&quot;) {
+            id
+          }
+        }&quot;&quot;&quot;
+
+r = client.Query(query, operationName = &quot;A&quot;)
+r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><h2><a class="nav-anchor" id="Change-serverUrl-1" href="#Change-serverUrl-1">Change serverUrl</a></h2><pre><code class="language-julia">client.serverUrl(&quot;https://api.graph.cool/simple/v1/movies&quot;)</code></pre><h2><a class="nav-anchor" id="Change-headers-1" href="#Change-headers-1">Change headers</a></h2><pre><code class="language-julia">client.headers(Dict(&quot;header&quot; =&gt; &quot;value&quot;))</code></pre><h2><a class="nav-anchor" id="Change-serverAuth-1" href="#Change-serverAuth-1">Change serverAuth</a></h2><pre><code class="language-julia">client.serverAuth(&quot;Bearer my-jwt-token&quot;)</code></pre><h2><a class="nav-anchor" id="Query-get-1" href="#Query-get-1">Query get</a></h2><pre><code class="language-julia">query=&quot;https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D&quot;
+r = Queryclient(query)
+r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><h2><a class="nav-anchor" id="Link-1" href="#Link-1">Link</a></h2><p>It is possible to get links to the graphql query editor</p><pre><code class="language-julia">query = &quot;&quot;&quot;
+        {
+          neomatrix{
+            nombre
+            linkedin
+          }
+        }
+        &quot;&quot;&quot;
+r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,query,getlink=true)</code></pre><p>result:</p><pre><code class="language-none">&quot;https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D%0A&quot;</code></pre><p>or</p><pre><code class="language-julia">r = client.Query(query, getlink = true)</code></pre><p>result:</p><pre><code class="language-none">&quot;https://api.graph.cool/simple/v1/movies?query=%7B%0A%20%20Movie%28title%3A%20%22Inception%22%29%7B%0A%20%20%20%20actors%7B%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A&quot;</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
+        query consulta {
+          neomatrix {
+            nombre
+          }
+        }
+        query hola {
+          neomatrix {
+            nombre
+            linkedin
+          }
+        }
+        &quot;&quot;&quot;
+r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,
+                query,
+                getlink = true,
+                operationName = &quot;consulta&quot;)</code></pre><p>result:</p><pre><code class="language-none">&quot;https://neomatrix.herokuapp.com/graphql?query=query%20consulta%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%7D%0A%7D%0Aquery%20hola%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%20%20%20linkedin%0A%20%20%20%20%7D%0A%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20&amp;operationName=consulta&quot;</code></pre><h2><a class="nav-anchor" id="Validating-query-1" href="#Validating-query-1">Validating query</a></h2><p>It is possible to validate the query locally before sending the request, only basic validations are carried out.</p><pre><code class="language-julia">query = &quot;&quot;&quot;
+        {
+          neomatrix{
+            nombre
+            linkedin
+          }
+        }
+        &quot;&quot;&quot;
+r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,query, check = true)</code></pre><p>result:</p><pre><code class="language-none">&quot;ok&quot;</code></pre><pre><code class="language-julia"> query = &quot;&quot;&quot;
+         {
+         neomatrix {
+           nombre
+           linkedin
+         }
+
+         &quot;&quot;&quot;
+r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,query, true)
+#r = client.Query(query, check = true)</code></pre><p>result:</p><pre><code class="language-none">ERROR: Diana.GraphQLError(&quot;{\&quot;errors\&quot;:[{\&quot;locations\&quot;: [{\&quot;column\&quot;: 10,\&quot;line\&quot;: 6}],\&quot;message\&quot;: \&quot;Syntax Error GraphQL request (10:6) Expected NAME, found eof \&quot;}]}&quot;)</code></pre><footer><hr/><a class="next" href="../"><span class="direction">Next</span><span class="title">Home</span></a></footer></article></body></html>
