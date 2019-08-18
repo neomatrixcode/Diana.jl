@@ -1,5 +1,6 @@
 
 # Client
+Diana also provides a GraphQL client implementation.
 
 ## Simple query
 
@@ -52,31 +53,6 @@ r.Info.status == 200 && println(r.Data)
 result:
 ```
 {"data":{"neomatrix":{"nombre":"Acevedo Maldonado Josue"}}}
-```
-
-```julia
-using Diana
-github_endpoint = "https://api.github.com/graphql"
-github_user = # GitHub handle
-github_token = # GitHub personal token
-github_header = Dict("User-Agent" => github_user)
-client = GraphQLClient(github_endpoint,
-                       auth = "bearer $github_token",
-                       headers = github_header)
-query = """
-        query A{
-          rateLimit {
-            cost
-            remaining
-            resetAt
-          }
-          repository(owner: "JuliaLang", name: "Julia") {
-            id
-          }
-        }"""
-
-r = client.Query(query, operationName = "A")
-r.Info.status == 200 && println(r.Data)
 ```
 
 ## Query
@@ -174,6 +150,32 @@ result:
 ```
 {"data":{"Movie":{"actors":[{"name":"Leonardo DiCaprio"},{"name":"Ellen Page"},{"name":"Tom Hardy"},{"name":"Joseph Gordon-Levitt"},{"name":"Marion Cotillard"}]}}}
 ```
+
+```julia
+using Diana
+github_endpoint = "https://api.github.com/graphql"
+github_user = # GitHub handle
+github_token = # GitHub personal token
+github_header = Dict("User-Agent" => github_user)
+client = GraphQLClient(github_endpoint,
+                       auth = "bearer $github_token",
+                       headers = github_header)
+query = """
+        query A{
+          rateLimit {
+            cost
+            remaining
+            resetAt
+          }
+          repository(owner: "JuliaLang", name: "Julia") {
+            id
+          }
+        }"""
+
+r = client.Query(query, operationName = "A")
+r.Info.status == 200 && println(r.Data)
+```
+
 ## Change serverUrl
 ```julia
 client.serverUrl("https://api.graph.cool/simple/v1/movies")
@@ -255,7 +257,7 @@ query = """
           }
         }
         """
-r = Queryclient(query, check = true)
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query, check = true)
 ```
 result:
 ```
@@ -268,14 +270,12 @@ result:
            nombre
            linkedin
          }
-         }
+
          """
-r = Queryclient(query, true)
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query, true)
+#r = client.Query(query, check = true)
 ```
 result:
 ```
-ERROR: {"errors":[{"locations": [{"column": 3,"line": 2}],"message": "Syntax Error GraphQL request (3:2) Expected NAME, found } "}]}
-```
-```julia
-r = client.Query(query, check = true)
+ERROR: Diana.GraphQLError("{\"errors\":[{\"locations\": [{\"column\": 10,\"line\": 6}],\"message\": \"Syntax Error GraphQL request (10:6) Expected NAME, found eof \"}]}")
 ```

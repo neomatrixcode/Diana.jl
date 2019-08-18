@@ -1,4 +1,4 @@
-
+#=
 struct ExecuteFieldParallel
 	#enter::Function
 	#leave::Function
@@ -55,7 +55,7 @@ struct ExecuteFieldParallel
 
 
 end
-
+=#
 
 struct ExecuteField
     visitante

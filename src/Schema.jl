@@ -11,8 +11,12 @@ function GetOperation(document::Node,operationName::String)
   vi.visitante(operation)
   return operation
 end
+"""
+    Schema(_schema::String, resolvers::Dict; context=nothing)
 
-function Schema(_schema::String, resolvers; context=nothing)
+Receive a schema in string format or in a text file, return an object of type schema
+"""
+function Schema(_schema::String, resolvers::Dict; context=nothing)
 if '.' in _schema
   _schema = open(_schema) do file
       read(file, String)
@@ -29,8 +33,11 @@ return Schema(symbol_table, resolvers, context=context)
 end
 
 
-
-function Schema(_schema::Dict, resolvers; context=nothing)
+"""
+    Schema(_schema::Dict, resolvers::Dict; context=nothing)
+Receive a schema in dictionary format, return an object of type schema
+"""
+function Schema(_schema::Dict, resolvers::Dict; context=nothing)
 
 symbol_table = _schema
 

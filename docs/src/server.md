@@ -30,10 +30,20 @@ Every GraphQL service defines a set of types which completely describe the set o
 The most basic components of a GraphQL schema are object types, which just represent a kind of object you can fetch from your service, and what fields it has. In the GraphQL schema language, we might represent it like this:
 
 ```julia
+#schema-first
+"""
 type Persona {
   nombre: String
   edad: Int!
 }
+"""
+
+# code-first
+Dict("Persona" => Dict(
+    "nombre"=>Dict("tipo"=>"String")
+    ,"edad"=>Dict("tipo"=>"Int!")
+  )
+)
 ```
 
 The language is pretty readable, but let's go over it so that we can have a shared vocabulary:
@@ -50,10 +60,23 @@ Now you know what a GraphQL object type looks like, and how to read the basics o
 Every field on a GraphQL object type can have zero or more arguments, for example the `edad` field below:
 
 ```julia
+#schema-first
+"""
 type Persona {
   nombre: String
   edad(valor:Int): Int!
 }
+"""
+
+# code-first
+Dict("Persona" => Dict(
+    "nombre"=>Dict("tipo"=>"String")
+    ,"edad"=>Dict("tipo"=>"Int!"
+      ,"args"=>Dict(
+        "valor"=>"Int")
+    )
+  )
+ )
 ```
 
 All arguments are named. Unlike languages like JavaScript and Python where functions take a list of ordered arguments, all arguments in GraphQL are passed by name specifically. In this case, the `edad` field has one defined argument, `valor`.
@@ -64,10 +87,19 @@ All arguments are named. Unlike languages like JavaScript and Python where funct
 Most types in your schema will just be normal object types, but there are two types that are special within a schema:
 
 ```julia
+#schema-first
+"""
 schema {
   query: Query
   mutation: Mutation
 }
+"""
+
+# code-first
+Dict(
+"query" => Query #Dict()
+,"mutation" => Mutation #Dict()
+)
 ```
 
 Every GraphQL service has a `query` type and may or may not have a `mutation` type. These types are the same as a regular object type, but they are special because they define the _entry point_ of every GraphQL query. So if you see a query that looks like:
@@ -88,10 +120,24 @@ query{
 That means that the GraphQL service needs to have a `Query` type with `neomatrix` and `persona` fields:
 
 ```julia
+#schema-first
+"""
 type Query {
   neomatrix: Persona
   persona(id: ID!): Persona
 }
+"""
+
+# code-first
+Dict(
+"Query"   => Dict(
+     "neomatrix"=>Dict("tipo"=>"Persona")
+    ,"persona"=>Dict("tipo"=>"Persona"
+      ,"args"=>Dict(
+        "id"=>"ID!")
+        )
+   )
+)
 ```
 
 Mutations work in a similar way - you define fields on the `Mutation` type, and those are available as the root mutation fields you can call in your query.
@@ -105,7 +151,6 @@ A GraphQL object type has a name and fields, but at some point those fields have
 In the following query, the `nombre` and `edad` fields will resolve to scalar types:
 
 ```julia
-
 {
   neomatrix{
     nombre
@@ -129,18 +174,29 @@ GraphQL comes with a set of default scalar types out of the box:
 So far, we've only talked about passing scalar values as arguments into a field. But you can also easily pass complex objects. This is particularly valuable in the case of mutations, where you might want to pass in a whole object to be created. In the GraphQL schema language, input types look exactly the same as regular object types, but with the keyword `input` instead of `type`:
 
 ```julia
+# schema-first
+"""
 input DataInputType{
   nombre: String
   edad: Int
 }
+"""
+
+# code-first
+Dict(
+"DataInputType" => Dict(
+     "nombre"=>Dict("tipo"=>"String")
+    ,"edad"=>Dict("tipo"=>"Int")
+   )
+)
 ```
 
 Here is how you could use the input object type in a mutation:
 
 ```julia
 
-mutation mutationwithvariaribles(\$miedad: Int){
-  addPerson(data: {nombre: "bob", edad: \$miedad}){
+mutation mutationwithvariarbles(\$dato: DataInputType){
+  addPerson(data: \$dato ){
     nombre,
     edad
   }
@@ -226,6 +282,12 @@ For example, in JavaScript we can easily work only with anonymous functions, but
 and log when it's called. In the same way, GraphQL query and mutation names, along with fragment names, can be a useful debugging tool on the server side to identify
 different GraphQL requests.
 
+
+
+```julia
+my_schema.execute(query, operationName="PersonaNombreandEdad")
+```
+
 ## Variables
 
 So far, we have been writing all of our arguments inside the query string. But in most applications, the arguments to fields will be dynamic: For example, there might be a dropdown, or a search field, or a set of filters.
@@ -234,16 +296,16 @@ It wouldn't be a good idea to pass these dynamic arguments directly in the query
 
 When we start working with variables, we need to do three things:
 
-1. Replace the static value in the query with `$variableName`
-2. Declare `$variableName` as one of the variables accepted by the query
+1. Replace the static value in the query with `\$variableName`
+2. Declare `\$variableName` as one of the variables accepted by the query
 3. Pass `variableName: value` in the separate, transport-specific (JSON) variables dictionary
 
 Here's what it looks like all together:
 
 ```julia
 
-query PersonaNombreandEdad($identificador: ID) {
-  persona(id: $identificador) {
+query PersonaNombreandEdad(\$identificador: ID) {
+  persona(id: \$identificador) {
     nombre
     edad
   }
@@ -252,10 +314,13 @@ query PersonaNombreandEdad($identificador: ID) {
 
 Now, in our client code, we can simply pass a different variable rather than needing to construct an entirely new query. This is also in general a good practice for denoting which arguments in our query are expected to be dynamic - we should never be doing string interpolation to construct queries from user-supplied values.
 
+```julia
+my_schema.execute(query,Variables=Dict("identificador"=>"100"))
+```
 
 ## Variable definitions
 
-The variable definitions are the part that looks like `($identificador: ID)` in the query above. It works just like the argument definitions for a function in a typed language. It lists all of the variables, prefixed by `$`, followed by their type, in this case `ID`.
+The variable definitions are the part that looks like `(\$identificador: ID)` in the query above. It works just like the argument definitions for a function in a typed language. It lists all of the variables, prefixed by `\$`, followed by their type, in this case `ID`.
 
 All declared variables must be either scalars, or input object types. So if you want to pass a complex object into a field, you need to know what input type that matches on the server. Learn more about input object types on the Schemas and Types seccion.
 
@@ -270,16 +335,92 @@ Most discussions of GraphQL focus on data fetching, but any complete data platfo
 
 In REST, any request might end up causing some side-effects on the server, but by convention it's suggested that one doesn't use `GET` requests to modify data. GraphQL is similar - technically any query could be implemented to cause a data write. However, it's useful to establish a convention that any operations that cause writes should be sent explicitly via a mutation.
 
+```julia
+#schema-first
+schema = """
+type Persona {
+  nombre: String
+  edad: Int
+  altura: Float
+  spooilers:Boolean
+}
+ type Query{
+  persona: Persona
+  neomatrix: Persona
+}
+type Mutation{
+  addPerson(nombre:String,edad:Int): Persona
+}
+ schema {
+  query: Query
+  mutation:Mutation
+}
+"""
+
+# code-first
+schema = Dict(
+"query" => "Query"
+,"Query"   => Dict(
+    "persona"=>Dict("tipo"=>"Persona")
+     ,"neomatrix"=>Dict("tipo"=>"Persona")
+   )
+,"Persona" => Dict(
+    "edad"=>Dict("tipo"=>"Int")
+    ,"nombre"=>Dict("tipo"=>"String")
+  )
+
+,"mutation" => "Mutation"
+,"Mutation" => Dict(
+
+    "addPerson"=>Dict(
+
+      "args"=>Dict(
+        "nombre"=>"String",
+        "edad"=>"Int")
+
+      ,"tipo"=>"Persona"
+
+      )
+
+  )
+)
+
+
+resolvers=Dict(
+    "Query"=>Dict(
+        "neomatrix" => (root,args,ctx,info)->(
+          return Dict("nombre"=>"josue","edad"=>25,"altura"=>10.5,"spooilers"=>false)
+          )
+        ,"persona" => (root,args,ctx,info)->(return Dict("nombre"=>"Diana","edad"=>14,"altura"=>11.8,"spooilers"=>true))
+    )
+    ,"Persona"=>Dict(
+      "edad" => (root,args,ctx,info)->(return root["edad"])
+    )
+    ,"Mutation"=>Dict(
+        "addPerson" => (root,args,ctx,info)->(
+          return Dict("nombre"=>args["nombre"],"edad"=>args["edad"],"altura"=>10.5,"spooilers"=>false)
+          )
+    )
+)
+
+
+ my_schema = Schema(schema, resolvers)
+
+```
+
+
 Just like in queries, if the mutation field returns an object type, you can ask for nested fields. This can be useful for fetching the new state of an object after an update. Let's look at a simple example mutation:
 
 ```julia
+my_schema.execute("""
 mutation mutationwithvariables(\$dato: DataInputType){
   addPerson(data: \$dato ){
     nombre,
     edad
   }
 }
-"""
+""",Variables=Dict("dato"=>Dict("edad"=>20,"nombre"=>"bob")))
+#{"data":{"addPerson":{"edad":20,"nombre":"bob"}}}
 ```
 
 Note how `addPerson` field returns the `nombre` and `edad` fields of the newly created review. This is especially useful when mutating existing data, for example, when incrementing a field, since we can mutate and query the new value of the field with one request.
@@ -294,23 +435,40 @@ A mutation can contain multiple fields, just like a query. There's one important
 
 This means that if we send two `incrementCredits` mutations in one request, the first is guaranteed to finish before the second begins, ensuring that we don't end up with a race condition with ourselves.
 
+
 # Execution
 
 After being validated, a GraphQL query is executed by a GraphQL server which returns a result that mirrors the shape of the requested query, as JSON.
 
-GraphQL cannot execute a query without a type system, let's use an example type system to illustrate executing a query. This is a part of the same type system used throughout the examples in these articles:
+GraphQL cannot execute a query without a type system, let's use an example type system to illustrate executing a query. This is a part of the same type system used throughout the examples:
 
 ```julia
+#schema-first
+"""
 type Persona {
   nombre: String
   edad: Int
-  altura: Float
-  spooilers:Boolean
 }
  type Query{
   persona: Persona
   neomatrix: Persona
 }
+"""
+
+# code-first
+schema = Dict(
+"query" => "Query"
+,"Query"   => Dict(
+    "persona"=>Dict("tipo"=>"Persona")
+     ,"neomatrix"=>Dict("tipo"=>"Persona")
+   )
+,"Persona" => Dict(
+    "edad"=>Dict("tipo"=>"Int")
+    ,"nombre"=>Dict("tipo"=>"String")
+  )
+)
+
+
 ```
 
 In order to describe what happens when a query is executed, let's use an example to walk through.
@@ -334,7 +492,7 @@ At the top level of every GraphQL server is a type that represents all of the po
 
 In this example, our Query type provides a field called `persona` which accepts the argument `nombre`. The resolver function for this field likely accesses a database and then constructs and returns a `Persona` object.
 
-```js
+```julia
 resolvers=Dict(
     "Query"=>Dict(
         "neomatrix" => (root,args,ctx,info)->(
@@ -354,12 +512,20 @@ resolvers=Dict(
 - `context` A value which is provided to every resolver and holds important contextual information like the currently logged in user, or access to a database.
 - `info` A value which holds field-specific information relevant to the current query as well as the schema details.
 
+### Context
+
+The context variable is used to pass data between the resolvers or to store global variables, its value is defined when creating the scheme
+
+```julia
+ my_schema = Schema(schema, resolvers, context=Dict("data"=>"datacontext"))
+```
+
 
 ## Trivial resolvers
 
 Now that a `Persona` object is available, GraphQL execution can continue with the fields requested on it.
 
-```js
+```julia
 resolvers=Dict(
     "Query"=>Dict(
         "neomatrix" => (root,args,ctx,info)->(
@@ -408,8 +574,9 @@ result:
 
 # Tools
 
-The lexer is built based on the [Tokenize](https://github.com/KristofferC/Tokenize.jl) package code and the Parser on the [graphql-js](https://github.com/graphql/graphql-js) package
-**Thanks people**
+Diana provides the Parser and the Lexer of the graphql for anyone to create their own tools and implementations
+
+The lexer is built based on the [Tokenize](https://github.com/KristofferC/Tokenize.jl) package code and the Parser on the [graphql-js](https://github.com/graphql/graphql-js) package. **Thanks people.**
 
 ## Parser
 ```julia

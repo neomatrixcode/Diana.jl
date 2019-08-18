@@ -34,7 +34,7 @@ end
 
 
 
-
+#=
 struct VisitanteParallel
     visitante
 
@@ -65,4 +65,4 @@ struct VisitanteParallel
 	    end
       new(visitante)
     end
-end
+end=#
