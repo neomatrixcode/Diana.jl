@@ -96,15 +96,6 @@ struct ExecuteField
 					end
 
                 args=Dict()
-
-            		if ((tipoactual == "String") | (tipoactual == "ID"))
-            			eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => \"$(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual))\")"))
-            		elseif ( (tipoactual == "Float") | (tipoactual == "Int") | (tipoactual == "Boolean"))
-                             eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => $(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual)))"))
-			        else # el tipo lista [ ] apenas lo pondre
-
-			        	if (haskey(resolvers, type_padre)) && (haskey(resolvers[type_padre], nombre_nodo))
-			        			# args = obtiene los argumentos de la consulta
 			        			if length(node.arguments)>0
 			        			   for data in node.arguments
 			        			   	if typeof(data.value[2])<:Diana.Object_
@@ -125,6 +116,15 @@ struct ExecuteField
 			        			   	end
 			        			   end
 			        		    end
+
+            		if ((tipoactual == "String") | (tipoactual == "ID"))
+            			eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => \"$(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual))\")"))
+            		elseif ( (tipoactual == "Float") | (tipoactual == "Int") | (tipoactual == "Boolean"))
+                             eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => $(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual)))"))
+			        else # el tipo lista [ ] apenas lo pondre
+
+			        	if (haskey(resolvers, type_padre)) && (haskey(resolvers[type_padre], nombre_nodo))
+
                                 root= resolvers[type_padre][nombre_nodo](nothing,args,ctx,Dict("fieldName"=>nombre_nodo,"parentType"=>type_padre,"path"=>path,"returnType"=> tipoactual))
 			  	        end
 

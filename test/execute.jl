@@ -467,7 +467,7 @@ type Persona {
   persona: Persona
   neomatrix: Persona
 }
-type DataInputType{
+input DataInputType{
   nombre: String
   edad: Int
 }
@@ -528,7 +528,7 @@ type Persona {
   persona: Persona
   neomatrix: Persona
 }
-type DataInputType{
+input DataInputType{
   nombre: String
   edad: Int
 }
@@ -583,12 +583,12 @@ mutation {
 
  query= """
 
-mutation mutationwithvariarbles(\$miedad: Int){
-  addPerson(data: {nombre: "bob", edad: \$miedad}){
+mutation mutationwithvariarbles(\$dato: DataInputType){
+  addPerson(data: \$dato ){
     nombre,
     edad
   }
 }
 """
 
-@test my_schema.execute(query,Variables=Dict("miedad"=>20)) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"
+@test my_schema.execute(query,Variables=Dict("dato"=>Dict("edad"=>20,"nombre"=>"bob"))) == "{\"data\":{\"addPerson\":{\"edad\":20,\"nombre\":\"bob\"}}}"

@@ -344,10 +344,12 @@ function many(lexer::Lexer, openKind, parseFn::Function, closeKind)
  	return nodes
  end
 """
+    Parse(str::String)
+
 Given a GraphQL source, parses it into a Document.
 Throws Diana.GraphQLError if a syntax error is encountered.
  """
-function Parse(str)
+function Parse(str::String)
 	return parseDocument(Lexer(str))
 end
 

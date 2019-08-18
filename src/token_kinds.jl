@@ -6,6 +6,10 @@
     PIPE, #|
     AMP, #&
 
+    begin_keywords,
+        KEYWORD, # general
+    end_keywords,
+
     begin_literal,
         INT, # 4
         FLOAT, # 3.5, 3.7e+3
@@ -23,6 +27,7 @@
     end_delimiters,
 
     begin_ops,
+        OP,
         SPREAD, # ...
         EQUALS, # =
         COLON, # :
