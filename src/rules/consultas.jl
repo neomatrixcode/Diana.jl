@@ -1,35 +1,4 @@
 
-struct getdeep <:Rule
-	enter::Function
-	leave::Function
-	valordeep
-	function getdeep()
-		valor=1
-		nivel=1
-		function valordeep()
-			return valor
-		end
-		function enter(node::Node)
-			if (node.kind=="Field")
-				if (typeof(node.selectionSet)<:Node)
-					nivel = nivel+1
-					if(nivel>valor)
-						valor = nivel
-					end
-				end
-			end
-		end
-		function leave(node::Node)
-			if (node.kind=="Field")
-				if (typeof(node.selectionSet)<:Node)
-					nivel = nivel-1
-				end
-			end
-		end
-		new(enter,leave,valordeep)
-	end
-end
-
 struct NotExtensionOnOperation <:Rule
 	enter::Function
 	leave::Function
