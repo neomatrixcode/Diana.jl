@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Server · Diana.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="../client/"><img class="logo" src="../assets/logo.png" alt="Diana.jl logo"/></a><h1>Diana.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../client/">Client</a></li><li><a class="toctext" href="../">Home</a></li><li class="current"><a class="toctext" href>Server</a><ul class="internal"><li class="toplevel"><a class="toctext" href="#Schemas-and-Types-1">Schemas and Types</a></li><li><a class="toctext" href="#Type-system-1">Type system</a></li><li><a class="toctext" href="#Object-types-and-fields-1">Object types and fields</a></li><li><a class="toctext" href="#Arguments-1">Arguments</a></li><li><a class="toctext" href="#The-Query-and-Mutation-types-1">The Query and Mutation types</a></li><li><a class="toctext" href="#Scalar-types-1">Scalar types</a></li><li><a class="toctext" href="#Input-types-1">Input types</a></li><li class="toplevel"><a class="toctext" href="#Queries-and-Mutations-1">Queries and Mutations</a></li><li><a class="toctext" href="#Fields-1">Fields</a></li><li><a class="toctext" href="#Arguments-2">Arguments</a></li><li><a class="toctext" href="#Operation-name-1">Operation name</a></li><li><a class="toctext" href="#Variables-1">Variables</a></li><li><a class="toctext" href="#Variable-definitions-1">Variable definitions</a></li><li><a class="toctext" href="#Mutations-1">Mutations</a></li><li><a class="toctext" href="#Multiple-fields-in-mutations-1">Multiple fields in mutations</a></li><li class="toplevel"><a class="toctext" href="#Execution-1">Execution</a></li><li><a class="toctext" href="#Root-fields-and-resolvers-1">Root fields &amp; resolvers</a></li><li><a class="toctext" href="#Trivial-resolvers-1">Trivial resolvers</a></li><li><a class="toctext" href="#Producing-the-result-1">Producing the result</a></li><li class="toplevel"><a class="toctext" href="#Tools-1">Tools</a></li><li><a class="toctext" href="#Parser-1">Parser</a></li><li><a class="toctext" href="#Lexer-1">Lexer</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Server</a></li></ul><a class="edit-page" href="https://github.com/codeneomatrix/Diana.jl/blob/master/docs/src/server.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Server</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Server-1" href="#Server-1">Server</a></h1><h1><a class="nav-anchor" id="Schemas-and-Types-1" href="#Schemas-and-Types-1">Schemas and Types</a></h1><h2><a class="nav-anchor" id="Type-system-1" href="#Type-system-1">Type system</a></h2><p>If you&#39;ve seen a GraphQL query before, you know that the GraphQL query language is basically about selecting fields on objects. So, for example, in the following query:</p><pre><code class="language-julia">{
+  neomatrix{
+  	nombre
+  	edad
+  }
+}</code></pre><ol><li>We start with a special &quot;root&quot; object</li><li>We select the <code>neomatrix</code> field on that</li><li>For the object returned by <code>neomatrix</code>, we select the <code>nombre</code> and <code>edad</code> fields</li></ol><p>Because the shape of a GraphQL query closely matches the result, you can predict what the query will return without knowing that much about the server. But it&#39;s useful to have an exact description of the data we can ask for - what fields can we select? What kinds of objects might they return? What fields are available on those sub-objects? That&#39;s where the schema comes in.</p><p>Every GraphQL service defines a set of types which completely describe the set of possible data you can query on that service. Then, when queries come in, they are validated and executed against that schema.</p><h2><a class="nav-anchor" id="Object-types-and-fields-1" href="#Object-types-and-fields-1">Object types and fields</a></h2><p>The most basic components of a GraphQL schema are object types, which just represent a kind of object you can fetch from your service, and what fields it has. In the GraphQL schema language, we might represent it like this:</p><pre><code class="language-julia">#schema-first
+&quot;&quot;&quot;
+type Persona {
+  nombre: String
+  edad: Int!
+}
+&quot;&quot;&quot;
+
+# code-first
+Dict(&quot;Persona&quot; =&gt; Dict(
+    &quot;nombre&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+    ,&quot;edad&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Int!&quot;)
+  )
+)</code></pre><p>The language is pretty readable, but let&#39;s go over it so that we can have a shared vocabulary:</p><ul><li><code>Persona</code> is a <em>GraphQL Object Type</em>, meaning it&#39;s a type with some fields. Most of the types in your schema will be object types.</li><li><code>nombre</code> and <code>edad</code> are <em>fields</em> on the <code>Persona</code> type. That means that <code>nombre</code> and <code>edad</code> are the only fields that can appear in any part of a GraphQL query that operates on the <code>Persona</code> type.</li><li><code>String</code> is one of the built-in <em>scalar</em> types - these are types that resolve to a single scalar object, and can&#39;t have sub-selections in the query. We&#39;ll go over scalar types more later.</li><li><code>Int!</code> means that the field is <em>non-nullable</em>, meaning that the GraphQL service promises to always give you a value when you query this field. In the type language, we&#39;ll represent those with an exclamation mark.</li></ul><p>Now you know what a GraphQL object type looks like, and how to read the basics of the GraphQL type language.</p><h2><a class="nav-anchor" id="Arguments-1" href="#Arguments-1">Arguments</a></h2><p>Every field on a GraphQL object type can have zero or more arguments, for example the <code>edad</code> field below:</p><pre><code class="language-julia">#schema-first
+&quot;&quot;&quot;
+type Persona {
+  nombre: String
+  edad(valor:Int): Int!
+}
+&quot;&quot;&quot;
+
+# code-first
+Dict(&quot;Persona&quot; =&gt; Dict(
+    &quot;nombre&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+    ,&quot;edad&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Int!&quot;
+      ,&quot;args&quot;=&gt;Dict(
+        &quot;valor&quot;=&gt;&quot;Int&quot;)
+    )
+  )
+ )</code></pre><p>All arguments are named. Unlike languages like JavaScript and Python where functions take a list of ordered arguments, all arguments in GraphQL are passed by name specifically. In this case, the <code>edad</code> field has one defined argument, <code>valor</code>.</p><h2><a class="nav-anchor" id="The-Query-and-Mutation-types-1" href="#The-Query-and-Mutation-types-1">The Query and Mutation types</a></h2><p>Most types in your schema will just be normal object types, but there are two types that are special within a schema:</p><pre><code class="language-julia">#schema-first
+&quot;&quot;&quot;
+schema {
+  query: Query
+  mutation: Mutation
+}
+&quot;&quot;&quot;
+
+# code-first
+Dict(
+&quot;query&quot; =&gt; Query #Dict()
+,&quot;mutation&quot; =&gt; Mutation #Dict()
+)</code></pre><p>Every GraphQL service has a <code>query</code> type and may or may not have a <code>mutation</code> type. These types are the same as a regular object type, but they are special because they define the <em>entry point</em> of every GraphQL query. So if you see a query that looks like:</p><pre><code class="language-julia">query{
+    neomatrix{
+    	nombre
+    	altura
+    }
+    persona(id:&quot;200&quot;){
+    	nombre
+    	edad
+    }
+}</code></pre><p>That means that the GraphQL service needs to have a <code>Query</code> type with <code>neomatrix</code> and <code>persona</code> fields:</p><pre><code class="language-julia">#schema-first
+&quot;&quot;&quot;
+type Query {
+  neomatrix: Persona
+  persona(id: ID!): Persona
+}
+&quot;&quot;&quot;
+
+# code-first
+Dict(
+&quot;Query&quot;   =&gt; Dict(
+     &quot;neomatrix&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Persona&quot;)
+    ,&quot;persona&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Persona&quot;
+      ,&quot;args&quot;=&gt;Dict(
+        &quot;id&quot;=&gt;&quot;ID!&quot;)
+        )
+   )
+)</code></pre><p>Mutations work in a similar way - you define fields on the <code>Mutation</code> type, and those are available as the root mutation fields you can call in your query.</p><p>It&#39;s important to remember that other than the special status of being the &quot;entry point&quot; into the schema, the <code>Query</code> and <code>Mutation</code> types are the same as any other GraphQL object type, and their fields work exactly the same way.</p><h2><a class="nav-anchor" id="Scalar-types-1" href="#Scalar-types-1">Scalar types</a></h2><p>A GraphQL object type has a name and fields, but at some point those fields have to resolve to some concrete data. That&#39;s where the scalar types come in: they represent the leaves of the query.</p><p>In the following query, the <code>nombre</code> and <code>edad</code> fields will resolve to scalar types:</p><pre><code class="language-julia">{
+  neomatrix{
+    nombre
+    edad
+  }
+}</code></pre><p>We know this because those fields don&#39;t have any sub-fields - they are the leaves of the query.</p><p>GraphQL comes with a set of default scalar types out of the box:</p><ul><li><code>Int</code>: A signed 64‐bit integer.</li><li><code>Float</code>: A signed double-precision floating-point value.</li><li><code>String</code>: A UTF‐8 character sequence.</li><li><code>Boolean</code>: <code>true</code> or <code>false</code>.</li><li><code>ID</code>: The ID scalar type represents a unique identifier, often used to refetch an object or as the key for a cache. The ID type is serialized in the same way as a String; however, defining it as an <code>ID</code> signifies that it is not intended to be human‐readable.</li></ul><h2><a class="nav-anchor" id="Input-types-1" href="#Input-types-1">Input types</a></h2><p>So far, we&#39;ve only talked about passing scalar values as arguments into a field. But you can also easily pass complex objects. This is particularly valuable in the case of mutations, where you might want to pass in a whole object to be created. In the GraphQL schema language, input types look exactly the same as regular object types, but with the keyword <code>input</code> instead of <code>type</code>:</p><pre><code class="language-julia"># schema-first
+&quot;&quot;&quot;
+input DataInputType{
+  nombre: String
+  edad: Int
+}
+&quot;&quot;&quot;
+
+# code-first
+Dict(
+&quot;DataInputType&quot; =&gt; Dict(
+     &quot;nombre&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+    ,&quot;edad&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Int&quot;)
+   )
+)</code></pre><p>Here is how you could use the input object type in a mutation:</p><pre><code class="language-julia">
+mutation mutationwithvariarbles(\$dato: DataInputType){
+  addPerson(data: \$dato ){
+    nombre,
+    edad
+  }
+}</code></pre><p>The fields on an input object type can themselves refer to input object types, but you can&#39;t mix input and output types in your schema. Input object types also can&#39;t have arguments on their fields.</p><h1><a class="nav-anchor" id="Queries-and-Mutations-1" href="#Queries-and-Mutations-1">Queries and Mutations</a></h1><h2><a class="nav-anchor" id="Fields-1" href="#Fields-1">Fields</a></h2><p>At its simplest, GraphQL is about asking for specific fields on objects. Let&#39;s start by looking at a very simple query and the result we get when we run it:</p><pre><code class="language-julia">{
+  persona {
+    nombre
+  }
+}</code></pre><p>You can see immediately that the query has exactly the same shape as the result. This is essential to GraphQL, because you always get back what you expect, and the server knows exactly what fields the client is asking for.</p><p>The field <code>nombre</code> returns a <code>String</code> type.</p><blockquote><p>Oh, one more thing - the query above is <em>interactive</em>. That means you can change it as you like and see the new result. Try adding an <code>edad</code> field to the <code>persona</code> object in the query, and see the new result.</p></blockquote><p>In the previous example, we just asked for the nombre of our persona which returned a String, but fields can also refer to Objects. In that case, you can make a <em>sub-selection</em> of fields for that object. GraphQL queries can traverse related objects and their fields, letting clients fetch lots of related data in one request, instead of making several roundtrips as one would need in a classic REST architecture.</p><h2><a class="nav-anchor" id="Arguments-2" href="#Arguments-2">Arguments</a></h2><p>If the only thing we could do was traverse objects and their fields, GraphQL would already be a very useful language for data fetching. But when you add the ability to pass arguments to fields, things get much more interesting.</p><pre><code class="language-julia">{
+  persona(id: &quot;1000&quot;) {
+    nombre
+    altura
+  }
+}</code></pre><p>In a system like REST, you can only pass a single set of arguments - the query parameters and URL segments in your request. But in GraphQL, every field and nested object can get its own set of arguments, making GraphQL a complete replacement for making multiple API fetches. You can even pass arguments into scalar fields, to implement data transformations once on the server, instead of on every client separately.</p><pre><code class="language-julia">{
+  persona(id: &quot;1000&quot;) {
+    nombre
+    altura(unidad: String)
+  }
+}</code></pre><p>Arguments can be of many different types.</p><p><a href="https://graphql.org/learn/schema">Read more about the GraphQL type system here.</a></p><h2><a class="nav-anchor" id="Operation-name-1" href="#Operation-name-1">Operation name</a></h2><p>Up until now, we have been using a shorthand syntax where we omit both the <code>query</code> keyword and the query name, but in production apps it&#39;s useful to use these to make our code less ambiguous.</p><p>Here’s an example that includes the keyword <code>query</code> as <em>operation type</em> and <code>PersonaNombreandEdad</code> as <em>operation name</em> :</p><pre><code class="language-julia">
+query PersonaNombreandEdad {
+  persona {
+    name
+    edad
+  }
+}</code></pre><p>The <em>operation type</em> is either <em>query</em>, <em>mutation</em>, or <em>subscription</em> and describes what type of operation you&#39;re intending to do. The operation type is required unless you&#39;re using the query shorthand syntax, in which case you can&#39;t supply a name or variable definitions for your operation.</p><p>The <em>operation name</em> is a meaningful and explicit name for your operation. It is only required in multi-operation documents, but its use is encouraged because it is very helpful for debugging and server-side logging. When something goes wrong either in your network logs or your GraphQL server, it is easier to identify a query in your codebase by name instead of trying to decipher the contents. Think of this just like a function name in your favorite programming language. For example, in JavaScript we can easily work only with anonymous functions, but when we give a function a name, it&#39;s easier to track it down, debug our code, and log when it&#39;s called. In the same way, GraphQL query and mutation names, along with fragment names, can be a useful debugging tool on the server side to identify different GraphQL requests.</p><pre><code class="language-julia">my_schema.execute(query, operationName=&quot;PersonaNombreandEdad&quot;)</code></pre><h2><a class="nav-anchor" id="Variables-1" href="#Variables-1">Variables</a></h2><p>So far, we have been writing all of our arguments inside the query string. But in most applications, the arguments to fields will be dynamic: For example, there might be a dropdown, or a search field, or a set of filters.</p><p>It wouldn&#39;t be a good idea to pass these dynamic arguments directly in the query string, because then our client-side code would need to dynamically manipulate the query string at runtime, and serialize it into a GraphQL-specific format. Instead, GraphQL has a first-class way to factor dynamic values out of the query, and pass them as a separate dictionary. These values are called <em>variables</em>.</p><p>When we start working with variables, we need to do three things:</p><ol><li>Replace the static value in the query with <code>\$variableName</code></li><li>Declare <code>\$variableName</code> as one of the variables accepted by the query</li><li>Pass <code>variableName: value</code> in the separate, transport-specific (JSON) variables dictionary</li></ol><p>Here&#39;s what it looks like all together:</p><pre><code class="language-julia">
+query PersonaNombreandEdad(\$identificador: ID) {
+  persona(id: \$identificador) {
+    nombre
+    edad
+  }
+}</code></pre><p>Now, in our client code, we can simply pass a different variable rather than needing to construct an entirely new query. This is also in general a good practice for denoting which arguments in our query are expected to be dynamic - we should never be doing string interpolation to construct queries from user-supplied values.</p><pre><code class="language-julia">my_schema.execute(query,Variables=Dict(&quot;identificador&quot;=&gt;&quot;100&quot;))</code></pre><h2><a class="nav-anchor" id="Variable-definitions-1" href="#Variable-definitions-1">Variable definitions</a></h2><p>The variable definitions are the part that looks like <code>(\$identificador: ID)</code> in the query above. It works just like the argument definitions for a function in a typed language. It lists all of the variables, prefixed by <code>\$</code>, followed by their type, in this case <code>ID</code>.</p><p>All declared variables must be either scalars, or input object types. So if you want to pass a complex object into a field, you need to know what input type that matches on the server. Learn more about input object types on the Schemas and Types seccion.</p><p>Variable definitions can be optional or required. In the case above, since there isn&#39;t an <code>!</code> next to the <code>ID</code> type, it&#39;s optional. But if the field you are passing the variable into requires a non-null argument, then the variable has to be required as well.</p><p>To learn more about the syntax for these variable definitions, it&#39;s useful to learn the GraphQL schema language. The schema language is explained in detail on the Schemas and Types seccion.</p><h2><a class="nav-anchor" id="Mutations-1" href="#Mutations-1">Mutations</a></h2><p>Most discussions of GraphQL focus on data fetching, but any complete data platform needs a way to modify server-side data as well.</p><p>In REST, any request might end up causing some side-effects on the server, but by convention it&#39;s suggested that one doesn&#39;t use <code>GET</code> requests to modify data. GraphQL is similar - technically any query could be implemented to cause a data write. However, it&#39;s useful to establish a convention that any operations that cause writes should be sent explicitly via a mutation.</p><pre><code class="language-julia">#schema-first
+schema = &quot;&quot;&quot;
+type Persona {
+  nombre: String
+  edad: Int
+  altura: Float
+  spooilers:Boolean
+}
+ type Query{
+  persona: Persona
+  neomatrix: Persona
+}
+type Mutation{
+  addPerson(nombre:String,edad:Int): Persona
+}
+ schema {
+  query: Query
+  mutation:Mutation
+}
+&quot;&quot;&quot;
+
+# code-first
+schema = Dict(
+&quot;query&quot; =&gt; &quot;Query&quot;
+,&quot;Query&quot;   =&gt; Dict(
+    &quot;persona&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Persona&quot;)
+     ,&quot;neomatrix&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Persona&quot;)
+   )
+,&quot;Persona&quot; =&gt; Dict(
+    &quot;edad&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Int&quot;)
+    ,&quot;nombre&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+  )
+
+,&quot;mutation&quot; =&gt; &quot;Mutation&quot;
+,&quot;Mutation&quot; =&gt; Dict(
+
+    &quot;addPerson&quot;=&gt;Dict(
+
+      &quot;args&quot;=&gt;Dict(
+        &quot;nombre&quot;=&gt;&quot;String&quot;,
+        &quot;edad&quot;=&gt;&quot;Int&quot;)
+
+      ,&quot;tipo&quot;=&gt;&quot;Persona&quot;
+
+      )
+
+  )
+)
+
+
+resolvers=Dict(
+    &quot;Query&quot;=&gt;Dict(
+        &quot;neomatrix&quot; =&gt; (root,args,ctx,info)-&gt;(
+          return Dict(&quot;nombre&quot;=&gt;&quot;josue&quot;,&quot;edad&quot;=&gt;25,&quot;altura&quot;=&gt;10.5,&quot;spooilers&quot;=&gt;false)
+          )
+        ,&quot;persona&quot; =&gt; (root,args,ctx,info)-&gt;(return Dict(&quot;nombre&quot;=&gt;&quot;Diana&quot;,&quot;edad&quot;=&gt;14,&quot;altura&quot;=&gt;11.8,&quot;spooilers&quot;=&gt;true))
+    )
+    ,&quot;Persona&quot;=&gt;Dict(
+      &quot;edad&quot; =&gt; (root,args,ctx,info)-&gt;(return root[&quot;edad&quot;])
+    )
+    ,&quot;Mutation&quot;=&gt;Dict(
+        &quot;addPerson&quot; =&gt; (root,args,ctx,info)-&gt;(
+          return Dict(&quot;nombre&quot;=&gt;args[&quot;nombre&quot;],&quot;edad&quot;=&gt;args[&quot;edad&quot;],&quot;altura&quot;=&gt;10.5,&quot;spooilers&quot;=&gt;false)
+          )
+    )
+)
+
+
+ my_schema = Schema(schema, resolvers)
+</code></pre><p>Just like in queries, if the mutation field returns an object type, you can ask for nested fields. This can be useful for fetching the new state of an object after an update. Let&#39;s look at a simple example mutation:</p><pre><code class="language-julia">my_schema.execute(&quot;&quot;&quot;
+mutation mutationwithvariables(\$dato: DataInputType){
+  addPerson(data: \$dato ){
+    nombre,
+    edad
+  }
+}
+&quot;&quot;&quot;,Variables=Dict(&quot;dato&quot;=&gt;Dict(&quot;edad&quot;=&gt;20,&quot;nombre&quot;=&gt;&quot;bob&quot;)))
+#{&quot;data&quot;:{&quot;addPerson&quot;:{&quot;edad&quot;:20,&quot;nombre&quot;:&quot;bob&quot;}}}</code></pre><p>Note how <code>addPerson</code> field returns the <code>nombre</code> and <code>edad</code> fields of the newly created review. This is especially useful when mutating existing data, for example, when incrementing a field, since we can mutate and query the new value of the field with one request.</p><p>You might also notice that, in this example, the <code>data</code> variable we passed in is not a scalar. It&#39;s an <em>input object type</em>, a special kind of object type that can be passed in as an argument. Learn more about input types on the Schemas and Types seccion.</p><h2><a class="nav-anchor" id="Multiple-fields-in-mutations-1" href="#Multiple-fields-in-mutations-1">Multiple fields in mutations</a></h2><p>A mutation can contain multiple fields, just like a query. There&#39;s one important distinction between queries and mutations, other than the name:</p><p><strong>While query fields are executed in parallel (in this version the execution is in series), mutation fields run in series, one after the other.</strong></p><p>This means that if we send two <code>incrementCredits</code> mutations in one request, the first is guaranteed to finish before the second begins, ensuring that we don&#39;t end up with a race condition with ourselves.</p><h1><a class="nav-anchor" id="Execution-1" href="#Execution-1">Execution</a></h1><p>After being validated, a GraphQL query is executed by a GraphQL server which returns a result that mirrors the shape of the requested query, as JSON.</p><p>GraphQL cannot execute a query without a type system, let&#39;s use an example type system to illustrate executing a query. This is a part of the same type system used throughout the examples:</p><pre><code class="language-julia">#schema-first
+&quot;&quot;&quot;
+type Persona {
+  nombre: String
+  edad: Int
+}
+ type Query{
+  persona: Persona
+  neomatrix: Persona
+}
+&quot;&quot;&quot;
+
+# code-first
+schema = Dict(
+&quot;query&quot; =&gt; &quot;Query&quot;
+,&quot;Query&quot;   =&gt; Dict(
+    &quot;persona&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Persona&quot;)
+     ,&quot;neomatrix&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Persona&quot;)
+   )
+,&quot;Persona&quot; =&gt; Dict(
+    &quot;edad&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;Int&quot;)
+    ,&quot;nombre&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+  )
+)
+
+</code></pre><p>In order to describe what happens when a query is executed, let&#39;s use an example to walk through.</p><pre><code class="language-julia">query{
+  neomatrix{
+  	nombre
+  }
+}</code></pre><p>You can think of each field in a GraphQL query as a function or method of the previous type which returns the next type. In fact, this is exactly how GraphQL works. Each field on each type is backed by a function called the <em>resolver</em> which is provided by the GraphQL server developer. When a field is executed, the corresponding <em>resolver</em> is called to produce the next value.</p><p>If a field produces a scalar value like a string or number, then the execution completes. However if a field produces an object value then the query will contain another selection of fields which apply to that object. This continues until scalar values are reached. GraphQL queries always end at scalar values.</p><h2><a class="nav-anchor" id="Root-fields-and-resolvers-1" href="#Root-fields-and-resolvers-1">Root fields &amp; resolvers</a></h2><p>At the top level of every GraphQL server is a type that represents all of the possible entry points into the GraphQL API, it&#39;s often called the <em>Root</em> type or the <em>Query</em> type.</p><p>In this example, our Query type provides a field called <code>persona</code> which accepts the argument <code>nombre</code>. The resolver function for this field likely accesses a database and then constructs and returns a <code>Persona</code> object.</p><pre><code class="language-julia">resolvers=Dict(
+    &quot;Query&quot;=&gt;Dict(
+        &quot;neomatrix&quot; =&gt; (root,args,ctx,info)-&gt;(
+        	return Dict(&quot;nombre&quot;=&gt;&quot;josue&quot;,&quot;edad&quot;=&gt;25,&quot;altura&quot;=&gt;10.5,&quot;spooilers&quot;=&gt;false)
+        	)
+        ,&quot;persona&quot; =&gt; (root,args,ctx,info)-&gt;(
+        	return Dict(&quot;nombre&quot;=&gt;&quot;Diana&quot;,&quot;edad&quot;=&gt;14,&quot;altura&quot;=&gt;11.8,&quot;spooilers&quot;=&gt;true)
+        	)
+    )
+)</code></pre><p>A resolver function receives four arguments:</p><ul><li><code>root</code> The previous object, which for a field on the root Query type is often not used.</li><li><code>args</code> The arguments provided to the field in the GraphQL query.</li><li><code>context</code> A value which is provided to every resolver and holds important contextual information like the currently logged in user, or access to a database.</li><li><code>info</code> A value which holds field-specific information relevant to the current query as well as the schema details.</li></ul><h3><a class="nav-anchor" id="Context-1" href="#Context-1">Context</a></h3><p>The context variable is used to pass data between the resolvers or to store global variables, its value is defined when creating the scheme</p><pre><code class="language-julia"> my_schema = Schema(schema, resolvers, context=Dict(&quot;data&quot;=&gt;&quot;datacontext&quot;))</code></pre><h2><a class="nav-anchor" id="Trivial-resolvers-1" href="#Trivial-resolvers-1">Trivial resolvers</a></h2><p>Now that a <code>Persona</code> object is available, GraphQL execution can continue with the fields requested on it.</p><pre><code class="language-julia">resolvers=Dict(
+    &quot;Query&quot;=&gt;Dict(
+        &quot;neomatrix&quot; =&gt; (root,args,ctx,info)-&gt;(
+        	return Dict(&quot;nombre&quot;=&gt;&quot;josue&quot;,&quot;edad&quot;=&gt;25,&quot;altura&quot;=&gt;10.5,&quot;spooilers&quot;=&gt;false)
+        	)
+        ,&quot;persona&quot; =&gt; (root,args,ctx,info)-&gt;(
+        	return Dict(&quot;nombre&quot;=&gt;&quot;Diana&quot;,&quot;edad&quot;=&gt;14,&quot;altura&quot;=&gt;11.8,&quot;spooilers&quot;=&gt;true)
+        	)
+    )
+    ,&quot;Persona&quot;=&gt;Dict(
+      &quot;edad&quot; =&gt; (root,args,ctx,info)-&gt;(
+      	return root[&quot;edad&quot;])
+    )
+)</code></pre><p>A GraphQL server is powered by a type system which is used to determine what to do next. Even before the <code>persona</code> field returns anything, GraphQL knows that the next step will be to resolve fields on the <code>Persona</code> type since the type system tells it that the <code>persona</code> field will return a <code>Persona</code>.</p><p>Resolving age in this case is very straight-forward. The name resolver function is called and the <code>root</code> argument is the <code>new Persona</code> object returned from the previous field. In this case, we expect that Human object to have a <code>edad</code> property which we can read and return directly.</p><p>In fact, Diana will allow you to skip resolvers that simple and will simply assume that if a resolver is not provided for a field, a property of the same name must be read and returned</p><h2><a class="nav-anchor" id="Producing-the-result-1" href="#Producing-the-result-1">Producing the result</a></h2><p>As each field is resolved, the resulting value is placed into a dictionary with the field name as the key and the resolved value as the value, this continues from the bottom leaf fields of the query all the way back up to the original field on the root Query type. Collectively these produce a structure that mirrors the original query which can then be sent (JSON) to the client which requested it.</p><p>Let&#39;s take one last look at the original query to see how all these resolving functions produce a result:</p><pre><code class="language-julia">{
+  persona{
+    nombre
+  }
+}</code></pre><p>result:</p><pre><code class="language-none">{&quot;datos&quot;:{
+  &quot;persona&quot;:{
+    &quot;nombre&quot;:&quot;Diana&quot;
+    }
+  }
+}</code></pre><h1><a class="nav-anchor" id="Tools-1" href="#Tools-1">Tools</a></h1><p>Diana provides the Parser and the Lexer of the graphql for anyone to create their own tools and implementations</p><p>The lexer is built based on the <a href="https://github.com/KristofferC/Tokenize.jl">Tokenize</a> package code and the Parser on the <a href="https://github.com/graphql/graphql-js">graphql-js</a> package. <strong>Thanks people.</strong></p><h2><a class="nav-anchor" id="Parser-1" href="#Parser-1">Parser</a></h2><pre><code class="language-julia">using Diana
+
+Parse(&quot;&quot;&quot;
+      #
+      query {
+        Region(name: &quot;The North&quot;) {
+          NobleHouse(name: &quot;Stark&quot;) {
+            castle {
+              name
+            }
+            members{
+              name
+              alias
+            }
+          }
+        }
+      }
+      &quot;&quot;&quot;)</code></pre><p>result:</p><pre><code class="language-none"> &lt; Node :: Document ,definitions : Diana.Node[
+ &lt; Node :: OperationDefinition ,operation : query ,selectionSet :
+ &lt; Node :: SelectionSet ,selections : Diana.Node[
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : Region &gt;  ,arguments : Diana.Argument[
+ &lt; Node :: Argument ,name :
+ &lt; Node :: Name ,value : name &gt;  ,value : (&quot;:&quot;,
+ &lt; Node :: StringValue ,value : The North &gt; ) &gt; ] ,selectionSet :
+ &lt; Node :: SelectionSet ,selections : Diana.Node[
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : NobleHouse &gt;  ,arguments : Diana.Argument[
+ &lt; Node :: Argument ,name :
+ &lt; Node :: Name ,value : name &gt;  ,value : (&quot;:&quot;,
+ &lt; Node :: StringValue ,value : Stark &gt; ) &gt; ] ,selectionSet :
+ &lt; Node :: SelectionSet ,selections : Diana.Node[
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : castle &gt;  ,selectionSet :
+ &lt; Node :: SelectionSet ,selections : Diana.Node[
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : name &gt;  &gt; ] &gt;  &gt; ,
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : members &gt;  ,selectionSet :
+ &lt; Node :: SelectionSet ,selections : Diana.Node[
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : name &gt;  &gt; ,
+ &lt; Node :: Field ,name :
+ &lt; Node :: Name ,value : alias &gt;  &gt; ] &gt;  &gt; ] &gt;  &gt; ] &gt;  &gt; ] &gt;  &gt; ] &gt;</code></pre><h2><a class="nav-anchor" id="Lexer-1" href="#Lexer-1">Lexer</a></h2><pre><code class="language-julia">using Diana
+
+Tokensgraphql(&quot;&quot;&quot;
+              #
+              query {
+                Region(name: &quot;The North&quot;) {
+                  NobleHouse(name: &quot;Stark&quot;) {
+                    castle {
+                      name
+                    }
+                    members {
+                      name
+                      alias
+                    }
+                  }
+                }
+              }
+              &quot;&quot;&quot;)</code></pre><p>result:</p><pre><code class="language-none">29-element Array{Diana.Tokens.Token,1}:
+ NAME           query               2,15 - 2,19
+ LBRACE         {                   2,21 - 2,21
+ NAME           Region              3,31 - 3,36
+ LPAREN         (                   3,37 - 3,37
+ NAME           name                3,38 - 3,41
+ COLON          :                   3,42 - 3,42
+ STRING         The North           3,44 - 3,54
+ RPAREN         )                   3,55 - 3,55
+ LBRACE         {                   3,57 - 3,57
+ NAME           NobleHouse          4,49 - 4,58
+ LPAREN         (                   4,59 - 4,59
+ NAME           name                4,60 - 4,63
+ COLON          :                   4,64 - 4,64
+ STRING         Stark               4,66 - 4,72
+ RPAREN         )                   4,73 - 4,73
+ LBRACE         {                   4,75 - 4,75
+ NAME           castle              5,69 - 5,74
+ LBRACE         {                   5,76 - 5,76
+ NAME           name                6,91 - 6,94
+ RBRACE         }                   7,111 - 7,111
+ NAME           members             8,131 - 8,137
+ LBRACE         {                   8,139 - 8,139
+ NAME           name                9,153 - 9,156
+ NAME           alias               10,175 - 10,179
+ RBRACE         }                   11,195 - 11,195
+ RBRACE         }                   12,213 - 12,213
+ RBRACE         }                   13,229 - 13,229
+ RBRACE         }                   14,243 - 14,243
+ ENDMARKER                          15,257 - 15,257</code></pre><footer><hr/><a class="previous" href="../"><span class="direction">Previous</span><span class="title">Home</span></a></footer></article></body></html>

@@ -1,321 +1,52 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>- · Diana.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>Diana.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>-</a><ul class="internal"><li><a class="toctext" href="#About-1">About</a></li><li><a class="toctext" href="#Installing-1">Installing</a></li><li><a class="toctext" href="#Client-1">Client</a></li><li><a class="toctext" href="#Lexer-1">Lexer</a></li><li><a class="toctext" href="#Parser-1">Parser</a></li><li><a class="toctext" href="#Execute-1">Execute</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>-</a></li></ul><a class="edit-page" href="https://github.com/codeneomatrix/Diana.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>-</span><a class="fa fa-bars" href="#"></a></div></header><h2><a class="nav-anchor" id="About-1" href="#About-1">About</a></h2><p>This repository is an implementation of a GraphQL server, a query language for API created by Facebook. See more complete documentation at http://graphql.org/</p><p>Looking for help? Find resources from the community.</p><h3><a class="nav-anchor" id="Getting-Started-1" href="#Getting-Started-1">Getting Started</a></h3><p>An overview of GraphQL in general is available in the <a href="https://github.com/facebook/graphql/blob/master/README.md">README</a> for the Specification for GraphQL.</p><p>This package is intended to help you building GraphQL schemas/types fast and easily.</p><ul><li><strong>Easy to use:</strong> Diana.jl helps you use GraphQL in Julia without effort.</li><li><strong>Data agnostic:</strong> Diana.jl supports any type of data source: SQL, NoSQL, etc. The intent is to provide a complete API and make your data available through GraphQL.</li><li><strong>Make queries:</strong> Diana.jl allows queries to graphql schemas</li></ul><h2><a class="nav-anchor" id="Installing-1" href="#Installing-1">Installing</a></h2><pre><code class="language-julia">Pkg&gt; add Diana
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · Diana.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><a href="client/"><img class="logo" src="assets/logo.png" alt="Diana.jl logo"/></a><h1>Diana.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="client/">Client</a></li><li class="current"><a class="toctext" href>Home</a><ul class="internal"><li><a class="toctext" href="#Diana.jl-1">Diana.jl</a></li><li><a class="toctext" href="#Installation-1">Installation</a></li><li><a class="toctext" href="#An-example-in-Diana-1">An example in Diana</a></li><li><a class="toctext" href="#Querying-1">Querying</a></li><li><a class="toctext" href="#Manual-1">Manual</a></li><li><a class="toctext" href="#Functions-1">Functions</a></li><li><a class="toctext" href="#Index-1">Index</a></li></ul></li><li><a class="toctext" href="server/">Server</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul><a class="edit-page" href="https://github.com/codeneomatrix/Diana.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Home-1" href="#Home-1">Home</a></h1><h3><a class="nav-anchor" id="Getting-Started-1" href="#Getting-Started-1">Getting Started</a></h3><p>GraphQL is a query language for API created by Facebook. See more complete documentation at <a href="http://graphql.org/">http://graphql.org/</a>. Looking for help? Find resources from the community.</p><p>An overview of GraphQL in general is available in the <a href="https://github.com/facebook/graphql/blob/master/README.md">README</a> for the Specification for GraphQL.</p><h2><a class="nav-anchor" id="Diana.jl-1" href="#Diana.jl-1">Diana.jl</a></h2><p>Diana is a library that provides tools to implement a GraphQL API in Julia using both the code-first like <a href="https://github.com/graphql-python/graphene#examples">Graphene</a> (Python) approach and the schema-first like <a href="https://github.com/mirumee/ariadne/#quickstart">Ariadne</a> (Python). Diana produces schemas that are fully compliant with the GraphQL spec.</p><p>This package is intended to help you building GraphQL schemas/types fast and easily.</p><ul><li><strong>Easy to use:</strong> Diana.jl helps you use GraphQL in Julia without effort.</li><li><strong>Data agnostic:</strong> Diana.jl supports any type of data source: SQL, NoSQL, etc. The intent is to provide a complete API and make your data available through GraphQL.</li><li><strong>Make queries:</strong> Diana.jl allows queries to graphql schemas.</li></ul><h2><a class="nav-anchor" id="Installation-1" href="#Installation-1">Installation</a></h2><pre><code class="language-julia">Pkg&gt; add Diana
 #Release
 pkg&gt; add Diana#master
-#Development</code></pre><h2><a class="nav-anchor" id="Client-1" href="#Client-1">Client</a></h2><h3><a class="nav-anchor" id="Simple-query-1" href="#Simple-query-1">Simple query</a></h3><pre><code class="language-julia">using Diana
+#Development</code></pre><h2><a class="nav-anchor" id="An-example-in-Diana-1" href="#An-example-in-Diana-1">An example in Diana</a></h2><p>Let’s build a basic GraphQL schema to say “hello” and “goodbye” in Diana.</p><pre><code class="language-julia">using Diana
 
-query = &quot;&quot;&quot;
-        {
-          neomatrix{
-            nombre
-            linkedin
-          }
-        }
-        &quot;&quot;&quot;
+schema = Dict(
+&quot;query&quot; =&gt; &quot;Query&quot;
+,&quot;Query&quot;   =&gt; Dict(
+    &quot;hello&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+   ,&quot;goodbye&quot;=&gt;Dict(&quot;tipo&quot;=&gt;&quot;String&quot;)
+   )
+)
 
-r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,
-                query,
-                headers = Dict(&quot;header&quot; =&gt; &quot;value&quot;))
-r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-julia">{
-  &quot;data&quot;:{
-    &quot;neomatrix&quot;:{
-        &quot;nombre&quot;:&quot;Acevedo Maldonado Josue&quot;,
-        &quot;linkedin&quot;:&quot;https://www.linkedin.com/in/acevedo-maldonado-josue/&quot;
-    }
-  }
-}</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
-        query consulta {
-          neomatrix {
-            nombre
-            linkedin
-          }
-        }
-
-        query hola {
-          neomatrix {
-            nombre
-          }
-        }
-        &quot;&quot;&quot;
-r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,query,operationName=&quot;hola&quot;)
-r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-none">{&quot;data&quot;:{&quot;neomatrix&quot;:{&quot;nombre&quot;:&quot;Acevedo Maldonado Josue&quot;}}}</code></pre><pre><code class="language-julia">using Diana
-github_endpoint = &quot;https://api.github.com/graphql&quot;
-github_user = # GitHub handle
-github_token = # GitHub personal token
-github_header = Dict(&quot;User-Agent&quot; =&gt; github_user)
-client = GraphQLClient(github_endpoint,
-                       auth = &quot;bearer $github_token&quot;,
-                       headers = github_header)
-query = &quot;&quot;&quot;
-        query A{
-          rateLimit {
-            cost
-            remaining
-            resetAt
-          }
-          repository(owner: &quot;JuliaLang&quot;, name: &quot;Julia&quot;) {
-            id
-          }
-        }&quot;&quot;&quot;
-
-r = client.Query(query, operationName = &quot;A&quot;)
-r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><h3><a class="nav-anchor" id="Query-1" href="#Query-1">Query</a></h3><pre><code class="language-julia">using Diana
-
-client = GraphQLClient(&quot;https://api.graph.cool/simple/v1/movies&quot;)
-client.serverAuth(&quot;Bearer my-jwt-token&quot;)
-client.headers(Dict(&quot;header&quot;=&gt;&quot;value&quot;))
-
-or
-
-client = GraphQLClient(&quot;https://api.graph.cool/simple/v1/movies&quot;,auth=&quot;Bearer my-jwt-token&quot;,headers=Dict(&quot;header&quot;=&gt;&quot;value&quot;))</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
-        {
-          Movie(title: &quot;Inception&quot;){
-            actors{
-              name
-            }
-          }
-        }
-        &quot;&quot;&quot;
-
-r = client.Query(query)
-r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-julia">{
-  &quot;data&quot;:{
-    &quot;Movie&quot;:{
-      &quot;actors&quot;:[
-        {
-          &quot;name&quot;:&quot;Leonardo DiCaprio&quot;
-        },
-        {
-          &quot;name&quot;:&quot;Ellen Page&quot;
-        },
-        {
-          &quot;name&quot;:&quot;Tom Hardy&quot;
-        },
-        {
-          &quot;name&quot;:&quot;Joseph Gordon-Levitt&quot;
-        },
-        {
-          &quot;name&quot;:&quot;Marion Cotillard&quot;
-        }
-      ]
-    }
-  }
-}</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
-        query getMovie(\$title: String!) {
-          Movie(title:\$title) {
-            releaseDate
-            actors {
-              name
-            }
-          }
-        }
-        &quot;&quot;&quot;
-r = client.Query(query, vars= Dict(&quot;title&quot; =&gt; &quot;Inception&quot;))
-
-println(r.Data)</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
-        query consulta {
-          Movie(title: &quot;Inception&quot;) {
-            actors{
-              name
-            }
-          }
-        }
-        query hola {
-          Movie(title: &quot;Inception&quot;) {
-            actors{
-              name
-            }
-          }
-        }
-        &quot;&quot;&quot;
-r = client.Query(query, operationName = &quot;consulta&quot;)
-r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><p>result:</p><pre><code class="language-none">{&quot;data&quot;:{&quot;Movie&quot;:{&quot;actors&quot;:[{&quot;name&quot;:&quot;Leonardo DiCaprio&quot;},{&quot;name&quot;:&quot;Ellen Page&quot;},{&quot;name&quot;:&quot;Tom Hardy&quot;},{&quot;name&quot;:&quot;Joseph Gordon-Levitt&quot;},{&quot;name&quot;:&quot;Marion Cotillard&quot;}]}}}</code></pre><h3><a class="nav-anchor" id="Change-serverUrl-1" href="#Change-serverUrl-1">Change serverUrl</a></h3><pre><code class="language-julia">client.serverUrl(&quot;https://api.graph.cool/simple/v1/movies&quot;)</code></pre><h3><a class="nav-anchor" id="Change-headers-1" href="#Change-headers-1">Change headers</a></h3><pre><code class="language-julia">client.headers(Dict(&quot;header&quot; =&gt; &quot;value&quot;))</code></pre><h3><a class="nav-anchor" id="Change-serverAuth-1" href="#Change-serverAuth-1">Change serverAuth</a></h3><pre><code class="language-julia">client.serverAuth(&quot;Bearer my-jwt-token&quot;)</code></pre><h3><a class="nav-anchor" id="Query-get-1" href="#Query-get-1">Query get</a></h3><pre><code class="language-julia">query=&quot;https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D&quot;
-r = Queryclient(query)
-r.Info.status == 200 &amp;&amp; println(r.Data)</code></pre><h3><a class="nav-anchor" id="Link-1" href="#Link-1">Link</a></h3><p>It is possible to get links to the graphql query editor</p><pre><code class="language-julia">query = &quot;&quot;&quot;
-        {
-          neomatrix{
-            nombre
-            linkedin
-          }
-        }
-        &quot;&quot;&quot;
-r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,query,getlink=true)</code></pre><p>result:</p><pre><code class="language-none">&quot;https://neomatrix.herokuapp.com/graphql?query=%7B%0A%20%20neomatrix%7B%0A%20%20%20%20nombre%0A%20%20%20%20linkedin%0A%20%20%7D%0A%7D%0A&quot;</code></pre><p>or</p><pre><code class="language-julia">r = client.Query(query, getlink = true)</code></pre><p>result:</p><pre><code class="language-none">&quot;https://api.graph.cool/simple/v1/movies?query=%7B%0A%20%20Movie%28title%3A%20%22Inception%22%29%7B%0A%20%20%20%20actors%7B%0A%20%20%20%20%20%20name%0A%20%20%20%20%7D%0A%20%20%7D%0A%7D%0A&quot;</code></pre><pre><code class="language-julia">query = &quot;&quot;&quot;
-        query consulta {
-          neomatrix {
-            nombre
-          }
-        }
-        query hola {
-          neomatrix {
-            nombre
-            linkedin
-          }
-        }
-        &quot;&quot;&quot;
-r = Queryclient(&quot;https://neomatrix.herokuapp.com/graphql&quot;,
-                query,
-                getlink = true,
-                operationName = &quot;consulta&quot;)</code></pre><p>result:</p><pre><code class="language-none">&quot;https://neomatrix.herokuapp.com/graphql?query=query%20consulta%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%7D%0A%7D%0Aquery%20hola%7B%0A%20%20neomatrix%7B%0A%20%20%20%20%20%20nombre%0A%20%20%20%20%20%20linkedin%0A%20%20%20%20%7D%0A%7D%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20&amp;operationName=consulta&quot;</code></pre><h3><a class="nav-anchor" id="Validating-query-1" href="#Validating-query-1">Validating query</a></h3><p>It is possible to validate the query locally before sending the request, only basic validations are carried out.</p><pre><code class="language-julia">query = &quot;&quot;&quot;
-        {
-          neomatrix{
-            nombre
-            linkedin
-          }
-        }
-        &quot;&quot;&quot;
-r = Queryclient(query, check = true)</code></pre><p>result:</p><pre><code class="language-none">&quot;ok&quot;</code></pre><pre><code class="language-julia"> query = &quot;&quot;&quot;
-         {
-         }
-         neomatrix {
-           nombre
-           linkedin
-         }
-         }
-         &quot;&quot;&quot;
-r = Queryclient(query, true)</code></pre><p>result:</p><pre><code class="language-none">ERROR: {&quot;errors&quot;:[{&quot;locations&quot;: [{&quot;column&quot;: 3,&quot;line&quot;: 2}],&quot;message&quot;: &quot;Syntax Error GraphQL request (3:2) Expected NAME, found } &quot;}]}</code></pre><pre><code class="language-julia">r = client.Query(query, check = true)</code></pre><h4><a class="nav-anchor" id="Note-1" href="#Note-1">Note</a></h4><p>The lexer is built based on the <a href="https://github.com/KristofferC/Tokenize.jl">Tokenize</a> package code and the Parser on the <a href="https://github.com/graphql/graphql-js">graphql-js</a> package</p><h3><a class="nav-anchor" id="Thanks-people-1" href="#Thanks-people-1">Thanks people</a></h3><h2><a class="nav-anchor" id="Lexer-1" href="#Lexer-1">Lexer</a></h2><pre><code class="language-julia">using Diana
-
-Tokensgraphql(&quot;&quot;&quot;
-              #
-              query {
-                Region(name: &quot;The North&quot;) {
-                  NobleHouse(name: &quot;Stark&quot;) {
-                    castle {
-                      name
-                    }
-                    members {
-                      name
-                      alias
-                    }
-                  }
-                }
-              }
-              &quot;&quot;&quot;)</code></pre><p>result:</p><pre><code class="language-none">29-element Array{Diana.Tokens.Token,1}:
- NAME           query               2,1 - 2,5
- LBRACE         {                   2,7 - 2,7
- NAME           Region              3,3 - 3,8
- LPAREN         (                   3,9 - 3,9
- NAME           name                3,10 - 3,13
- COLON          :                   3,14 - 3,14
- STRING         \&quot;The North\&quot;       3,15 - 3,25
- RPAREN         )                   3,26 - 3,26
- LBRACE         {                   3,28 - 3,28
- NAME           NobleHouse          4,7 - 4,16
- LPAREN         (                   4,17 - 4,17
- NAME           name                4,18 - 4,21
- COLON          :                   4,22 - 4,22
- STRING         \&quot;Stark\&quot;           4,23 - 4,29
- RPAREN         )                   4,30 - 4,30
- LBRACE         {                   4,31 - 4,31
- NAME           castle              5,9 - 5,14
- LBRACE         {                   5,15 - 5,15
- NAME           name                6,11 - 6,14
- RBRACE         }                   7,9 - 7,9
- NAME           members             8,9 - 8,15
- LBRACE         {                   8,16 - 8,16
- NAME           name                9,11 - 9,14
- NAME           alias               10,11 - 10,15
- RBRACE         }                   11,7 - 11,7
- RBRACE         }                   12,5 - 12,5
- RBRACE         }                   13,3 - 13,3
- RBRACE         }                   14,1 - 14,1
- ENDMARKER                          15,1 - 15,0</code></pre><h2><a class="nav-anchor" id="Parser-1" href="#Parser-1">Parser</a></h2><pre><code class="language-julia">using Diana
-
-Parse(&quot;&quot;&quot;
-      #
-      query {
-        Region(name: &quot;The North&quot;) {
-          NobleHouse(name: &quot;Stark&quot;) {
-            castle {
-              name
-            }
-            members{
-              name
-              alias
-            }
-          }
-        }
-      }
-      &quot;&quot;&quot;)</code></pre><p>result:</p><pre><code class="language-none"> &lt; Node :: Document ,definitions : Any[
- &lt; Node :: OperationDefinition ,operation : query ,selectionSet :
- &lt; Node :: SelectionSet ,selections : Main.Diana.Field[
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : Region &gt;  ,arguments : Main.Diana.Argument[
- &lt; Node :: Argument ,name :
- &lt; Node :: Name ,value : name &gt;  ,value : (&quot;:&quot;,
- &lt; Node :: StringValue ,value : &quot;The North&quot; &gt; ) &gt; ] ,selectionSet :
- &lt; Node :: SelectionSet ,selections : Main.Diana.Field[
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : NobleHouse &gt;  ,arguments : Main.Diana.Argument[
- &lt; Node :: Argument ,name :
- &lt; Node :: Name ,value : name &gt;  ,value : (&quot;:&quot;,
- &lt; Node :: StringValue ,value : &quot;Stark&quot; &gt; ) &gt; ] ,selectionSet :
- &lt; Node :: SelectionSet ,selections : Main.Diana.Field[
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : castle &gt;  ,selectionSet :
- &lt; Node :: SelectionSet ,selections : Main.Diana.Field[
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : name &gt;  &gt; ] &gt;  &gt; ,
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : members &gt;  ,selectionSet :
- &lt; Node :: SelectionSet ,selections : Main.Diana.Field[
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : name &gt;  &gt; ,
- &lt; Node :: Field ,name :
- &lt; Node :: Name ,value : alias &gt;  &gt; ] &gt;  &gt; ] &gt;  &gt; ] &gt;  &gt; ] &gt;  &gt; ] &gt;</code></pre><h2><a class="nav-anchor" id="Execute-1" href="#Execute-1">Execute</a></h2><pre><code class="language-julia">using Diana
-
-schema= &quot;&quot;&quot;
-        type Persona {
-          nombre: String
-          edad: Int
-        }
-
-        type Query {
-          persona: Persona
-          neomatrix: Persona
-        }
-
-        schema {
-          query: Query
-        }
-        &quot;&quot;&quot;
-
-resolvers = Dict(
-    &quot;Query_neomatrix&quot; =&gt; (obj, args, ctx, info) -&gt; (return Dict(&quot;nombre&quot; =&gt; &quot;josue&quot;, &quot;edad&quot; =&gt; 5)),
-    &quot;Query_persona&quot; =&gt; (obj, args, ctx, info) -&gt; begin
-        return Dict(&quot;nombre&quot; =&gt; &quot;Diana&quot;, &quot;edad&quot; =&gt; 15)
-    end,
-    &quot;Persona_nombre&quot; =&gt; (obj, args, ctx, info) -&gt; (return ctx[&quot;nombre&quot;]),
-    &quot;Persona_edad&quot; =&gt; (obj, args, ctx, info) -&gt; (return ctx[&quot;edad&quot;])
+resolvers=Dict(
+    &quot;Query&quot;=&gt;Dict(
+        &quot;hello&quot; =&gt; (root,args,ctx,info)-&gt;(return &quot;Hello World!&quot;)
+        ,&quot;goodbye&quot; =&gt; (root,args,ctx,info)-&gt;(return &quot;Goodbye World&quot;)
     )
+)
 
 my_schema = Schema(schema, resolvers)
+</code></pre><p>For each Field in our Schema, we write a Resolver method to fetch data requested by a client’s Query using the current context and Arguments.</p><h3><a class="nav-anchor" id="Schema-Definition-Language-(SDL)-1" href="#Schema-Definition-Language-(SDL)-1">Schema Definition Language (SDL)</a></h3><p>In the GraphQL Schema Definition Language, we could describe the fields defined by our example code as show below.</p><pre><code class="language-julia">using Diana
 
-query = &quot;&quot;&quot;
-        query {
-          neomatrix {
-            nombre
-          }
-        }
-        &quot;&quot;&quot;
-data = my_schema.execute(query)
-</code></pre><p>result:</p><pre><code class="language-none">{&quot;datos&quot;:{
-  &quot;neomatrix&quot;:{
-    &quot;nombre&quot;:&quot;josue&quot;
-    }
-  }
-}&quot;</code></pre><pre><code class="language-julia">
-query = &quot;&quot;&quot;
-        query {
-          persona {
-            nombre
-          }
-        }
-        &quot;&quot;&quot;
+ schema= &quot;&quot;&quot;
+ type Query{
+  hello: String
+  goodbye: String
+}
+ schema {
+  query: Query
+}
+&quot;&quot;&quot;
 
-data = my_schema.execute(query)
-</code></pre><p>result:</p><pre><code class="language-none">{&quot;datos&quot;:{
-  &quot;persona&quot;:{
-    &quot;nombre&quot;:&quot;Diana&quot;
-    }
-  }
-}</code></pre><footer><hr/></footer></article></body></html>
+resolvers=Dict(
+    &quot;Query&quot;=&gt;Dict(
+        &quot;hello&quot; =&gt; (root,args,ctx,info)-&gt;(return &quot;Hello World!&quot;)
+        ,&quot;goodbye&quot; =&gt; (root,args,ctx,info)-&gt;(return &quot;Goodbye World&quot;)
+    )
+)
+
+my_schema = Schema(schema, resolvers)
+</code></pre><h2><a class="nav-anchor" id="Querying-1" href="#Querying-1">Querying</a></h2><p>Then we can start querying our Schema by passing a GraphQL query string to execute:</p><pre><code class="language-julia">query= &quot;&quot;&quot;
+query{
+  hello
+}
+&quot;&quot;&quot;
+
+result = my_schema.execute(query)
+
+println(result)
+# {&quot;data&quot;:{&quot;hello&quot;:&quot;Hello World!&quot;}}</code></pre><p>Congrats! You got your first Diana schema working!</p><h2><a class="nav-anchor" id="Manual-1" href="#Manual-1">Manual</a></h2><ul><li><a href="client/#Client-1">Client</a></li><ul><li><a href="client/#Simple-query-1">Simple query</a></li><li><a href="client/#Query-1">Query</a></li><li><a href="client/#Change-serverUrl-1">Change serverUrl</a></li><li><a href="client/#Change-headers-1">Change headers</a></li><li><a href="client/#Change-serverAuth-1">Change serverAuth</a></li><li><a href="client/#Query-get-1">Query get</a></li><li><a href="client/#Link-1">Link</a></li><li><a href="client/#Validating-query-1">Validating query</a></li></ul><li><a href="server/#Server-1">Server</a></li><li><a href="server/#Schemas-and-Types-1">Schemas and Types</a></li><ul><li><a href="server/#Type-system-1">Type system</a></li><li><a href="server/#Object-types-and-fields-1">Object types and fields</a></li><li><a href="server/#Arguments-1">Arguments</a></li><li><a href="server/#The-Query-and-Mutation-types-1">The Query and Mutation types</a></li><li><a href="server/#Scalar-types-1">Scalar types</a></li><li><a href="server/#Input-types-1">Input types</a></li></ul><li><a href="server/#Queries-and-Mutations-1">Queries and Mutations</a></li><ul><li><a href="server/#Fields-1">Fields</a></li><li><a href="server/#Arguments-2">Arguments</a></li><li><a href="server/#Operation-name-1">Operation name</a></li><li><a href="server/#Variables-1">Variables</a></li><li><a href="server/#Variable-definitions-1">Variable definitions</a></li><li><a href="server/#Mutations-1">Mutations</a></li><li><a href="server/#Multiple-fields-in-mutations-1">Multiple fields in mutations</a></li></ul><li><a href="server/#Execution-1">Execution</a></li><ul><li><a href="server/#Root-fields-and-resolvers-1">Root fields &amp; resolvers</a></li><ul><li><a href="server/#Context-1">Context</a></li></ul><li><a href="server/#Trivial-resolvers-1">Trivial resolvers</a></li><li><a href="server/#Producing-the-result-1">Producing the result</a></li></ul><li><a href="server/#Tools-1">Tools</a></li><ul><li><a href="server/#Parser-1">Parser</a></li><li><a href="server/#Lexer-1">Lexer</a></li></ul></ul><h2><a class="nav-anchor" id="Functions-1" href="#Functions-1">Functions</a></h2><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.Tokensgraphql-Tuple{String}" href="#Diana.Tokensgraphql-Tuple{String}"><code>Diana.Tokensgraphql</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">Tokensgraphql(x::String)</code></pre><p>Given an origin string, this returns the set of tokens that make up that source.</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/lexer.jl#L26-L30">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.Parse-Tuple{String}" href="#Diana.Parse-Tuple{String}"><code>Diana.Parse</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">Parse(str::String)</code></pre><p>Given a GraphQL source, parses it into a AST. Throws Diana.GraphQLError if a syntax error is encountered.</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/Parser.jl#L346-L351">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.Queryclient-Tuple{String}" href="#Diana.Queryclient-Tuple{String}"><code>Diana.Queryclient</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">Queryclient(queryurl::String)</code></pre><p>Execute the query in link format and return the result.</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/client.jl#L54-L58">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.Queryclient-Tuple{String,String}" href="#Diana.Queryclient-Tuple{String,String}"><code>Diana.Queryclient</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String=&quot;Bearer 0000&quot;, headers::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::String=&quot;&quot;)</code></pre><p>Execute a query with all available parameters</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/client.jl#L17-L21">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.GraphQLClient-Tuple{String}" href="#Diana.GraphQLClient-Tuple{String}"><code>Diana.GraphQLClient</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">GraphQLClient(url::String; auth::String=&quot;Bearer 0000&quot;, headers::Dict=Dict())</code></pre><p>Stores the parameters of the query for later use, returns a Client object</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/client.jl#L64-L68">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.Schema-Tuple{String,Dict}" href="#Diana.Schema-Tuple{String,Dict}"><code>Diana.Schema</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">Schema(_schema::String, resolvers::Dict; context=nothing)</code></pre><p>Receive a schema in string format or in a text file, return an object of type schema</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/Schema.jl#L14-L18">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="Diana.Schema-Tuple{Dict,Dict}" href="#Diana.Schema-Tuple{Dict,Dict}"><code>Diana.Schema</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-julia">Schema(_schema::Dict, resolvers::Dict; context=nothing)</code></pre><p>Receive a schema in dictionary format, return an object of type schema</p></div></div><a class="source-link" target="_blank" href="https://github.com/codeneomatrix/Diana.jl/blob/7b97e2ab3e4b58fb69763f37fe6f15b1b96f4aec/src/Schema.jl#L36-L39">source</a></section><h2><a class="nav-anchor" id="Index-1" href="#Index-1">Index</a></h2><ul><li><a href="#Diana.GraphQLClient-Tuple{String}"><code>Diana.GraphQLClient</code></a></li><li><a href="#Diana.Parse-Tuple{String}"><code>Diana.Parse</code></a></li><li><a href="#Diana.Queryclient-Tuple{String}"><code>Diana.Queryclient</code></a></li><li><a href="#Diana.Queryclient-Tuple{String,String}"><code>Diana.Queryclient</code></a></li><li><a href="#Diana.Schema-Tuple{Dict,Dict}"><code>Diana.Schema</code></a></li><li><a href="#Diana.Schema-Tuple{String,Dict}"><code>Diana.Schema</code></a></li><li><a href="#Diana.Tokensgraphql-Tuple{String}"><code>Diana.Tokensgraphql</code></a></li></ul><footer><hr/><a class="previous" href="client/"><span class="direction">Previous</span><span class="title">Client</span></a><a class="next" href="server/"><span class="direction">Next</span><span class="title">Server</span></a></footer></article></body></html>
