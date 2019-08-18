@@ -1,15 +1,20 @@
-# Master
+# Diana v0.2.0
 
 ## New Features
 
+  - Refactor Client
   - Lexer Rewriting
   - Parser Rewriting
   - Query Execution Rewriting
+  - Schemas / Types code-first approach
+  - Arguments
+  - Extract variable values
+  - Mutation execution
 
 ## Bug fixes
 
 ## Deprecated or removed
-
+Removed Queryclient(data::String,check::Bool)
 # Diana v0.1.0
 
 ## New features
