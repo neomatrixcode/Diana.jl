@@ -1,6 +1,6 @@
 <p align="center"><img src="diana-banner.png" width="25%" ></p>
 <p align="center">
-<strong>A Julia GraphQL server implementation.</strong>
+<strong>A Julia GraphQL client/server implementation.</strong>
 <br><br>
 <a href="https://travis-ci.org/codeneomatrix/Diana.jl"><img src="https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master"></a>
 <a href="https://codecov.io/gh/codeneomatrix/Diana.jl">
@@ -37,7 +37,43 @@ pkg> add Diana#master
 ```
 
 ## Examples
+Client
+-------
+```julia
+query = """
+{
+  neomatrix{
+    nombre
+    linkedin
+  }
+}
+"""
 
+r = Queryclient("https://neomatrix.herokuapp.com/graphql",query)
+```
+
+```julia
+client = GraphQLClient("https://api.graph.cool/simple/v1/movies",auth="Bearer my-jwt-token")
+
+query2 = """
+query getMovie(\$title: String!) {
+  Movie(title:\$title) {
+    releaseDate
+    actors {
+      name
+    }
+  }
+}
+"""
+r = client.Query(query2,vars=Dict("title" => "Inception"))
+
+r.Data 
+# "{\"data\":{\"Movie\":{\"releaseDate\":\"2010-08-28T20:00:00.000Z\",\"actors\":[{\"name\":\"Leonardo DiCaprio\"},{\"name\":\"Ellen Page\"},{\"name\":\"Tom Hardy\"},{\"name\":\"Joseph Gordon-Levitt\"},{\"name\":\"Marion Cotillard\"}]}}}"
+
+```
+
+Server
+-------
 Here is one example for you to get started:
 
 ```julia
