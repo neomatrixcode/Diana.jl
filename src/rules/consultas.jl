@@ -175,7 +175,7 @@ struct FragmentUnknowNotUsed <:Rule
 			if (node.kind== "FragmentSpread") #usados
 				nombre = node.name.value
 				if( nombre in nombres)
-					deleteat!(nombres,findfirst(isequal(nombre), nombres))
+					deleteat!(nombres,findall(isequal(nombre), nombres))
 				else
 					if !(nombre in yausados)
 					push!(usados,nombre)
@@ -185,7 +185,7 @@ struct FragmentUnknowNotUsed <:Rule
 			if (node.kind== "FragmentDefinition")
 				valor= node.name.value
 				if(valor in usados)
-					deleteat!(usados,findfirst(isequal(valor), usados))
+					deleteat!(usados,findall(isequal(valor), usados))
 					if(!(valor in yausados))
 					    push!(yausados,valor)
 					end

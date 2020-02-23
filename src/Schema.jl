@@ -17,19 +17,18 @@ end
 Receive a schema in string format or in a text file, return an object of type schema
 """
 function Schema(_schema::String, resolvers::Dict; context=nothing)
-if '.' in _schema
-  _schema = open(_schema) do file
-      read(file, String)
-    end
-end
+  if '.' in _schema
+    _schema = open(_schema) do file
+        read(file, String)
+      end
+  end
 
-symbol_extract =getfield_types()
-vi= Visitante(Parse(_schema))
-vi.visitante(symbol_extract)
-symbol_table = symbol_extract.simbolos
+  symbol_extract =getfield_types()
+  vi= Visitante(Parse(_schema))
+  vi.visitante(symbol_extract)
+  symbol_table = symbol_extract.simbolos
 
-return Schema(symbol_table, resolvers, context=context)
-
+  return Schema(symbol_table, resolvers, context=context)
 end
 
 
