@@ -1,0 +1,10 @@
+#!/bin/sh
+
+JULIA="julia"
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    JULIA="/Applications/Julia-1.3.app/Contents/Resources/julia/bin/julia"
+fi
+
+
+$JULIA --color=yes --depwarn=no -q -i -- bootstrap.jl s "$@"

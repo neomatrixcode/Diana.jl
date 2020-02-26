@@ -1,0 +1,7 @@
+[deps]
+Diana = "070d9d8b-17a7-5814-83fa-42438ba5c6e0"
+Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+IJulia = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+LoggingExtras = "e6f89c97-d47a-5376-807f-9c37f3926c36"
+Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
