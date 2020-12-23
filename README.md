@@ -1,5 +1,5 @@
 <p align="center"><img src="diana_logo.png" width="25%" ></p>
-<h2>Diana.jl</h2>
+<h1 align="center">Diana.jl</h1>
 <p align="center">
 
 <strong>A Julia GraphQL client/server implementation.</strong>
