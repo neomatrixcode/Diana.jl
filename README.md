@@ -1,5 +1,7 @@
-<p align="center"><img src="diana-banner.png" width="25%" ></p>
+<p align="center"><img src="diana_logo.png" width="25%" ></p>
+<h2>Diana.jl</h2>
 <p align="center">
+
 <strong>A Julia GraphQL client/server implementation.</strong>
 <br><br>
 <a href="https://travis-ci.org/codeneomatrix/Diana.jl"><img src="https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master"></a>
