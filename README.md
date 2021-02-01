@@ -4,14 +4,14 @@
 
 <strong>A Julia GraphQL client/server implementation.</strong>
 <br><br>
-<a href="https://travis-ci.org/codeneomatrix/Diana.jl"><img src="https://travis-ci.org/codeneomatrix/Diana.jl.svg?branch=master"></a>
-<a href="https://codecov.io/gh/codeneomatrix/Diana.jl">
-  <img src="https://codecov.io/gh/codeneomatrix/Diana.jl/branch/master/graph/badge.svg" />
+<a href="https://travis-ci.org/neomatrixcode/Diana.jl"><img src="https://travis-ci.org/neomatrixcode/Diana.jl.svg?branch=master"></a>
+<a href="https://codecov.io/gh/neomatrixcode/Diana.jl">
+  <img src="https://codecov.io/gh/neomatrixcode/Diana.jl/branch/master/graph/badge.svg" />
 </a>
-<a href="https://codeneomatrix.github.io/Diana.jl/stable"><img src="https://img.shields.io/badge/docs-stable-blue.svg"></a>
-<a href="https://codeneomatrix.github.io/Diana.jl/dev"><img src="https://img.shields.io/badge/docs-dev-blue.svg"></a>
+<a href="https://neomatrixcode.github.io/Diana.jl/stable"><img src="https://img.shields.io/badge/docs-stable-blue.svg"></a>
+<a href="https://neomatrixcode.github.io/Diana.jl/dev"><img src="https://img.shields.io/badge/docs-dev-blue.svg"></a>
 <a href="https://www.repostatus.org/#active"><img src="https://www.repostatus.org/badges/latest/active.svg"></a>
-<a href="https://raw.githubusercontent.com/codeneomatrix/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
+<a href="https://raw.githubusercontent.com/neomatrixcode/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
 </p>
 
 #### Contributions welcomed!
@@ -144,4 +144,4 @@ result = my_schema.execute(query)
 ## Documentation
 
 Documentation and links to additional resources are available at
-https://codeneomatrix.github.io/Diana.jl/v0.2/
+https://neomatrixcode.github.io/Diana.jl/v0.2/
