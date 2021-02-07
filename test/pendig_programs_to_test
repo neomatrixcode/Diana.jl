@@ -1,0 +1,44 @@
+using Diana
+
+schema = """
+       input NestedInput {
+         aThing: String
+           bThing: String
+           }
+
+           input BaseInput {
+         nestedThing: NestedInput
+           otherThing: String
+       }
+
+       type Query {
+         hello: String
+       }
+
+       type Mutation {
+         failingFunction(input: BaseInput ): String
+       }
+
+       schema {
+         query: Query
+         mutation: Mutation
+       }"""
+
+
+resolvers = Dict(
+           "Query" => Dict(
+             "hello" => (root, args, ctx, info) -> (return "world")
+                 ),
+           "Mutation" => Dict(
+             "failingFunction" => (root, args, ctx, info) -> begin
+                     println(args)
+                             # ARGs will not properly parse and drop into this function
+           end
+           )
+       )
+
+my_schema = Schema(schema, resolvers)
+
+query=  "mutation { failingFunction(input:{nestedThing:{aThing:\"test\",bThing:\"test\"},otherThing:\"test\"}) }"
+
+result = my_schema.execute(query)
