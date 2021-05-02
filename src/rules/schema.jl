@@ -44,7 +44,7 @@ struct extract_operation <:Rule
     found = Dict()
     function enter(node::Node)
       if (active==true) && (node.kind == "OperationDefinition")
-        if node.name != nothing
+        if node.name !== nothing
            if (node.name.value == operationName)
               push!(found, "operation_type" => node.operation, "extracted_operation" => node)
               active=false

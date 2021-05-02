@@ -1096,7 +1096,7 @@ function Base.show(io::IO, x::Node)
       catch
         v=true
       end
-      if ((elemento!=nothing) & v)
+      if ((elemento!==nothing) & v)
         if(f == :kind)
           print(io,"Node :: ",elemento)
         elseif(f == :value) | (f == :operation)

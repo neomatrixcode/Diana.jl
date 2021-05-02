@@ -109,7 +109,7 @@ Depth = 5
 Tokensgraphql(x::String)
 Parse(str::String)
 Queryclient(queryurl::String)
-Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::String="")
+Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::Union{String, Nothing}=nothing)
 GraphQLClient(url::String; auth::String="Bearer 0000", headers::Dict=Dict())
 Schema(_schema::String, resolvers::Dict; context=nothing)
 Schema(_schema::Dict, resolvers::Dict; context=nothing)
