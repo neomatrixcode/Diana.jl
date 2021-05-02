@@ -15,11 +15,14 @@ end
 
 
 """
-    Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::String="")
+    Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::Union{String, Nothing}=nothing)
 
   Execute a query with all available parameters
 """
-function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="Bearer 0000", headers::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::String="")
+function Queryclient(url::String,data::String;
+					 vars::Dict=Dict(),auth::String="Bearer 0000",
+					 headers::Dict=Dict(),getlink::Bool=false,
+					 check::Bool=false,operationName::Union{String, Nothing}=nothing)
 
 	if (check)
 		Validatequery(Parse(data))
@@ -29,7 +32,7 @@ function Queryclient(url::String,data::String; vars::Dict=Dict(),auth::String="B
 		#------------
 		link =url*"?query="*HTTP.escapeuri(data)
 
-		if length(operationName)>0
+		if operationName !== nothing && length(operationName) > 0
            link=link*"&operationName="*operationName
 		end
 
@@ -84,7 +87,7 @@ function GraphQLClient(url::String; auth::String="Bearer 0000", headers::Dict=Di
 		my_auth= auth
 	end
 
-	function Query(data::String; vars::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::String="")
+	function Query(data::String; vars::Dict=Dict(),getlink::Bool=false,check::Bool=false,operationName::Union{String, Nothing}=nothing)
 
 		return Queryclient(my_url,data,vars=vars,auth=my_auth,headers=my_headersextras,getlink=getlink,operationName=operationName,check=check)
 

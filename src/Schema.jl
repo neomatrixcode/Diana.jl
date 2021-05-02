@@ -46,7 +46,7 @@ symbol_table = _schema
 
       count_operations = length(document.definitions)
 
-      if (count_operations > 1) && (operationName==nothing)
+      if (count_operations > 1) && (operationName === nothing)
         throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"No operation named.\"}]}"))
       end
 
@@ -55,7 +55,7 @@ symbol_table = _schema
        operation= nothing
        type_operation = " "
 
-       if operationName==nothing
+       if operationName === nothing
           operation= document
           type_operation= document.definitions[1].operation
       else
