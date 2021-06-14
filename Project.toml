@@ -9,4 +9,6 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 
 [compat]
+HTTP = "0.9"
+JSON = "0.21"
 julia = "1"
