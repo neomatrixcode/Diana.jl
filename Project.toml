@@ -2,7 +2,7 @@ name = "Diana"
 uuid = "070d9d8b-17a7-5814-83fa-42438ba5c6e0"
 authors = ["Josue Acevedo Maldonado <josuecevedo@gmail.com>"]
 repo = "https://github.com/neomatrixcode/Diana.jl.git"
-version = "0.2.0"
+version = "0.2.1"
 
 [deps]
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"

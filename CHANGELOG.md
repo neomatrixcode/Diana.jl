@@ -1,3 +1,13 @@
+# Diana v0.2.1
+
+## New Features
+
+  - make operationName default to nothing in client
+
+## Bug fixes
+
+## Deprecated or removed
+
 # Diana v0.2.0
 
 ## New Features
