@@ -8,7 +8,9 @@
   <img src="https://codecov.io/gh/neomatrixcode/Diana.jl/branch/master/graph/badge.svg" />
 </a>
 <a href="https://neomatrixcode.gitbook.io/diana/"><img src="https://img.shields.io/badge/docs-stable-blue.svg"></a>
-<a href="https://www.repostatus.org/#active"><img src="https://www.repostatus.org/badges/latest/active.svg"></a>
+<a href="https://juliahub.com/ui/Packages/Diana/Lt1mj?t=2"><img src="https://juliahub.com/docs/Diana/deps.svg"></a>
+<a href="https://juliahub.com/ui/Packages/Diana/Lt1mj"><img src="https://juliahub.com/docs/Diana/version.svg"></a>
+<a href="https://juliahub.com/ui/Packages/Diana/Lt1mj"><img src="https://juliahub.com/docs/Diana/pkgeval.svg"></a>
 <a href="https://raw.githubusercontent.com/neomatrixcode/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
 </p>
 
