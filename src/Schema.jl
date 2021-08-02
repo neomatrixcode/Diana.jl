@@ -12,11 +12,11 @@ function GetOperation(document::Node,operationName::String)
   return operation
 end
 """
-    Schema(_schema::String, resolvers::Dict; context=nothing)
+    Schema(_schema::String, resolvers::NamedTuple; context=nothing)
 
 Receive a schema in string format or in a text file, return an object of type schema
 """
-function Schema(_schema::String, resolvers::Dict; context=nothing)
+function Schema(_schema::String, resolvers::NamedTuple; context=nothing)
   if '.' in _schema
     _schema = open(_schema) do file
         read(file, String)
@@ -33,10 +33,10 @@ end
 
 
 """
-    Schema(_schema::Dict, resolvers::Dict; context=nothing)
-Receive a schema in dictionary format, return an object of type schema
+    Schema(_schema::NamedTuple, resolvers::NamedTuple; context=nothing)
+Receive a schema in NamedTuple format, return an object of type schema
 """
-function Schema(_schema::Dict, resolvers::Dict; context=nothing)
+function Schema(_schema::NamedTuple, resolvers::NamedTuple; context=nothing)
 
 symbol_table = _schema
 

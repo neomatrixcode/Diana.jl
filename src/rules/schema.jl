@@ -14,6 +14,7 @@ struct getfield_types <:Rule
         nombrecampo= node.name.value
         push!(simbolos[nombre], nombrecampo => Dict() )
         push!(simbolos[nombre][nombrecampo], "tipo" =>node.tipe.name.value )
+        push!(simbolos[nombre][nombrecampo], "value" =>"" )
 
         if length(node.arguments)>0
           push!(simbolos[nombre][nombrecampo], "args" => Dict() )

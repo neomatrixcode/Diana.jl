@@ -1085,27 +1085,41 @@ function parseDirectiveLocations(lexer::Lexer)
   return locations
 end
 
-function Base.show(io::IO, x::Node)
-  t = typeof(x)
-  print(io, "\n\e[33m < \e[37m")
-    for f in fieldnames(t)
-      elemento = getfield(x, f)
-      v= true
-      try
-        v = length(elemento)>0
-      catch
-        v=true
-      end
-      if ((elemento!==nothing) & v)
-        if(f == :kind)
-          print(io,"Node :: ",elemento)
-        elseif(f == :value) | (f == :operation)
-          print(io," ,",f ," : \e[92m",elemento,"\e[37m")
-        else
-          print(io," ,",f ," : ",elemento)
-        end
-      end
-    end
 
-  print(io,"\e[33m > \e[37m")
+function runner_Parser(elemento, field::Symbol, io::IO)
+  v= true
+
+  if(typeof(elemento) <: Array)
+    v = length(elemento)>0
+  end
+
+  if ((elemento!==nothing) & v)
+    if(field == :kind)
+      print(io,"kind :: ",elemento)
+    elseif(field == :operation)
+      print(io," ,",field ," : \e[94m",elemento,"\e[37m")
+    elseif(field == :value)
+      print(io," ,",field ," : \e[92m",elemento,"\e[37m")
+    else
+      print(io," ,",field ," : ",elemento)
+    end
+  end 
 end
+
+function Base.show(io::IO, node::Node)
+  typeofnode = typeof(node)
+  print(io, "\e[33m{ \e[37m")
+
+  iterate(Iterators.map((field)->runner_Parser(getfield(node,field), field, io), fieldnames(typeofnode)))
+
+  print(io,"\e[33m } \e[37m")
+end
+
+function Base.show(io::IO, elements::Array{Node,1})
+  print(io, "\e[35m[\n \e[37m")
+
+  iterate(Iterators.map((element)->print(io,element), elements))
+
+  print(io,"\e[35m ] \e[37m")
+end
+ 
