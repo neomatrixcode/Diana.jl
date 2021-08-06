@@ -58,24 +58,55 @@ end
 =#
 
 struct ExecuteField
-    visitante
+    visitante::Function
     datos::Dict
 
     function ExecuteField(symbol_table::NamedTuple, resolvers::NamedTuple,ctx; Variables=nothing)
     	datos=Dict("data"=>Dict())
 
-    	function resolvefieldValue(nombrecampo::String,args::Dict,type_padre::String,root::Union{Nothing,Dict},path::String,tipoactual::String)
+		function resolve_field(args,ctx,type_padre::Symbol, father_type::NamedTuple, nombre_nodo::Symbol, root::NamedTuple)
+			#println(" resolve_field de NamedTuple ")
 
-			    type_padre_symbol::Symbol = Symbol(type_padre)
-				nombrecampo_symbol::Symbol = Symbol(nombrecampo)
-
-				if (haskey(resolvers, type_padre_symbol)) && (haskey( getfield(resolvers, type_padre_symbol), nombrecampo_symbol))
-						return resolvers[type_padre_symbol][nombrecampo_symbol](root,args,ctx,Dict("fieldName"=>nombrecampo,"parentType"=>type_padre,"path"=>path,"dato=Type"=> tipoactual))
-				elseif (typeof(root)<:Dict) # si root es un diccionario
-			        	return root[nombrecampo_symbol]
-			    else
-					return "null"
+			if ((father_type[nombre_nodo][:resolver]) === nothing)
+				if (haskey(root, nombre_nodo))
+						return getfield(root,nombre_nodo)
+				else
+					throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The "*String(nombre_nodo)*" field does not exists.\"}]}"))
 				end
+			else
+				return father_type[nombre_nodo][:resolver](root, args, ctx, (fieldName = nombre_nodo, parentType = type_padre))
+				#datatable = merge(datatable, NamedTuple{(Symbol(String(nombre_nodo)),)}((root,)))
+			end
+		end
+
+		function resolve_field(args,ctx,type_padre::Symbol, father_type::NamedTuple, nombre_nodo::Symbol, root::H) where {H} 
+			#println(" resolve_field de objetos ")
+			if ((father_type[nombre_nodo][:resolver]) === nothing)
+				if (nombre_nodo in fieldnames(typeof(root)))
+						return getfield(root,nombre_nodo)
+				else
+					throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The "*String(nombre_nodo)*" field does not exists.\"}]}"))
+				end
+			else
+				return father_type[nombre_nodo][:resolver](root, args, ctx, (fieldName = nombre_nodo, parentType = type_padre))
+				#datatable = merge(datatable, NamedTuple{(Symbol(String(nombre_nodo)),)}((root,)))
+			end
+		end
+
+
+		function resolve_field(args,ctx,type_padre::Symbol, father_type::NamedTuple, nombre_nodo::Symbol, root::Dict)
+			#println(" resolve_field de Diccionarios ")
+
+			if ((father_type[nombre_nodo][:resolver]) === nothing)
+				if (haskey(root, nombre_nodo))
+					return root[nombre_nodo]
+				else
+					throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The "*String(nombre_nodo)*" field does not exists.\"}]}"))
+				end
+			else
+				return father_type[nombre_nodo][:resolver](root, args, ctx, (fieldName = nombre_nodo, parentType = type_padre))
+				#datatable = merge(datatable, NamedTuple{(Symbol(String(nombre_nodo)),)}((root,)))
+			end
 		end
 
 		function extract_arguments(node)
@@ -102,27 +133,37 @@ struct ExecuteField
 			        		    end 
 		end
 
-		function runner(subarbol,path::String,type_padre::Symbol,root::Union{Nothing,Dict})
+		function runner(subarbol,type_padre::Symbol,root::H) where {H}
 			if( (typeof(subarbol )<: Node) )
-				mivisitante(subarbol,path,type_padre,root)
+				mivisitante(subarbol,type_padre,root)
 			elseif (typeof(subarbol) <: Array{Node,1})
-				iterate(Iterators.map((campo) -> mivisitante(campo,path,type_padre,root), subarbol))
+				iterate(Iterators.map((campo) -> mivisitante(campo,type_padre,root), subarbol))
 			end 
 		end
 
-		function mivisitante(node::Node,path::String,type_padre::Symbol,root::Union{Nothing,Dict})
+		function mivisitante(node::Node,type_padre::Symbol, root::H) where {H}
 			typeofnode = typeof(node)
-
+			args = Dict()
+			ctx=""
+			
             if (node.kind == "Field")
+			
             	nombre_nodo::Symbol = Symbol(node.name.value)
 				father_type = getfield(symbol_table,type_padre)
+
             	if (haskey(father_type, nombre_nodo))
-					    
-			        	tipoactual::Symbol = father_type[nombre_nodo][:tipo]
 
-						#extract_arguments()
+			        tipoactual::Symbol = father_type[nombre_nodo][:tipo]
+                    
+					#extract_arguments()
 
-						if (father_type[nombre_nodo][:primitivo] == true)
+					if (father_type[nombre_nodo][:primitivo] == true)
+
+						#= if (haskey(root, nombre_nodo_string))
+							println("valor -> ",root[nombre_nodo_string])
+						else
+							throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The "*String(nombre_nodo)*" field does not exists.\"}]}"))
+						end =#
                     
 							#println(nombre_nodo, " es un ", tipoactual)
 							#= if ((tipoactual == :String ) | (tipoactual == :ID))
@@ -133,41 +174,26 @@ struct ExecuteField
 									# eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\" => $(resolvefieldValue(nombre_nodo,args,type_padre,root,path,tipoactual)))"))
 							# el tipo lista [ ] apenas lo pondre
 							end  =#
-						else # resolve de un tipo no primitivo
-								
-							#println(nombre_nodo, " es un Type, se ejecuta el resolver")
-								#= type_padre_symbol::Symbol = Symbol(type_padre)
-								nombre_nodo_symbol::Symbol = Symbol(nombre_nodo)
+					else 
+							
+		                root = resolve_field(args,ctx,type_padre,father_type,nombre_nodo, root)
+						type_padre= tipoactual
 		
-								if (haskey(resolvers, type_padre_symbol)) && (haskey( getfield(resolvers,type_padre_symbol), nombre_nodo_symbol))
-										root= "" # resolvers[type_padre_symbol][nombre_nodo_symbol](nothing,args,ctx,Dict("fieldName"=>nombre_nodo,"parentType"=>type_padre,"path"=>path,"returnType"=> tipoactual))
-								  end
-		
-								if !(nombre_nodo in collect(keys(eval(Meta.parse("datos$(path)")))))
-									# eval(Meta.parse("push!(datos$(path), \"$(nombre_nodo)\"=>Dict())"))
-								end =#
-		
-								#path= path*"[\"$(nombre_nodo)\"]"
-								  type_padre= tipoactual
-		
-						end
+					end
 			    else
-			        	throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The $(nombre_nodo) field does not exists.\"}]}"))
+			        throw(GraphQLError("{\"data\": null,\"errors\": [{\"message\": \"The "*String(nombre_nodo)*" field does not exists.\"}]}"))
 				end 
-
-					
-
 				
             end 
 
-			iterate(Iterators.map((field)->runner(getfield(node,field),path,type_padre,root), fieldnames(typeofnode)))	
+			iterate(Iterators.map((field)->runner(getfield(node,field),type_padre,root), fieldnames(typeofnode)))	
 		end
 
 
 	    function visitante(ast::Node, raiz::Symbol)
 			
 			#println(ast)
-			mivisitante(ast,"[\"data\"]",raiz,nothing)
+			mivisitante(ast,raiz, NamedTuple())
 	    end
       new(visitante,datos)
     end
@@ -208,3 +234,6 @@ end
 # 74.200 μs (925 allocations: 45.44 KiB)
 # 73.800 μs (913 allocations: 44.91 KiB)
 # 73.600 μs (905 allocations: 44.41 KiB)
+# 83.300 μs (991 allocations: 53.97 KiB)
+# 206.800 μs (2514 allocations: 136.63 KiB)
+# 206.600 μs (2499 allocations: 134.72 KiB)
