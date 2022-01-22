@@ -11,6 +11,7 @@
 <a href="https://juliahub.com/ui/Packages/Diana/Lt1mj?t=2"><img src="https://juliahub.com/docs/Diana/deps.svg"></a>
 <a href="https://juliahub.com/ui/Packages/Diana/Lt1mj"><img src="https://juliahub.com/docs/Diana/version.svg"></a>
 <a href="https://juliahub.com/ui/Packages/Diana/Lt1mj"><img src="https://juliahub.com/docs/Diana/pkgeval.svg"></a>
+<a href=""><img src="https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Diana"></a>
 <a href="https://raw.githubusercontent.com/neomatrixcode/Diana.jl/master/LICENSE.md"><img src="https://img.shields.io/badge/License-MIT-blue.svg"></a>
 <a href="https://zenodo.org/badge/latestdoi/97287478"><img src="https://zenodo.org/badge/97287478.svg" alt="DOI"></a>
 </p>
